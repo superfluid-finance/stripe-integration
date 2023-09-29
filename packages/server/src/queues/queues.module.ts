@@ -9,6 +9,7 @@ import { Queue } from 'bullmq';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import {
   TEST_QUEUE_NAME,
@@ -31,18 +32,21 @@ export class QueuesModule implements NestModule {
     return {
       module: QueuesModule,
       imports: [
-        BullModule.forRoot({
-          connection: {
-            host: 'localhost',
-            port: 6379,
-          },
-          defaultJobOptions: {
-            attempts: 3,
-            backoff: {
-              type: 'exponential',
-              delay: 1000,
+        BullModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: async (configService: ConfigService) => ({
+            connection: {
+              host: configService.getOrThrow("REDIS_HOST"),
+              port: configService.getOrThrow("REDIS_PORT"),
             },
-          },
+            defaultJobOptions: {
+              attempts: 3,
+              backoff: {
+                type: 'exponential',
+                delay: 1000,
+              },
+            }
+          }),
         }),
         testQueue,
       ],
