@@ -20,6 +20,9 @@ dependencies:
   react-dom:
     specifier: latest
     version: 18.2.0(react@18.2.0)
+  stripe:
+    specifier: ^13.8.0
+    version: 13.8.0
   viem:
     specifier: ^1.13.1
     version: 1.14.0(typescript@5.2.2)(zod@3.22.2)
@@ -4882,6 +4885,14 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
     dev: true
+
+  /stripe@13.8.0:
+    resolution: {integrity: sha512-QFOOeaEwNOAj4k/T9OtSb9sKx9oLVI5y9HrJJn3XN9RJYKGAuE+fMD+rHA5u9ILmf3FDx99jaEvVvykftJtBGA==}
+    engines: {node: '>=12.*'}
+    dependencies:
+      '@types/node': 20.8.0
+      qs: 6.11.2
+    dev: false
 
   /style-value-types@5.0.0:
     resolution: {integrity: sha512-08yq36Ikn4kx4YU6RD7jWEv27v4V+PUsOGa4n/as8Et3CuODMJQ00ENeAVXAeydX4Z2j1XHZF1K2sX4mGl18fA==}
