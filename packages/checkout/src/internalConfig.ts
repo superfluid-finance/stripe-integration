@@ -30,7 +30,7 @@ const chainToReceiverAddressMap: ChainToReceiverAddressMap = new Map<ChainID, Ad
 ])
 
 const internalConfig: InternalConfig = {
-    stripeSecretKey: ensureDefined(process.env.STRIPE_SECRET_KEY),
+    stripeSecretKey: ensureDefined(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY_TODO),
     stripeCurrencyToSuperTokenMap: stripeCurrencyToSuperTokenMap,
     chainToReceiverAddressMap 
 };
