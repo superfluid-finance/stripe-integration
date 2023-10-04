@@ -16,10 +16,10 @@ export default function Home() {
 
   const productId = useMemo<string | undefined>(() => {
     if (!isReady)
-      return;
+      return "";
 
     if (typeof query.product !== "string")
-      return;
+      return "";
 
     return query.product
   }, [isReady, query.product]);
