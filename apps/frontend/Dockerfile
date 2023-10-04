@@ -18,8 +18,8 @@ RUN \
 
 # Rebuild the source code only when needed
 FROM base AS builder
-WORKDIR /checkout
-COPY --from=deps /checkout/node_modules ./node_modules
+WORKDIR /apps/frontend
+COPY --from=deps /apps/frontend/node_modules ./node_modules
 COPY . .
 
 # Next.js collects completely anonymous telemetry data about general usage.

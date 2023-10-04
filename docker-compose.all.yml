@@ -10,14 +10,14 @@ services:
       - cache:/data
 
   backend:
-    build: ./server
+    build: ./apps/background
     ports:
       - '8080:8080'
     depends_on: 
       - redis
 
   frontend:
-    build: ./checkout
+    build: ./apps/frontend
     ports:
       - '3000:3000'
     depends_on: 
