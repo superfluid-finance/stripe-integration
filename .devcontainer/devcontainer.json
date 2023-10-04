@@ -14,7 +14,7 @@
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": [
-		"npm install -g @nestjs/cli",
+		"pnpm add -g @nestjs/cli",
 		"pnpm install",
 		"pnpm docker:redis"
 	]
