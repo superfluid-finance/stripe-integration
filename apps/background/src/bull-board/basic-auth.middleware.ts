@@ -12,8 +12,8 @@ export class BasicAuthMiddleware implements NestMiddleware {
   ).toString('base64');
 
   constructor(configService: ConfigService) {
-    this.username = configService.getOrThrow("BULLBOARD_USER");
-    this.password = configService.getOrThrow("BULLBOARD_PASSWORD");  
+    this.username = configService.getOrThrow('BULLBOARD_USER');
+    this.password = configService.getOrThrow('BULLBOARD_PASSWORD');
   }
 
   use(req: Request, res: Response, next: NextFunction) {

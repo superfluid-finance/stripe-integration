@@ -10,40 +10,45 @@ import { PROCESS_CUSTOMER } from './invoices.processor';
 
 @Processor(INVOICE_POLLING_QUEUE_NAME)
 export class InvoicePollingProcessor extends WorkerHost {
-    constructor(@InjectQueue(INVOICES_QUEUE_NAME) private readonly invoicesQueue: Queue, @InjectStripeClient() private readonly stripeClient: Stripe) {
-        super();
+  constructor(
+    @InjectQueue(INVOICES_QUEUE_NAME) private readonly invoicesQueue: Queue,
+    @InjectStripeClient() private readonly stripeClient: Stripe,
+  ) {
+    super();
+  }
+
+  async process(job: Job<any, any, string>, token?: string): Promise<number> {
+    if (job.name !== POLL_STRIP_INVOICES_NAME_AND_ID) {
+      logger.debug('Skipping: ' + job.name);
+      return;
     }
 
-    async process(job: Job<any, any, string>, token?: string): Promise<number> {
-        if (job.name !== POLL_STRIP_INVOICES_NAME_AND_ID) {
-            logger.debug("Skipping: " + job.name);
-            return;
-        }
+    logger.debug('Processing: ' + job.name);
 
-        logger.debug("Processing: " + job.name);
+    const stripeInvoicesResponse = await this.stripeClient.invoices.list({
+      collection_method: 'send_invoice',
+      status: 'open',
+    });
 
-        const stripeInvoicesResponse = await this.stripeClient.invoices.list({
-            collection_method: "send_invoice",
-            status: "open",
-        });
+    // TODO: handle "has_more"?
+    const stripeInvoices = stripeInvoicesResponse.data;
 
-        // TODO: handle "has_more"?
-        const stripeInvoices = stripeInvoicesResponse.data
+    logger.debug('Queried stripe invoices count: ' + stripeInvoices.length);
 
-        logger.debug("Queried stripe invoices count: " + stripeInvoices.length)
+    const jobs = await this.invoicesQueue.addBulk(
+      stripeInvoices.map((invoice) => ({
+        name: PROCESS_CUSTOMER,
+        data: {}, // TODO: Storing the whole invoice seems totally excessive
+        opts: {
+          jobId: invoice.customer as string, // TODO(KK): not quite right
+        },
+      })),
+    );
 
-        const jobs = await this.invoicesQueue.addBulk(stripeInvoices.map(invoice => ({
-            name: PROCESS_CUSTOMER,
-            data: {}, // TODO: Storing the whole invoice seems totally excessive
-            opts: {
-                jobId: invoice.customer as string // TODO(KK): not quite right
-            }
-        })));
+    logger.debug('Added more jobs: ' + jobs.length);
 
-        logger.debug("Added more jobs: " + jobs.length)
-
-        return jobs.length;
-    }
+    return jobs.length;
+  }
 }
 
 const logger = new Logger(InvoicePollingProcessor.name);

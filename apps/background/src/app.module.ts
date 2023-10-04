@@ -6,25 +6,27 @@ import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from './bull-board/bull-board.module';
 import { InvoicesModule } from './invoices/invoices.module';
 
-const registerConfigModule = () => ConfigModule.forRoot({
-  isGlobal: true
-});
+const registerConfigModule = () =>
+  ConfigModule.forRoot({
+    isGlobal: true,
+  });
 
-export const registerStripeModule = () => StripeModule.forRootAsync(StripeModule, {
-  inject: [ConfigService],
-  useFactory: (configServide: ConfigService) => ({
-    apiKey: configServide.getOrThrow("STRIPE_SECRET_KEY"),
-    // TODO(KK): webhooks
-  })
-});
+export const registerStripeModule = () =>
+  StripeModule.forRootAsync(StripeModule, {
+    inject: [ConfigService],
+    useFactory: (configServide: ConfigService) => ({
+      apiKey: configServide.getOrThrow('STRIPE_SECRET_KEY'),
+      // TODO(KK): webhooks
+    }),
+  });
 
-const registerBullModule = () => 
+const registerBullModule = () =>
   BullModule.forRootAsync({
     inject: [ConfigService],
     useFactory: async (configService: ConfigService) => ({
       connection: {
-        host: configService.getOrThrow("REDIS_HOST"),
-        port: configService.getOrThrow("REDIS_PORT"),
+        host: configService.getOrThrow('REDIS_HOST'),
+        port: configService.getOrThrow('REDIS_PORT'),
       },
       defaultJobOptions: {
         attempts: 3,
@@ -32,21 +34,19 @@ const registerBullModule = () =>
           type: 'exponential',
           delay: 1000,
         },
-      }
+      },
     }),
   });
 
-
 @Module({
   imports: [
-    registerConfigModule(), 
-    registerStripeModule(), 
+    registerConfigModule(),
+    registerStripeModule(),
     registerBullModule(),
     InvoicesModule.register(),
-    BullBoardModule, 
+    BullBoardModule,
   ],
   controllers: [],
-  providers: []
+  providers: [],
 })
-export class AppModule {
-}
+export class AppModule {}
