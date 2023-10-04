@@ -1,15 +1,17 @@
 {
-  "name": "stripe",
+  "name": "@superfluid-finance/stripe",
   "version": "1.0.0",
   "type": "module",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "build": "pnpm -r build",
-    "dev:redis": "docker-compose -f docker-compose-redis-only.yml up",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "pnpm -r lint",
+    "docker": "pnpm docker:build && pnpm docker:run",
+    "docker:run": "docker-compose -f docker-compose.all.yml up",
+    "docker:build": "pnpm -r docker:build", 
+    "docker:redis": "docker-compose -f docker-compose.redis.yml up"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": "Superfluid Finance",
+  "license": "MIT"
 }

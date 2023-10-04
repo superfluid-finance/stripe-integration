@@ -16,7 +16,7 @@
 	"postCreateCommand": [
 		"npm install -g @nestjs/cli",
 		"pnpm install",
-		"pnpm dev:redis"
+		"pnpm docker:redis"
 	]
 	// 	"sudo apt-get update",
 	// 	"sudo apt-get install -y lsb-release curl gpg",

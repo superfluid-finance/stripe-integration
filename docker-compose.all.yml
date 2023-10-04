@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:6-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server
+    volumes: 
+      - cache:/data
+
+  backend:
+    build: ./packages/server
+    ports:
+      - '8080:8080'
+    depends_on: 
+      - redis
+
+  frontend:
+    build: ./packages/checkout
+    ports:
+      - '3000:3000'
+    depends_on: 
+      - backend
+
+volumes:
+  cache:
+    driver: local
