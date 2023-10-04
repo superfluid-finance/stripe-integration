@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "pnpm -r build",
     "dev:redis": "docker-compose -f docker-compose-redis-only.yml up",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
