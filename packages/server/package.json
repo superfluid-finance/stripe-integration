@@ -22,6 +22,7 @@
     "@bull-board/api": "^5.8.4",
     "@bull-board/express": "^5.8.4",
     "@bull-board/nestjs": "^5.8.4",
+    "@golevelup/nestjs-stripe": "^0.6.3",
     "@nestjs/bullmq": "^10.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
@@ -29,7 +30,8 @@
     "@nestjs/platform-express": "^10.0.0",
     "bullmq": "^4.11.4",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "stripe": "^13.8.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.1",
