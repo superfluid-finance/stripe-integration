@@ -11,7 +11,7 @@ import { INVOICES_QUEUE_NAME, registerInvoicesQueueModule } from 'src/invoices/i
 @Module({
   imports: [registerInvoicePollingQueueModule(), registerInvoicesQueueModule()],
 })
-export class BullBoardModule implements NestModule {
+export class QueueDashboardModule implements NestModule {
   constructor(
     @InjectQueue(INVOICE_POLLING_QUEUE_NAME)
     private readonly invoicePollingQueue: Queue,

@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { StripeModule } from '@golevelup/nestjs-stripe';
 import { BullModule } from '@nestjs/bullmq';
-import { BullBoardModule } from './bull-board/bull-board.module';
+import { QueueDashboardModule } from './queue-dashboard/bull-board.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { CheckoutSessionModule } from './checkout-session/checkout-session.module';
 import { StripeListenerModule } from './stripe-listener/stripe-listener.module';
@@ -48,7 +48,7 @@ const registerBullModule = () =>
     registerStripeModule(),
     registerBullModule(),
     InvoicesModule.register(),
-    BullBoardModule,
+    QueueDashboardModule,
     CheckoutSessionModule,
     StripeListenerModule,
     InvoicePaymentTrackerModule,
