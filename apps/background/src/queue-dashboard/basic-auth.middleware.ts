@@ -10,8 +10,8 @@ export class BasicAuthMiddleware implements NestMiddleware {
   private readonly encodedCreds = Buffer.from(this.username + ':' + this.password).toString('base64');
 
   constructor(configService: ConfigService) {
-    this.username = configService.getOrThrow('BULLBOARD_USER');
-    this.password = configService.getOrThrow('BULLBOARD_PASSWORD');
+    this.username = configService.getOrThrow('QUEUE_DASHBOARD_USER');
+    this.password = configService.getOrThrow('QUEUE_DASHBOARD_PASSWORD');
   }
 
   use(req: Request, res: Response, next: NextFunction) {
