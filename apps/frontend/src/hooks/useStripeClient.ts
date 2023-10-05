@@ -2,8 +2,8 @@ import Stripe from 'stripe';
 import { useMemo } from 'react';
 import internalConfig from '@/internalConfig';
 
-const useStripeAPI = () => {
-  const stripeAPI = useMemo(
+const useStripeClient = () => {
+  const stripeClient = useMemo(
     () =>
       new Stripe(internalConfig.stripeSecretKey, {
         apiVersion: '2023-08-16',
@@ -11,7 +11,7 @@ const useStripeAPI = () => {
     [],
   );
 
-  return stripeAPI;
+  return stripeClient;
 };
 
-export default useStripeAPI;
+export default useStripeClient;

@@ -6,7 +6,7 @@ import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import { useRouter } from 'next/router';
 import { useQuery } from 'wagmi';
 import Stripe from "stripe";
-import useStripeAPI from '@/hooks/useStripeAPI';
+import useStripeClient from '@/hooks/useStripeClient';
 import ConnectKitProvider from '@/components/ConnectKitProvider';
 
 const inter = Inter({ subsets: ['latin'] })
@@ -24,7 +24,7 @@ export default function Home() {
     return query.product
   }, [isReady, query.product]);
 
-  const stripeAPI = useStripeAPI();
+  const stripeClient = useStripeClient();
 
   // TODO(KK): To avoid filtering issues then this part should be handled by the back-end API. Or the code should be re-used.
 
@@ -33,7 +33,7 @@ export default function Home() {
       return;
     }
 
-    const product = await stripeAPI.products.retrieve(productId);
+    const product = await stripeClient.products.retrieve(productId);
     return product;
   }, {
     enabled: !!productId
@@ -44,7 +44,7 @@ export default function Home() {
       return;
     }
 
-    const prices = await stripeAPI.prices.list({
+    const prices = await stripeClient.prices.list({
       product: productId,
       active: true
     });
