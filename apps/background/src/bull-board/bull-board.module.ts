@@ -4,15 +4,9 @@ import { ExpressAdapter } from '@bull-board/express';
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import {
-  INVOICE_POLLING_QUEUE_NAME,
-  registerInvoicePollingQueueModule,
-} from 'src/invoices/invoice-polling.queue';
+import { INVOICE_POLLING_QUEUE_NAME, registerInvoicePollingQueueModule } from 'src/invoices/invoice-polling.queue';
 import { BasicAuthMiddleware } from './basic-auth.middleware';
-import {
-  INVOICES_QUEUE_NAME,
-  registerInvoicesQueueModule,
-} from 'src/invoices/invoices.queue';
+import { INVOICES_QUEUE_NAME, registerInvoicesQueueModule } from 'src/invoices/invoices.queue';
 
 @Module({
   imports: [registerInvoicePollingQueueModule(), registerInvoicesQueueModule()],
@@ -30,14 +24,9 @@ export class BullBoardModule implements NestModule {
 
     createBullBoard({
       serverAdapter,
-      queues: [
-        new BullMQAdapter(this.invoicePollingQueue),
-        new BullMQAdapter(this.invoicesQueue),
-      ],
+      queues: [new BullMQAdapter(this.invoicePollingQueue), new BullMQAdapter(this.invoicesQueue)],
     });
 
-    consumer
-      .apply(BasicAuthMiddleware, serverAdapter.getRouter())
-      .forRoutes('/queues');
+    consumer.apply(BasicAuthMiddleware, serverAdapter.getRouter()).forRoutes('/queues');
   }
 }

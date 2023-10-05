@@ -1,9 +1,6 @@
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { DynamicModule, Logger, Module, OnModuleInit } from '@nestjs/common';
-import {
-  INVOICE_POLLING_QUEUE_NAME,
-  registerInvoicePollingQueueModule,
-} from './invoice-polling.queue';
+import { INVOICE_POLLING_QUEUE_NAME, registerInvoicePollingQueueModule } from './invoice-polling.queue';
 import { InvoicePollingProcessor } from './invoice-polling.processor';
 import { Job, Queue } from 'bullmq';
 import { registerStripeModule } from 'src/app.module';
@@ -19,21 +16,9 @@ export class InvoicesModule implements OnModuleInit {
 
     return {
       module: InvoicesModule,
-      imports: [
-        registerStripeModule(),
-        BullModule,
-        invoicePollingQueueModule,
-        invoicesQueueModule,
-      ],
-      providers: [
-        ...invoicePollingQueueModule.providers,
-        ...invoicesQueueModule.providers,
-        InvoicePollingProcessor,
-      ],
-      exports: [
-        ...invoicePollingQueueModule.exports,
-        ...invoicesQueueModule.exports,
-      ],
+      imports: [registerStripeModule(), BullModule, invoicePollingQueueModule, invoicesQueueModule],
+      providers: [...invoicePollingQueueModule.providers, ...invoicesQueueModule.providers, InvoicePollingProcessor],
+      exports: [...invoicePollingQueueModule.exports, ...invoicesQueueModule.exports],
     };
   }
 

@@ -7,9 +7,7 @@ export class BasicAuthMiddleware implements NestMiddleware {
   private readonly username = 'user';
   private readonly password = 'password';
 
-  private readonly encodedCreds = Buffer.from(
-    this.username + ':' + this.password,
-  ).toString('base64');
+  private readonly encodedCreds = Buffer.from(this.username + ':' + this.password).toString('base64');
 
   constructor(configService: ConfigService) {
     this.username = configService.getOrThrow('BULLBOARD_USER');
@@ -20,10 +18,7 @@ export class BasicAuthMiddleware implements NestMiddleware {
     const reqCreds = req.get('authorization')?.split('Basic ')?.[1] ?? null;
 
     if (!reqCreds || reqCreds !== this.encodedCreds) {
-      res.setHeader(
-        'WWW-Authenticate',
-        'Basic realm="Access to Queue Dashboard", charset="UTF-8"',
-      );
+      res.setHeader('WWW-Authenticate', 'Basic realm="Access to Queue Dashboard", charset="UTF-8"');
       res.sendStatus(401);
     } else {
       next();

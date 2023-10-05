@@ -1,10 +1,5 @@
 import Stripe from 'stripe';
-import {
-  PaymentDetails,
-  PaymentOption,
-  ProductDetails,
-  WidgetProps,
-} from '@superfluid-finance/widget';
+import { PaymentDetails, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 import { Address } from 'wagmi';
 import {
   ChainToReceiverAddressMap,
@@ -25,16 +20,13 @@ type Output = {
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
-export default function convertStripeProductToSuperfluidWidget(
-  stripe: Input,
-): Output {
+export default function convertStripeProductToSuperfluidWidget(stripe: Input): Output {
   // TODO(KK): Enforce it's a subscription-based product?
 
   const productDetails: Output['productDetails'] = {
     name: stripe.product.name,
     description: stripe.product.description ?? '', // TODO(KK): Stripe product might not have a description. The Product Card of the widget should still look good.
-    imageURI:
-      stripe.product.images.length > 0 ? stripe.product.images[0] : undefined, // TODO(KK): Consider taking in a list of images in the widget and provide a carousel.
+    imageURI: stripe.product.images.length > 0 ? stripe.product.images[0] : undefined, // TODO(KK): Consider taking in a list of images in the widget and provide a carousel.
   };
 
   // TODO(KK): How to solve chain ID? Where do I retrieve it from?
