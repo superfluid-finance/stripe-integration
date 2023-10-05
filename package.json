@@ -1,0 +1,19 @@
+{
+  "name": "@superfluid-finance/stripe",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [ "Stripe", "Superfluid", "Web3" ],
+  "license": "MIT",
+  "author": "Superfluid Finance",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "clean": "pnpm -r clean",
+    "docker": "pnpm docker:build && pnpm docker:run",
+    "docker:build": "pnpm -r docker:build",
+    "docker:redis": "docker-compose -f docker-compose.redis.yml up",
+    "docker:run": "docker-compose -f docker-compose.all.yml up",
+    "format": "pnpm -r format",
+    "lint": "pnpm -r lint"
+  }
+}

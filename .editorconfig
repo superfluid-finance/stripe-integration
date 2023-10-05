@@ -1,0 +1,22 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Matches multiple files with extension .js, .ts, .tsx, .json
+[*.{js,ts,tsx,json}]
+indent_style = space
+indent_size = 2
+
+# Matches the files with extension .md
+[*.md]
+indent_size = 4
+trim_trailing_whitespace = false
+
+# Matches the exact files either package.json or .travis.yml
+[{package.json,.travis.yml}]
+indent_style = space
+indent_size = 2
