@@ -5,6 +5,10 @@ import { StripeModule } from '@golevelup/nestjs-stripe';
 import { BullModule } from '@nestjs/bullmq';
 import { BullBoardModule } from './bull-board/bull-board.module';
 import { InvoicesModule } from './invoices/invoices.module';
+import { CheckoutSessionModule } from './checkout-session/checkout-session.module';
+import { StripeListenerModule } from './stripe-listener/stripe-listener.module';
+import { InvoicePaymentTrackerModule } from './invoice-payment-tracker/invoice-payment-tracker.module';
+import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
 
 const registerConfigModule = () =>
   ConfigModule.forRoot({
@@ -45,6 +49,10 @@ const registerBullModule = () =>
     registerBullModule(),
     InvoicesModule.register(),
     BullBoardModule,
+    CheckoutSessionModule,
+    StripeListenerModule,
+    InvoicePaymentTrackerModule,
+    SuperTokenAccountingModule,
   ],
   controllers: [],
   providers: [],
