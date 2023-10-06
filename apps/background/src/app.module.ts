@@ -44,6 +44,6 @@ const registerBullModule = () =>
     SuperTokenAccountingModule,
   ],
   controllers: [],
-  providers: [],
+  providers: []
 })
 export class AppModule {}

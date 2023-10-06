@@ -15,6 +15,10 @@ type InternalConfig = {
   stripeSecretKey: string;
   stripeCurrencyToSuperTokenMap: StripeCurrentToSuperTokenMap;
   chainToReceiverAddressMap: ChainToReceiverAddressMap;
+  background: {
+    host: string;
+    port: number;
+  }
 };
 
 const networkToSuperTokenMap = new Map<ChainID, Address>([[5, '0x8aE68021f6170E5a766bE613cEA0d75236ECCa9a']]);
@@ -31,6 +35,10 @@ const internalConfig: InternalConfig = {
   stripeSecretKey: ensureDefined(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY_TODO, 'NEXT_PUBLIC_STRIPE_SECRET_KEY_TODO'),
   stripeCurrencyToSuperTokenMap: stripeCurrencyToSuperTokenMap,
   chainToReceiverAddressMap,
+  background: {
+    host: ensureDefined(process.env.NEXT_PUBLIC_BACKGROUND_HOST, 'NEXT_PUBLIC_BACKGROUND_HOST'),
+    port: Number(ensureDefined(process.env.NEXT_PUBLIC_BACKGROUND_PORT, 'NEXT_PUBLIC_BACKGROUND_PORT')),
+  }
 };
 
 // TODO(KK): Enabled networks

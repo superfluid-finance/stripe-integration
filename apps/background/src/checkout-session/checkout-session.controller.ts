@@ -39,6 +39,7 @@ export class CheckoutSessionController {
   @Post('create')
   createSession(request: Request) {
     // TODO: Authorize based on API key
+    // throw new UnauthorizedException();
 
     const validationResult = CreateSessionData.safeParse(request);
     if (!validationResult.success) {

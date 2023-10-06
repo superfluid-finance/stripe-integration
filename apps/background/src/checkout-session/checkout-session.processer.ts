@@ -8,7 +8,8 @@ import { CreateSessionData } from './checkout-session.controller';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';
 
-type CheckoutSessionJob = Job<any, CreateSessionData, typeof CHECKOUT_SESSION_JOB_NAME>;
+type UserId = string;
+type CheckoutSessionJob = Job<CreateSessionData, UserId, typeof CHECKOUT_SESSION_JOB_NAME>;
 
 /**
  *
@@ -22,8 +23,15 @@ export class CheckoutSessionProcesser extends WorkerHost {
     super();
   }
 
-  async process(job: CheckoutSessionJob, token?: string): Promise<any> {
-    this.stripeClient.customers.create(); // TODO
+  async process(job: CheckoutSessionJob, token?: string): Promise<UserId> {
+    const data = job.data;
+    const stripeResponse = await this.stripeClient.customers.create({
+      metadata: {
+        walletAddress: data.senderAddress
+      },
+    }); // TODO
+
+    return stripeResponse.id;
 
     // Handle job for ensuring customer on Stripe's end here
     // Have the job be self-scheduling, i.e. it reschedules for a while until it dies off if user didn't finish with the details
