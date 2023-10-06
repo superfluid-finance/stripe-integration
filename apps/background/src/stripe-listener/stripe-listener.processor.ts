@@ -17,8 +17,8 @@ type StripeListenerJob = Job<any, any, typeof STRIPE_LISTENER_JOB_NAME>;
 @Processor(QUEUE_NAME)
 export class StripeListenerProcessor extends WorkerHost {
   constructor(
-      @InjectStripeClient() private readonly stripeClient: Stripe,
-      private readonly paymentTrackerService : PaymentTrackerService
+    @InjectStripeClient() private readonly stripeClient: Stripe,
+    private readonly paymentTrackerService: PaymentTrackerService,
   ) {
     super();
   }

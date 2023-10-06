@@ -10,7 +10,11 @@ import * as PaymentTracker from 'src/payment-tracker/payment-tracker.queue';
 import * as StripeListener from 'src/stripe-listener/stripe-listener.queue';
 
 @Module({
-  imports: [CheckoutSession.registerQueueModule(), PaymentTracker.registerQueueModule(), StripeListener.registerQueueModule()],
+  imports: [
+    CheckoutSession.registerQueueModule(),
+    PaymentTracker.registerQueueModule(),
+    StripeListener.registerQueueModule(),
+  ],
 })
 export class QueueDashboardModule implements NestModule {
   constructor(
@@ -26,7 +30,11 @@ export class QueueDashboardModule implements NestModule {
 
     createBullBoard({
       serverAdapter,
-      queues: [new BullMQAdapter(this.checkoutSessionQueue), new BullMQAdapter(this.paymentTrackerQueue), new BullMQAdapter(this.stripeListenerQueue)],
+      queues: [
+        new BullMQAdapter(this.checkoutSessionQueue),
+        new BullMQAdapter(this.paymentTrackerQueue),
+        new BullMQAdapter(this.stripeListenerQueue),
+      ],
     });
 
     consumer.apply(BasicAuthMiddleware, serverAdapter.getRouter()).forRoutes('/queues');

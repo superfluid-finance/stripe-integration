@@ -7,6 +7,6 @@ import registerStripeModule from 'src/registerStripeModule';
 @Module({
   imports: [registerQueueModule(), registerStripeModule()],
   providers: [PaymentTrackerProcessor, PaymentTrackerService],
-  exports: [PaymentTrackerService]
+  exports: [PaymentTrackerService],
 })
 export class PaymentTrackerModule {}

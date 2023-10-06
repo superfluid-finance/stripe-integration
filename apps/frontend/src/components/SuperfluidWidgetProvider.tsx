@@ -36,7 +36,7 @@ export default function SupefluidWidgetProvider({ stripeProduct, stripePrices }:
         prices: stripePrices,
         chainToReceiverAddressMap: internalConfig.chainToReceiverAddressMap,
         currencyToSuperTokenMap: internalConfig.stripeCurrencyToSuperTokenMap
-    }), [stripeProduct]);
+    }), [stripeProduct, stripePrices]);
 
     const [email, setEmail] = useState<string | undefined>();
 

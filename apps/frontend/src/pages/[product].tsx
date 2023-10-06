@@ -1,12 +1,9 @@
-import Image from 'next/image'
 import { Inter } from 'next/font/google'
-import { FC, useMemo, useState } from 'react';
-import WagmiProvider from '@/components/WagmiProvider';
-import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
+import { useMemo } from 'react';
 import { useRouter } from 'next/router';
 import { useQuery } from 'wagmi';
-import Stripe from "stripe";
 import useStripeClient from '@/hooks/useStripeClient';
+import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import ConnectKitProvider from '@/components/ConnectKitProvider';
 
 const inter = Inter({ subsets: ['latin'] })
