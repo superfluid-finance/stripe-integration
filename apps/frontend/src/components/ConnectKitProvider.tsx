@@ -1,3 +1,4 @@
+"use client"
 
 import { ConnectKitProvider as ConnectKitProvider_, ConnectKitButton, getDefaultConfig } from "connectkit";
 import { PropsWithChildren, useState, createContext, useMemo } from "react"

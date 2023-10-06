@@ -7,6 +7,7 @@
   "author": "Superfluid Finance",
   "type": "module",
   "scripts": {
+    "dev": "pnpm -r dev && pnpm -r start:dev",
     "build": "pnpm -r build",
     "clean": "pnpm -r clean",
     "docker": "pnpm docker:build && pnpm docker:run",
