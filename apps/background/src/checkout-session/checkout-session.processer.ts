@@ -27,7 +27,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
     const data = job.data;
 
     const customerSearchParams: Stripe.CustomerSearchParams = {
-      query: `metadata['senderAddress']:'${data.senderAddress}'`
+      query: `metadata['senderAddress']:'${data.senderAddress}'`,
     };
     const customersSearchResponse = await this.stripeClient.customers.search(customerSearchParams);
 
@@ -37,7 +37,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       email: data.email,
       metadata: {
         // What else is _required_ here?
-        senderAddress: data.senderAddress // TODO(KK): Any way to use array here?
+        senderAddress: data.senderAddress, // TODO(KK): Any way to use array here?
       },
     };
     const customersCreateResponse = await this.stripeClient.customers.create(customerCreateParams);
@@ -52,8 +52,8 @@ export class CheckoutSessionProcesser extends WorkerHost {
       customerSearchParams,
       customersSearchResponse,
       customerCreateParams,
-      customersCreateResponse
-    })
+      customersCreateResponse,
+    });
 
     return customersCreateResponse.id;
 

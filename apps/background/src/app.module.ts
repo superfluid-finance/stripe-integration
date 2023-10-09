@@ -7,6 +7,7 @@ import { CheckoutSessionModule } from './checkout-session/checkout-session.modul
 import { StripeListenerModule } from './stripe-listener/stripe-listener.module';
 import { PaymentTrackerModule } from './payment-tracker/payment-tracker.module';
 import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
+import { StripeToSuperfluidModule } from './stripe-to-superfluid/stripe-to-superfluid.module';
 import registerStripeModule from './registerStripeModule';
 
 const registerConfigModule = () =>
@@ -42,8 +43,9 @@ const registerBullModule = () =>
     StripeListenerModule,
     PaymentTrackerModule,
     SuperTokenAccountingModule,
+    StripeToSuperfluidModule,
   ],
   controllers: [],
-  providers: []
+  providers: [],
 })
 export class AppModule {}

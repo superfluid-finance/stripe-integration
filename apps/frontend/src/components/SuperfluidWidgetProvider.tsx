@@ -1,12 +1,9 @@
 "use client"
 
-import internalConfig from "@/internalConfig";
 import { CreateSessionData } from "@/pages/api/create-session";
-import convertStripeProductToSuperfluidWidget from "@/services/convertStripeProductToSuperfluidWidget";
-import SuperfluidWidget, { EventListeners, PaymentDetails, PaymentOption, ProductDetails, WalletManager, WidgetProps, supportedNetworks } from "@superfluid-finance/widget";
+import SuperfluidWidget, { EventListeners, PaymentOption, WalletManager, WidgetProps } from "@superfluid-finance/widget";
 import { useModal } from "connectkit";
 import { useMemo, useState } from "react";
-import Stripe from "stripe";
 import { useAccount, useMutation } from "wagmi";
 
 type Props = {
