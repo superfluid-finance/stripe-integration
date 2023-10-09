@@ -1,10 +1,11 @@
-import { BadRequestException, Controller, Logger, Post, Body } from '@nestjs/common';
+import { BadRequestException, Controller, Logger, Post, Body, Headers, UnauthorizedException } from '@nestjs/common';
 import { toZod } from 'tozod';
 import { z } from 'zod';
 import { QUEUE_NAME } from './checkout-session.queue';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { CHECKOUT_SESSION_JOB_NAME } from './checkout-session.processer';
+import { ConfigService } from '@nestjs/config';
 
 export type CreateSessionData = {
   chainId: number;
@@ -21,39 +22,30 @@ const CreateSessionData: toZod<CreateSessionData> = z.object({
   email: z.string().trim().max(320),
 });
 
-export type CreateSessionRequest = {
-  apiKey: string; // Move to headers to make proxing trivial.
-  data: CreateSessionData;
-};
-const CreateSessionRequest = z
-  .object({
-    apiKey: z.string(),
-    data: CreateSessionData,
-  })
-  .strict();
-
 @Controller('checkout-session')
 export class CheckoutSessionController {
-  constructor(@InjectQueue(QUEUE_NAME) private readonly queue: Queue) {}
+  private readonly apiKey: string;
+
+  constructor(@InjectQueue(QUEUE_NAME) private readonly queue: Queue, private readonly configService: ConfigService) {
+    this.apiKey = configService.getOrThrow('API_KEY');
+  }
 
   @Post('create')
-  async createSession(@Body() request: CreateSessionRequest): Promise<void> {
+  async createSession(@Body() data: CreateSessionData, @Headers('x-api-key') apiKey: string): Promise<void> {
+    if (apiKey !== this.apiKey) {
+      throw new UnauthorizedException();
+    }
 
-    // TODO: Authorize based on API key
-    // throw new UnauthorizedException();
-
-    const validationResult = CreateSessionData.safeParse(request.data); // TODO: confusing
+    const validationResult = CreateSessionData.safeParse(data); // TODO: confusing
     if (!validationResult.success) {
       throw new BadRequestException(validationResult.error);
     }
-
-    console.log(validationResult.data)
 
     // Use encoded data as job ID for duplicate request idempotency.
     const jobId = Buffer.from(JSON.stringify(validationResult.data), 'utf-8').toString('base64');
 
     await this.queue.add(CHECKOUT_SESSION_JOB_NAME, validationResult.data, {
-      // jobId: jobId,
+      jobId: jobId,
     });
     // TODO: get payment option, customer details, create a job, monitor Stripe for new Customer creation (don't create a bunch of spam)
   }

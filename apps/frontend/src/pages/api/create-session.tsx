@@ -9,11 +9,6 @@ export type CreateSessionData = {
     email: string;
 };
 
-type CreateSessionRequest = {
-    apiKey: string;
-    data: CreateSessionData;
-};
-
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -21,14 +16,12 @@ export default async function handler(
     if (req.method === 'POST') {
         const backendUrl = new URL(`http://${internalConfig.background.host}:${internalConfig.background.port}/checkout-session/create`);;
 
-        const createSessionRequest: CreateSessionRequest = {
-            apiKey: "whatever",
-            data: req.body as CreateSessionData
-        }
+        const createSessionRequest: CreateSessionData = req.body as CreateSessionData
 
         const response = await fetch(backendUrl, {
             method: "POST",
             headers: {
+                "x-api-key": internalConfig.background.apiKey,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(createSessionRequest)

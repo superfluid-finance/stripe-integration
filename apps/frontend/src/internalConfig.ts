@@ -18,6 +18,7 @@ type InternalConfig = {
   background: {
     host: string;
     port: number;
+    apiKey: string;
   }
 };
 
@@ -32,12 +33,13 @@ const chainToReceiverAddressMap: ChainToReceiverAddressMap = new Map<ChainID, Ad
 ]);
 
 const internalConfig: InternalConfig = {
-  stripeSecretKey: ensureDefined(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY_TODO, 'NEXT_PUBLIC_STRIPE_SECRET_KEY_TODO'),
+  stripeSecretKey: ensureDefined(process.env.STRIPE_SECRET_KEY, 'STRIPE_SECRET_KEY'),
   stripeCurrencyToSuperTokenMap: stripeCurrencyToSuperTokenMap,
   chainToReceiverAddressMap,
   background: {
-    host: ensureDefined(process.env.NEXT_PUBLIC_BACKGROUND_HOST, 'NEXT_PUBLIC_BACKGROUND_HOST'),
-    port: Number(ensureDefined(process.env.NEXT_PUBLIC_BACKGROUND_PORT, 'NEXT_PUBLIC_BACKGROUND_PORT')),
+    host: ensureDefined(process.env.BACKGROUND_HOST, 'BACKGROUND_HOST'),
+    port: Number(ensureDefined(process.env.BACKGROUND_PORT, 'BACKGROUND_PORT')),
+    apiKey: ensureDefined(process.env.BACKGROUND_API_KEY, 'BACKGROUND_API_KEY')
   }
 };
 
