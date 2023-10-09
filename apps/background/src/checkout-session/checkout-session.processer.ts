@@ -1,5 +1,5 @@
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Job, Queue } from 'bullmq';
 import { QUEUE_NAME } from './checkout-session.queue';
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
@@ -25,15 +25,41 @@ export class CheckoutSessionProcesser extends WorkerHost {
 
   async process(job: CheckoutSessionJob, token?: string): Promise<UserId> {
     const data = job.data;
-    const stripeResponse = await this.stripeClient.customers.create({
-      metadata: {
-        walletAddress: data.senderAddress
-      },
-    }); // TODO
 
-    return stripeResponse.id;
+    const customerSearchParams: Stripe.CustomerSearchParams = {
+      query: `metadata['senderAddress']:'${data.senderAddress}'`
+    };
+    const customersSearchResponse = await this.stripeClient.customers.search(customerSearchParams);
+
+    // TODO: pre-condition if need to create customer
+
+    const customerCreateParams: Stripe.CustomerCreateParams = {
+      email: data.email,
+      metadata: {
+        // What else is _required_ here?
+        senderAddress: data.senderAddress // TODO(KK): Any way to use array here?
+      },
+    };
+    const customersCreateResponse = await this.stripeClient.customers.create(customerCreateParams);
+
+    // const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create({
+
+    // });
+
+    logger.debug({
+      job,
+      token,
+      customerSearchParams,
+      customersSearchResponse,
+      customerCreateParams,
+      customersCreateResponse
+    })
+
+    return customersCreateResponse.id;
 
     // Handle job for ensuring customer on Stripe's end here
     // Have the job be self-scheduling, i.e. it reschedules for a while until it dies off if user didn't finish with the details
   }
 }
+
+const logger = new Logger(CheckoutSessionProcesser.name);

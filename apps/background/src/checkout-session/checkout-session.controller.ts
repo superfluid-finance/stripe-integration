@@ -16,9 +16,9 @@ export type CreateSessionData = {
 };
 const CreateSessionData: toZod<CreateSessionData> = z.object({
   chainId: z.number(),
-  tokenAddress: z.string().trim(),
-  senderAddress: z.string().trim(),
-  receiverAddress: z.string().trim(),
+  tokenAddress: z.string().trim().toLowerCase().length(42),
+  senderAddress: z.string().trim().toLowerCase().length(42),
+  receiverAddress: z.string().trim().toLowerCase().length(42),
   email: z.string().trim().max(320),
 });
 
@@ -26,7 +26,7 @@ const CreateSessionData: toZod<CreateSessionData> = z.object({
 export class CheckoutSessionController {
   private readonly apiKey: string;
 
-  constructor(@InjectQueue(QUEUE_NAME) private readonly queue: Queue, private readonly configService: ConfigService) {
+  constructor(@InjectQueue(QUEUE_NAME) private readonly queue: Queue, configService: ConfigService) {
     this.apiKey = configService.getOrThrow('API_KEY');
   }
 
@@ -36,7 +36,7 @@ export class CheckoutSessionController {
       throw new UnauthorizedException();
     }
 
-    const validationResult = CreateSessionData.safeParse(data); // TODO: confusing
+    const validationResult = CreateSessionData.safeParse(data);
     if (!validationResult.success) {
       throw new BadRequestException(validationResult.error);
     }
@@ -45,7 +45,7 @@ export class CheckoutSessionController {
     const jobId = Buffer.from(JSON.stringify(validationResult.data), 'utf-8').toString('base64');
 
     await this.queue.add(CHECKOUT_SESSION_JOB_NAME, validationResult.data, {
-      jobId: jobId,
+      // jobId: jobId,
     });
     // TODO: get payment option, customer details, create a job, monitor Stripe for new Customer creation (don't create a bunch of spam)
   }
