@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: stripe-integration
+  name: stripe-integration
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: stripe-integration
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: stripe-integration
+    spec:
+      containers:
+      - image: superfluid-finance/stripe-integration:latest
+        imagePullPolicy: Never
+        name: stripe-integration
+        env:
+          - name: STRIPE_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: stripe-sk
+                key: STRIPE_SECRET_KEY
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-key
+                key: API_KEY
+          - name: PORT
+            value: "3000"
+          - name: REDIS_HOST
+            value: stripe-integration-redis-master
+          - name: REDIS_PORT
+            value: "6379"
+          - name: QUEUE_DASHBOARD_USER
+            value: user
+          - name: QUEUE_DASHBOARD_PASSWORD
+            value: password
+        ports:
+        - containerPort: 3000
+        resources: {}
+status: {}

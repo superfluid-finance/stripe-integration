@@ -8,6 +8,7 @@ import { StripeListenerModule } from './stripe-listener/stripe-listener.module';
 import { PaymentTrackerModule } from './payment-tracker/payment-tracker.module';
 import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
 import { StripeToSuperfluidModule } from './stripe-to-superfluid/stripe-to-superfluid.module';
+import { HealthModule } from './health/health.module';
 import registerStripeModule from './registerStripeModule';
 
 const registerConfigModule = () =>
@@ -44,6 +45,7 @@ const registerBullModule = () =>
     PaymentTrackerModule,
     SuperTokenAccountingModule,
     StripeToSuperfluidModule,
+    HealthModule,
   ],
   controllers: [],
   providers: [],
