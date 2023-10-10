@@ -7,12 +7,13 @@ import { useMemo, useState } from "react";
 import { useAccount, useMutation } from "wagmi";
 
 type Props = {
+    productId: string;
     // setInitialChainId: (chainId: number | undefined) => void;
     productDetails: WidgetProps["productDetails"]
     paymentDetails: WidgetProps["paymentDetails"]
 }
 
-export default function SupefluidWidgetProvider({ paymentDetails, productDetails }: Props) {
+export default function SupefluidWidgetProvider({ productId, paymentDetails, productDetails }: Props) {
     const { open, setOpen } = useModal();
 
     const walletManager = useMemo<WalletManager>(() => ({
@@ -20,7 +21,7 @@ export default function SupefluidWidgetProvider({ paymentDetails, productDetails
         open: () => setOpen(true)
     }), [open, setOpen]);
 
-    const { mutate: createSession } = useMutation(["foo"], async (data: CreateSessionData) => {
+    const { mutate: createSession } = useMutation(["TODO: query key"], async (data: CreateSessionData) => {
         await fetch("/api/create-session", {
             headers: {
                 'Content-Type': 'application/json',
@@ -41,6 +42,7 @@ export default function SupefluidWidgetProvider({ paymentDetails, productDetails
             if (accountAddress && paymentOption && arg?.route === "transactions") {
                 console.log("creating session")
                 const data: CreateSessionData = {
+                    productId,
                     chainId: paymentOption.chainId,
                     tokenAddress: paymentOption.superToken.address,
                     senderAddress: accountAddress,

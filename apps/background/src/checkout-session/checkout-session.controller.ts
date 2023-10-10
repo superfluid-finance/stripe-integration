@@ -8,6 +8,7 @@ import { CHECKOUT_SESSION_JOB_NAME } from './checkout-session.processer';
 import { ConfigService } from '@nestjs/config';
 
 export type CreateSessionData = {
+  productId: string;
   chainId: number;
   tokenAddress: string;
   senderAddress: string;
@@ -16,6 +17,7 @@ export type CreateSessionData = {
 };
 const CreateSessionData: toZod<CreateSessionData> = z.object({
   chainId: z.number(),
+  productId: z.string().trim().max(255),
   tokenAddress: z.string().trim().toLowerCase().length(42),
   senderAddress: z.string().trim().toLowerCase().length(42),
   receiverAddress: z.string().trim().toLowerCase().length(42),

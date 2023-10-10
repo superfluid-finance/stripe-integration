@@ -2,8 +2,6 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { WidgetProps } from '@superfluid-finance/widget';
 import Stripe from 'stripe';
-import { defaultChainToSuperTokenReceiverMap } from './core/ChainToSuperTokenReceiverMap';
-import { defaultStripeCurrencyToSuperTokenMap } from './core/StripeCurrencyToSuperTokenMap';
 import { StripeToSuperfluidService } from './stripe-to-superfluid.service';
 
 type Response = {
