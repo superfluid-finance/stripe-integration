@@ -1,5 +1,6 @@
 # Kubernetes setup
 
+- build the background container: `docker build -t superfluid-finance/stripe-integration:latest .`
 - install [helm](https://helm.sh/docs/intro/install/)
 - cd into the `k8s` folder
 - run `helm install stripe-integration .`
