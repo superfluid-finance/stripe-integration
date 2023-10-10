@@ -25,7 +25,7 @@ export default async function Product({ params }: { params: { product: string } 
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <WagmiProvider>
         <ConnectKitProvider>
-          {!!config && <SupefluidWidgetProvider productDetails={config.productDetails} paymentDetails={config.paymentDetails} />}
+          {!!config && <SupefluidWidgetProvider productId={productId} productDetails={config.productDetails} paymentDetails={config.paymentDetails} />}
         </ConnectKitProvider>
       </WagmiProvider>
     </main>

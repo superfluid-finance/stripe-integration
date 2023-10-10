@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
-import { ChainToSuperTokenReceiverMap, defaultChainToSuperTokenReceiverMap } from './core/ChainToSuperTokenReceiverMap';
-import { StripeCurrencyToSuperTokenMap, defaultStripeCurrencyToSuperTokenMap } from './core/StripeCurrencyToSuperTokenMap';
+import { ChainToSuperTokenReceiverMap, defaultChainToSuperTokenReceiverMap } from './price-conversion-strategy/ChainToSuperTokenReceiverMap';
+import { StripeCurrencyToSuperTokenMap, defaultStripeCurrencyToSuperTokenMap } from './price-conversion-strategy/StripeCurrencyToSuperTokenMap';
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 
 type Input = {
@@ -14,13 +14,36 @@ type Output = {
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
-@Injectable()
-export class StripeToSuperfluidService {
+interface StripeProductToWidgetConfigMapper {
+  mapStripeProductToWidgetConfig(stripe: Input): Output
+}
 
+type PriceId = string;
+interface SuperTokenToStripeCurrencyMapper {
+  mapSuperTokenToStripeCurrency(superToken: {
+    chainId: number,
+    address: string
+  }): PriceId | undefined;
+}
+
+@Injectable()
+export class StripeToSuperfluidService implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper {
   // TODO(KK): Inject
   private readonly chainToSuperTokenReceiverMap = defaultChainToSuperTokenReceiverMap;
   private readonly stripeCurrencyToSuperTokenMap = defaultStripeCurrencyToSuperTokenMap;
 
+  mapSuperTokenToStripeCurrency(superToken: { chainId: number; address: string; }): PriceId | undefined {
+    for (const [stripeCurrency, chainToSuperTokenMap] of Array.from(this.stripeCurrencyToSuperTokenMap)) {
+      for (const [chainId, superTokenAddress] of Array.from(chainToSuperTokenMap)) {
+        if (superToken.chainId === chainId && superToken.address.toLowerCase() === superTokenAddress.toLowerCase()) {
+          return stripeCurrency;
+        }
+      }
+    }
+
+    return undefined;
+  }
+  
   mapStripeProductToWidgetConfig(stripe: Input): Output {
     // TODO(KK): Enforce it's a subscription-based product?
 
