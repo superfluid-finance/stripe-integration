@@ -3,16 +3,16 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: stripe-integration
+    app: stripe-backend
     app.kubernetes.io/managed-by: Helm
-  name: stripe-integration
+  name: stripe-backend
 spec:
   ports:
   - port: 3000
     protocol: TCP
     targetPort: 3000
   selector:
-    app: stripe-integration
+    app: stripe-backend
   type: NodePort
 status:
   loadBalancer: {}

@@ -3,24 +3,24 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: stripe-integration
-  name: stripe-integration
+    app: stripe-backend
+  name: stripe-backend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: stripe-integration
+      app: stripe-backend
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: stripe-integration
+        app: stripe-backend
     spec:
       containers:
-      - image: superfluid-finance/stripe-integration:latest
+      - image: superfluid-finance/stripe-backend:latest
         imagePullPolicy: Never
-        name: stripe-integration
+        name: stripe-backend
         env:
           - name: STRIPE_SECRET_KEY
             valueFrom:
@@ -35,7 +35,7 @@ spec:
           - name: PORT
             value: "3000"
           - name: REDIS_HOST
-            value: stripe-integration-redis-master
+            value: stripe-backend-redis-master
           - name: REDIS_PORT
             value: "6379"
           - name: QUEUE_DASHBOARD_USER
