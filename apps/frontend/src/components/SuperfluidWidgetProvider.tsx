@@ -21,7 +21,7 @@ export default function SupefluidWidgetProvider({ productId, paymentDetails, pro
         open: () => setOpen(true)
     }), [open, setOpen]);
 
-    const { mutate: createSession } = useMutation(["TODO: query key"], async (data: CreateSessionData) => {
+    const { mutate: createSession } = useMutation(["createSession"], async (data: CreateSessionData) => {
         await fetch("/api/create-session", {
             headers: {
                 'Content-Type': 'application/json',
@@ -53,10 +53,6 @@ export default function SupefluidWidgetProvider({ productId, paymentDetails, pro
             }
         }
     }), [email, paymentOption, accountAddress, createSession]);
-
-    // TODO(KK): When to ensure customer
-    // TODO(KK): When to create subscription
-
 
     return (<>
         <SuperfluidWidget

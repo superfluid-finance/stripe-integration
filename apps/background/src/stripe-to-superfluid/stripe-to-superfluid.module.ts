@@ -7,6 +7,6 @@ import registerStripeModule from 'src/registerStripeModule';
   imports: [registerStripeModule()],
   controllers: [StripeToSuperfluidController],
   providers: [StripeToSuperfluidService],
-  exports: [StripeToSuperfluidService]
+  exports: [StripeToSuperfluidService],
 })
 export class StripeToSuperfluidModule {}

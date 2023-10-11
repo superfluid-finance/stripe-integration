@@ -11,8 +11,10 @@ type Response = {
 
 @Controller('stripe-to-superfluid')
 export class StripeToSuperfluidController {
-  constructor(@InjectStripeClient() private readonly stripeClient: Stripe, private readonly stripeToSuperfluidService: StripeToSuperfluidService) {
-  }
+  constructor(
+    @InjectStripeClient() private readonly stripeClient: Stripe,
+    private readonly stripeToSuperfluidService: StripeToSuperfluidService,
+  ) {}
 
   @Get('checkout-widget')
   async mapStripeProductToCheckoutWidget(@Query('product-id') productId: string): Promise<Response> {
@@ -20,20 +22,20 @@ export class StripeToSuperfluidController {
       this.stripeClient.products.retrieve(productId),
       this.stripeClient.prices.list({
         product: productId,
-        active: true
-      })
+        active: true,
+      }),
     ]);
-  
+
     const config = this.stripeToSuperfluidService.mapStripeProductToWidgetConfig({
       product: stripeProductsResponse,
-      prices: stripePricesResponse.data
+      prices: stripePricesResponse.data,
     });
 
     logger.debug({
       stripeProductsResponse,
       stripePricesResponse,
       productId,
-      config
+      config,
     });
 
     return config;

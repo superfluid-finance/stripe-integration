@@ -18,9 +18,12 @@ export class PaymentTrackerService {
    *
    * @param invoices
    */
-  async handleStripeInvoices(invoices: ReadonlyArray<Stripe.Invoice>) {
+  async handleOpenStripeInvoices(invoices: ReadonlyArray<Stripe.Invoice>) {
     // TODO: handle "has_more"?
     logger.debug('Queried stripe invoices count: ' + invoices.length);
+
+    // Validate invoice is open
+    // Validate invoice is meant for Superfluid
 
     const jobs = await this.queue.addBulk(
       invoices.map((invoice) => ({

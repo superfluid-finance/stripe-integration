@@ -12,7 +12,7 @@ import * as StripeListener from 'src/stripe-listener/stripe-listener.queue';
 @Module({
   imports: [
     CheckoutSession.registerQueueModule(),
-    PaymentTracker.registerQueueModule(),
+    ...PaymentTracker.registerQueueModules(),
     StripeListener.registerQueueModule(),
   ],
 })

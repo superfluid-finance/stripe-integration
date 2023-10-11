@@ -9,7 +9,9 @@ import { PaymentTrackerService } from 'src/payment-tracker/payment-tracker.servi
 
 export const STRIPE_LISTENER_JOB_NAME = 'poll-new-invoices';
 
-type StripeListenerJob = Job<any, any, typeof STRIPE_LISTENER_JOB_NAME>;
+type StripeListenerJob = Job<{
+  stripeCustomerId?: string;
+}, any, typeof STRIPE_LISTENER_JOB_NAME>;
 
 /**
  *
@@ -24,15 +26,17 @@ export class StripeListenerProcessor extends WorkerHost {
   }
 
   async process(job: StripeListenerJob, token?: string) {
-    const stripeInvoicesResponse = await this.stripeClient.invoices.list({
-      collection_method: 'send_invoice',
-      status: 'open',
-    });
+    const invoices = await this.stripeClient.invoices
+      .list({
+        collection_method: 'send_invoice',
+        status: 'open',
+        customer: job.data.stripeCustomerId,
+      })
+      .autoPagingToArray({
+        limit: 50,
+      });
 
-    // TODO: handle "has_more"?
-    const stripeInvoices = stripeInvoicesResponse.data;
-
-    await this.paymentTrackerService.handleStripeInvoices(stripeInvoices);
+    await this.paymentTrackerService.handleOpenStripeInvoices(invoices);
   }
 }
 

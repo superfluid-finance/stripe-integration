@@ -20,51 +20,51 @@ export class CheckoutSessionProcesser extends WorkerHost {
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly stripeToSupefluidService: StripeToSuperfluidService // Bad name...
+    private readonly stripeToSupefluidService: StripeToSuperfluidService, // Bad name...
   ) {
     super();
   }
 
-  async process(job: CheckoutSessionJob, token?: string): Promise<CheckoutSessionJob["returnvalue"]> {
+  async process(job: CheckoutSessionJob, token?: string): Promise<CheckoutSessionJob['returnvalue']> {
     const data = job.data;
 
     const currency = this.stripeToSupefluidService.mapSuperTokenToStripeCurrency({
       chainId: data.chainId,
-      address: data.tokenAddress
+      address: data.tokenAddress,
     });
     if (!currency) {
-      throw new Error("How to handle this?");
+      throw new Error('How to handle this?');
     }
 
     const product = await this.stripeClient.products.retrieve(data.productId);
     if (!product) {
       // if not found, probably fail the job
-      throw new Error("Product not found. What are you subscribing to?")
+      throw new Error('Product not found. What are you subscribing to?');
     }
 
-    const pricesResponse = await this.stripeClient.prices.list({
-      active: true,
-      product: product.id,
-      currency: currency
-    });
-    // Handle "has more" here?
-    const prices = pricesResponse.data;
+    const prices = await this.stripeClient.prices
+      .list({
+        active: true,
+        product: product.id,
+        currency: currency,
+      })
+      .autoPagingToArray({ limit: 50 });
 
     if (prices.length > 1) {
-      throw new Error("More than one price for the currency. It's throwing me off...")
+      throw new Error("More than one price for the currency. It's throwing me off...");
     }
 
     if (prices.length === 0) {
-      throw new Error("No Stripe price found for the Super Token.")
+      throw new Error('No Stripe price found for the Super Token.');
     }
 
     const price = prices[0];
 
-    const customersQueryParams: Stripe.CustomerListParams = {
-      email: data.email,
-    };
-    const customersQueryResponse = await this.stripeClient.customers.list(customersQueryParams);
-    const customers = customersQueryResponse.data;
+    const customers = await this.stripeClient.customers
+      .list({
+        email: data.email,
+      })
+      .autoPagingToArray({ limit: 100 });
 
     let customerId: CustomerId;
     if (customers.length === 0) {
@@ -85,8 +85,8 @@ export class CheckoutSessionProcesser extends WorkerHost {
     // Why isn't price asked here?
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
-      collection_method: "send_invoice",
-      days_until_due: 1, // TODO(KK): I'm not sure about this value...
+      collection_method: 'send_invoice',
+      days_until_due: 0, // TODO(KK): I'm not sure about this value...
       currency: currency,
       items: [
         {
@@ -98,13 +98,15 @@ export class CheckoutSessionProcesser extends WorkerHost {
         chainId: data.chainId,
         senderAddress: data.senderAddress, // TODO(KK): Any way to use array here? Answer: kind of no.
         tokenAddress: data.tokenAddress,
-        receiverAddress: data.tokenAddress
-      }
-    }
+        receiverAddress: data.tokenAddress,
+      },
+    };
     const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
 
     // Handle job for ensuring customer on Stripe's end here
     // Have the job be self-scheduling, i.e. it reschedules for a while until it dies off if user didn't finish with the details
+  
+    // Call Stripe Listener Module to get invoice processing right away?
   }
 }
 
