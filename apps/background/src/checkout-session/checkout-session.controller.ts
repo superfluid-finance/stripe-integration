@@ -8,21 +8,24 @@ import { CHECKOUT_SESSION_JOB_NAME } from './checkout-session.processer';
 import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
 
+const Address = z.string().trim().toLowerCase().length(42);
+type Address = z.infer<typeof Address>;
+
 export class CreateSessionData {
   @ApiProperty() productId: string;
   @ApiProperty() chainId: number;
-  @ApiProperty() tokenAddress: string;
-  @ApiProperty() senderAddress: string;
-  @ApiProperty() receiverAddress: string;
+  @ApiProperty() superTokenAddress: Address;
+  @ApiProperty() senderAddress: Address;
+  @ApiProperty() receiverAddress: Address;
   @ApiProperty() email: string;
 
-  static schema: toZod<CreateSessionData> = z.object({
+  static schema: z.ZodType<CreateSessionData> = z.object({
     chainId: z.number(),
     productId: z.string().trim().max(255),
-    tokenAddress: z.string().trim().toLowerCase().length(42),
-    senderAddress: z.string().trim().toLowerCase().length(42),
-    receiverAddress: z.string().trim().toLowerCase().length(42),
-    email: z.string().trim().max(320),
+    superTokenAddress: Address,
+    senderAddress: Address,
+    receiverAddress: Address,
+    email: z.string().trim().max(320).email(),
   });
 }
 

@@ -12,32 +12,32 @@ export class SuperTokenAccountingService {
 
   async getAccountToAccountBalance({
     chainId,
+    superTokenAddress,
     senderAddress,
-    receiverAddress,
-    currency,
+    receiverAddress
   }: {
-    chainId: ChainId;
+    chainId: number;
+    superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
-    currency: Currency;
   }): Promise<bigint> {
     const end = getUnixTime(new Date());
 
     // How do we find the start time?
-    const start = getUnixTime(new Date());
+    // const start = getUnixTime(new Date());
 
     // TODO:
     // - Consider caching somewhere.
-    // - The approach with Accounting API seems wasteful resource wise.
+    // - The approach with Accounting API seems wasteful resource wise. EDIT: yep, very wasteful
 
     const response = await this.accountingClient.GET('/v1/stream-periods', {
       params: {
         query: {
           addresses: [senderAddress],
-          chains: [chainId],
+          chains: [chainId as ChainId],
           counterparties: [receiverAddress],
 
-          currency: currency, // Pretty meh that this is required.
+          currency: "USD", // Pretty meh that this is required.
           priceGranularity: 'year', // I guess this is the average price for the token over the period?
 
           start: 0, // Get all history
@@ -51,8 +51,9 @@ export class SuperTokenAccountingService {
     if (error) {
       throw error;
     } else {
-      const sumTransferred = response.data.reduce(
-        (acc, { totalAmountStreamed }) => acc + (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
+      const streamPeriods = response.data.filter(x => x.token!.id!.toLowerCase() === superTokenAddress.toLowerCase());
+      const sumTransferred = streamPeriods.reduce(
+        (acc, { sender, totalAmountStreamed }) => acc + (sender.toLowerCase() === senderAddress.toLowerCase() ? 1n : -1n) * (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
         0n,
       );
       return sumTransferred;

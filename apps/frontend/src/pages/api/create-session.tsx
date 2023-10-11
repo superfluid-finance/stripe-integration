@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 export type CreateSessionData = {
     productId: string;
     chainId: number;
-    tokenAddress: string;
+    superTokenAddress: string;
     senderAddress: string;
     receiverAddress: string;
     email: string;

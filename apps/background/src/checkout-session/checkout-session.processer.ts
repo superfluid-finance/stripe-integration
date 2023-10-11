@@ -10,8 +10,19 @@ import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';
 
+type Address = `0x${string}`;
 type CustomerId = string;
 type CheckoutSessionJob = Job<CreateSessionData, void, typeof CHECKOUT_SESSION_JOB_NAME>;
+
+// This should probably also have a version? 
+// It should be nested/named in a way that human wouldn't want to change it without being absolutely sure of knowing what they're doing.
+export type SubscriptionMetadata = {
+  chainId: number,
+  superTokenAddress: Address,
+
+  senderAddress: Address, // TODO(KK): Any way to use array here? Answer: kind of no.
+  receiverAddress: Address,
+}
 
 /**
  *
@@ -31,7 +42,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
 
     const currency = this.stripeToSupefluidService.mapSuperTokenToStripeCurrency({
       chainId: data.chainId,
-      address: data.tokenAddress,
+      address: data.superTokenAddress,
     });
     if (!currency) {
       throw new Error('How to handle this?');
@@ -83,7 +94,12 @@ export class CheckoutSessionProcesser extends WorkerHost {
       customerId = customers[0].id;
     }
 
-    // Why isn't price asked here?
+    const subscriptionMetadata: SubscriptionMetadata = {
+      chainId: data.chainId,
+      superTokenAddress: data.superTokenAddress as Address,
+      senderAddress: data.senderAddress as Address,
+      receiverAddress: data.receiverAddress as Address,
+    }
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       collection_method: 'send_invoice',
@@ -95,12 +111,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
           quantity: 1, // KK: This should be fine. In what cases wouldn't it be 1?
         },
       ],
-      metadata: {
-        chainId: data.chainId,
-        senderAddress: data.senderAddress, // TODO(KK): Any way to use array here? Answer: kind of no.
-        tokenAddress: data.tokenAddress,
-        receiverAddress: data.tokenAddress,
-      },
+      metadata: subscriptionMetadata
     };
     const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
 

@@ -7,6 +7,8 @@ import _ from 'lodash';
 import { SuperTokenAccountingService } from 'src/super-token-accounting/super-token-accounting.service';
 import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
+import { SubscriptionMetadata } from 'src/checkout-session/checkout-session.processer';
+import { getAddress } from 'viem';
 
 export const PAYMENT_TRACKER_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
 
@@ -17,6 +19,9 @@ type PaymentTrackerJob = Job<
   any,
   typeof PAYMENT_TRACKER_JOB_NAME
 >;
+
+type TRACKED_INVOICE_GROUP_KEY = `${number}:0x${string}:0x${string}:0x${string}`;
+const NOT_TRACKED_INVOICE_GROUP_KEY = null;
 
 /**
  *
@@ -48,29 +53,65 @@ export class PaymentTrackerProcessor extends WorkerHost {
       })
       .autoPagingToArray(DEFAULT_PAGING);
 
-    // TODO: Group by Super Token!
-      
     // TODO: Warn if there are subscriptions without the token address?
-    const groupByCurrencies = _.groupBy(invoices, (x) => x.subscription_details?.metadata?.["tokenAddress"]);
-    _.forEach(groupByCurrencies, (invoices_, key) => {
-      const { totalAmountPaid, totalAmountDue } = invoices_.reduce((accumulator, invoice) => ({
-        totalAmountPaid: accumulator.totalAmountPaid + BigInt(invoice.amount_paid),
-        totalAmountDue: accumulator.totalAmountDue + BigInt(invoice.amount_due)
-      }), {
-        totalAmountPaid: 0n,
-        totalAmountDue: 0n
-      } as {
-        totalAmountPaid: bigint
-        totalAmountDue: bigint
-      });
+    const groupBySuperToken = _.groupBy(invoices, (x) => {
+      const subscriptionMetadata = x.subscription_details?.metadata as Partial<SubscriptionMetadata> | undefined;
+      if (subscriptionMetadata) {
+        const { chainId, superTokenAddress, senderAddress, receiverAddress } = subscriptionMetadata
+        if (chainId && superTokenAddress && senderAddress && receiverAddress) {
+          // TODO: validate more strictly?
+          const groupKey: TRACKED_INVOICE_GROUP_KEY = `${chainId}:${superTokenAddress}:${senderAddress}:${receiverAddress}`;
+          return groupKey;
+        }
+      }
 
-      // TODO: This should already be somewhere in the metadata for optimization, i.e. there shouldn't be a need to map again.
-
-      // const superTokenAddress = this.stripeToSuperfluidService.mapSuperTokenToStripeCurrency(key);
-
-      // superTokenAccountingService.
-
+      return NOT_TRACKED_INVOICE_GROUP_KEY; // We don't know what to do with these.
     });
+
+    for (const [key, invoices_] of Object.entries(groupBySuperToken)) {
+      
+      if (key === NOT_TRACKED_INVOICE_GROUP_KEY) {
+        // TODO: Warn? Return from job as statistics?
+      } else {
+        const { totalAmountPaid, totalAmountDue } = invoices_.reduce((accumulator, invoice) => ({
+          totalAmountPaid: accumulator.totalAmountPaid + BigInt(invoice.amount_paid),
+          totalAmountDue: accumulator.totalAmountDue + BigInt(invoice.amount_due)
+        }), {
+          totalAmountPaid: 0n,
+          totalAmountDue: 0n
+        });
+
+        const keySplit = key.split(":");
+
+        const chainId = Number(keySplit[0]);
+        const superTokenAddress = keySplit[1];
+        const senderAddress = keySplit[2];
+        const receiverAddress = keySplit[3];
+
+        const totalAmountTransferred = await this.superTokenAccountingService.getAccountToAccountBalance({
+          chainId,
+          superTokenAddress,
+          senderAddress,
+          receiverAddress,
+        });
+
+        if (totalAmountPaid > totalAmountTransferred) {
+          throw new Error("This would mean we're missing data most likely... There could be some refund scenarios?");
+        }
+
+        const leftOverToDisburse = totalAmountTransferred - totalAmountPaid
+        if (leftOverToDisburse > totalAmountDue) {
+          for (const invoice in invoices_) {
+            await this.stripeClient.invoices.pay(invoice); // It's not too bad if this fails as there will be a retry of the job which will get fresh info.
+          }
+        } else {
+          throw new Error("Not enough funds transferred...");
+        }
+
+        // TODO(KK): Do we double-check with "superTokenAccountingService" here that super token and currency match?
+      }
+
+    }
 
     // this.flowProducer.add({
     //   name: PAYMENT_TRACKER_JOB_NAME,

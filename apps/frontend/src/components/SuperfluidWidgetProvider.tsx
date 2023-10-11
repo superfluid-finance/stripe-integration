@@ -44,7 +44,7 @@ export default function SupefluidWidgetProvider({ productId, paymentDetails, pro
                 const data: CreateSessionData = {
                     productId,
                     chainId: paymentOption.chainId,
-                    tokenAddress: paymentOption.superToken.address,
+                    superTokenAddress: paymentOption.superToken.address,
                     senderAddress: accountAddress,
                     receiverAddress: paymentOption.receiverAddress,
                     email: email ?? ""
