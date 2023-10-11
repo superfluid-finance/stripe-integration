@@ -1,7 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { StripeModule } from '@golevelup/nestjs-stripe';
 
-export default function registerStripeModule() {
+export const DEFAULT_PAGING: {limit: number} = { limit: 50};
+
+export function registerStripeModule() {
   return StripeModule.forRootAsync(StripeModule, {
     inject: [ConfigService],
     useFactory: (configServide: ConfigService) => ({

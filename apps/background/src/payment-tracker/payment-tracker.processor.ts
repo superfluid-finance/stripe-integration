@@ -6,6 +6,7 @@ import Stripe from 'stripe';
 import _ from 'lodash';
 import { SuperTokenAccountingService } from 'src/super-token-accounting/super-token-accounting.service';
 import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
+import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const PAYMENT_TRACKER_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
 
@@ -45,10 +46,7 @@ export class PaymentTrackerProcessor extends WorkerHost {
         status: 'open',
         expand: ["data.subscription"]
       })
-      .autoPagingToArray({
-        limit: 50,
-      });
-
+      .autoPagingToArray(DEFAULT_PAGING);
 
     // TODO: Group by Super Token!
       

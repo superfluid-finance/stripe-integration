@@ -9,7 +9,7 @@ import { PaymentTrackerModule } from './payment-tracker/payment-tracker.module';
 import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
 import { StripeToSuperfluidModule } from './stripe-to-superfluid/stripe-to-superfluid.module';
 import { HealthModule } from './health/health.module';
-import registerStripeModule from './registerStripeModule';
+import { registerStripeModule } from './stripeModuleConfig';
 
 const registerConfigModule = () =>
   ConfigModule.forRoot({

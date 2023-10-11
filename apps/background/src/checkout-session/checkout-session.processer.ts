@@ -6,6 +6,7 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import { CreateSessionData } from './checkout-session.controller';
 import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
+import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';
 
@@ -48,7 +49,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
         product: product.id,
         currency: currency,
       })
-      .autoPagingToArray({ limit: 50 });
+      .autoPagingToArray(DEFAULT_PAGING);
 
     if (prices.length > 1) {
       throw new Error("More than one price for the currency. It's throwing me off...");
@@ -64,7 +65,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       .list({
         email: data.email,
       })
-      .autoPagingToArray({ limit: 100 });
+      .autoPagingToArray(DEFAULT_PAGING);
 
     let customerId: CustomerId;
     if (customers.length === 0) {

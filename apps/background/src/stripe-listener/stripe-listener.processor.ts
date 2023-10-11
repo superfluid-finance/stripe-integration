@@ -6,6 +6,7 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import { PAYMENT_TRACKER_JOB_NAME } from 'src/payment-tracker/payment-tracker.processor';
 import { PaymentTrackerService } from 'src/payment-tracker/payment-tracker.service';
+import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const STRIPE_LISTENER_JOB_NAME = 'poll-new-invoices';
 
@@ -32,9 +33,7 @@ export class StripeListenerProcessor extends WorkerHost {
         status: 'open',
         customer: job.data.stripeCustomerId,
       })
-      .autoPagingToArray({
-        limit: 50,
-      });
+      .autoPagingToArray(DEFAULT_PAGING);
 
     await this.paymentTrackerService.handleOpenStripeInvoices(invoices);
   }
