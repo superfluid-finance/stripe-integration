@@ -18,6 +18,10 @@
 		"pnpm add -g @nestjs/cli" // You can now globally use "nest" commands.
 	],
 	"postStartCommand": [
+		"pnpm install",
+		"pnpm add -g @nestjs/cli" // You can now globally use "nest" commands.
+	],
+	"postStartCommand": [
 		"minikube start", // For Kubernetes local testing. If you have Docker Desktop then you probably don't need this.
 		"eval $(minikube docker-env)", // Redirect docker commands to Minikube
 		"pnpm docker:redis" // For local development, `pnpm dev` instance should connect to this
