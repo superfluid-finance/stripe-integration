@@ -1,10 +1,10 @@
 # Kubernetes setup
 
-- build the background container: `docker build -t superfluid-finance/stripe-integration:latest .`
+- build the background container: `docker build -t superfluid-finance/stripe-backend:latest .`
 - install [helm](https://helm.sh/docs/intro/install/)
 - cd into the `k8s` folder
-- run `helm install stripe-integration .`
-- (optional) upgrade with `helm upgrade stripe-integration .`
+- run `helm install stripe-backend .`
+- (optional) upgrade with `helm upgrade stripe-backend .`
 
 
 ## Useful commands
@@ -12,8 +12,8 @@
 - `kubectl get po` - list pods
 - `kubectl get svc` - list services
     - You can grab the api port with this command, and call `http://localhost:{port}/health` to test the service.        
-    `stripe-integration     NodePort    10.101.180.9    <none>        3000:`<u>30894</u>`/TCP   11m`
-- `kubectl logs -l app=stripe-integration` - get aggregated logs from all pods
+    `stripe-backend     NodePort    10.101.180.9    <none>        3000:`<u>30894</u>`/TCP   11m`
+- `kubectl logs -l app=stripe-backend` - get aggregated logs from all pods
 - `kubectl logs [pod-name]` - get logs from a specific pod
 
 ## Set up secrets
