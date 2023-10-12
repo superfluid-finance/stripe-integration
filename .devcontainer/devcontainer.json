@@ -6,7 +6,8 @@
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/pnpm:2": {},
-		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}, // Used for minikube's docker driver
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
@@ -14,16 +15,20 @@
 	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": [
-		"pnpm add -g @nestjs/cli",
 		"pnpm install",
+		"pnpm add -g @nestjs/cli" // You can now globally use "nest" commands.
+	],
+	"postStartCommand": [
+		// For Kubernetes local testing. If you have Docker Desktop then you probably don't need this:
+		"minikube start",
+		// Redirect docker commands to minikube:
+		"eval $(minikube docker-env)",
+		// Localhost port forwarding (https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube#ingress-and-port-forwarding):
+		// "minikube addons enable ingress",
+		// "nohup kubectl port-forward --pod-running-timeout=24h -n ingress-nginx service/ingress-nginx-controller :80 &",
+		// For local development, `pnpm dev` instance should connect to this:
 		"pnpm docker:redis"
 	]
-	// 	"sudo apt-get update",
-	// 	"sudo apt-get install -y lsb-release curl gpg",
-	// 	"curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg",
-	// 	"echo 'deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main' | sudo tee /etc/apt/sources.list.d/redis.list",
-	// 	"sudo apt-get install -y redis"
-	// ]
 	// Configure tool-specific properties.
 	// "customizations": {},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.

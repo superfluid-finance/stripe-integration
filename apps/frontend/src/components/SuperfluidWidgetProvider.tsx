@@ -1,17 +1,19 @@
-import internalConfig from "@/internalConfig";
-import convertStripeProductToSuperfluidWidget from "@/services/convertStripeProductToSuperfluidWidget";
-import SuperfluidWidget, { EventListeners, WalletManager, supportedNetworks } from "@superfluid-finance/widget";
+"use client"
+
+import { CreateSessionData } from "@/pages/api/create-session";
+import SuperfluidWidget, { EventListeners, PaymentOption, WalletManager, WidgetProps } from "@superfluid-finance/widget";
 import { useModal } from "connectkit";
 import { useMemo, useState } from "react";
-import Stripe from "stripe";
+import { useAccount, useMutation } from "wagmi";
 
 type Props = {
+    productId: string;
     // setInitialChainId: (chainId: number | undefined) => void;
-    stripeProduct: Stripe.Product
-    stripePrices: Stripe.Price[]
+    productDetails: WidgetProps["productDetails"]
+    paymentDetails: WidgetProps["paymentDetails"]
 }
 
-export default function SupefluidWidgetProvider({ stripeProduct, stripePrices }: Props) {
+export default function SupefluidWidgetProvider({ productId, paymentDetails, productDetails }: Props) {
     const { open, setOpen } = useModal();
 
     const walletManager = useMemo<WalletManager>(() => ({
@@ -19,34 +21,46 @@ export default function SupefluidWidgetProvider({ stripeProduct, stripePrices }:
         open: () => setOpen(true)
     }), [open, setOpen]);
 
-    const eventListeners = useMemo<EventListeners>(() => ({
-        // onPaymentOptionUpdate: (paymentOption) => setInitialChainId(paymentOption?.chainId)
-        onTransactionSent: () => {
-            // Ensure customer
+    const { mutate: createSession } = useMutation(["createSession"], async (data: CreateSessionData) => {
+        await fetch("/api/create-session", {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data), method: "POST"
+        })
+    });
 
-            // Create subscription
-        }
-    }), []);
-
-    // TODO(KK): When to ensure customer
-    // TODO(KK): When to create subscription
-
-    const config = useMemo(() => convertStripeProductToSuperfluidWidget({
-        product: stripeProduct,
-        prices: stripePrices,
-        chainToReceiverAddressMap: internalConfig.chainToReceiverAddressMap,
-        currencyToSuperTokenMap: internalConfig.stripeCurrencyToSuperTokenMap
-    }), [stripeProduct]);
+    const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();;
+    const { address: accountAddress } = useAccount();
 
     const [email, setEmail] = useState<string | undefined>();
+
+    const eventListeners = useMemo<EventListeners>(() => ({
+        onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
+        onRouteChange: (arg) => {
+            console.log("onRouteChange");
+            if (accountAddress && paymentOption && arg?.route === "transactions") {
+                console.log("creating session")
+                const data: CreateSessionData = {
+                    productId,
+                    chainId: paymentOption.chainId,
+                    superTokenAddress: paymentOption.superToken.address,
+                    senderAddress: accountAddress,
+                    receiverAddress: paymentOption.receiverAddress,
+                    email: email ?? ""
+                }
+                createSession(data);
+            }
+        }
+    }), [email, paymentOption, accountAddress, createSession]);
 
     return (<>
         <SuperfluidWidget
             type="page"
             walletManager={walletManager}
-            // eventListeners={eventListeners} 
-            paymentDetails={config.paymentDetails}
-            productDetails={config.productDetails}
+            eventListeners={eventListeners}
+            paymentDetails={paymentDetails}
+            productDetails={productDetails}
         />
         <div className="bg-neutral-500 text-black">
             <p>e-mail:</p>

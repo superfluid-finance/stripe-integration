@@ -24,9 +24,9 @@
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "stripe": "^13.8.0",
     "viem": "^1.13.1",
-    "wagmi": "^1.4.2"
+    "wagmi": "^1.4.2",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.7.1",

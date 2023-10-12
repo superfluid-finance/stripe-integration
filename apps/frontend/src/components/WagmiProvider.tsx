@@ -1,5 +1,7 @@
+"use client"
+
 import { WagmiConfig, createConfig } from "wagmi";
-import { ConnectKitProvider, ConnectKitButton, getDefaultConfig, useModal } from "connectkit";
+import { getDefaultConfig } from "connectkit";
 import publicConfig from '@/publicConfig';
 import { PropsWithChildren } from "react";
 import { supportedNetworks } from "@superfluid-finance/widget";

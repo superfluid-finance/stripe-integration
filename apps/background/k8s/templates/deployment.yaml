@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: stripe-backend
+  name: stripe-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: stripe-backend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: stripe-backend
+    spec:
+      containers:
+      - image: superfluid-finance/stripe-backend:latest
+        imagePullPolicy: Never
+        name: stripe-backend
+        env:
+          - name: STRIPE_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: stripe-sk
+                key: STRIPE_SECRET_KEY
+          - name: API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-key
+                key: API_KEY
+          - name: PORT
+            value: "3000"
+          - name: REDIS_HOST
+            value: stripe-backend-redis-master
+          - name: REDIS_PORT
+            value: "6379"
+          - name: QUEUE_DASHBOARD_USER
+            value: user
+          - name: QUEUE_DASHBOARD_PASSWORD
+            value: password
+        ports:
+        - containerPort: 3000
+        resources: {}
+status: {}
