@@ -6,6 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-20-bullseye",
 	"features": {
 		"ghcr.io/devcontainers-contrib/features/pnpm:2": {},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {}, // Used for minikube's docker driver
 		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {}
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
@@ -18,9 +19,15 @@
 		"pnpm add -g @nestjs/cli" // You can now globally use "nest" commands.
 	],
 	"postStartCommand": [
-		"minikube start", // For Kubernetes local testing. If you have Docker Desktop then you probably don't need this.
-		"eval $(minikube docker-env)", // Redirect docker commands to Minikube
-		"pnpm docker:redis" // For local development, `pnpm dev` instance should connect to this
+		// For Kubernetes local testing. If you have Docker Desktop then you probably don't need this:
+		"minikube start",
+		// Redirect docker commands to minikube:
+		"eval $(minikube docker-env)",
+		// Localhost port forwarding (https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube#ingress-and-port-forwarding):
+		// "minikube addons enable ingress",
+		// "nohup kubectl port-forward --pod-running-timeout=24h -n ingress-nginx service/ingress-nginx-controller :80 &",
+		// For local development, `pnpm dev` instance should connect to this:
+		"pnpm docker:redis"
 	]
 	// Configure tool-specific properties.
 	// "customizations": {},
