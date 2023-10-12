@@ -14,15 +14,15 @@ type Address = `0x${string}`;
 type CustomerId = string;
 type CheckoutSessionJob = Job<CreateSessionData, void, typeof CHECKOUT_SESSION_JOB_NAME>;
 
-// This should probably also have a version? 
+// This should probably also have a version?
 // It should be nested/named in a way that human wouldn't want to change it without being absolutely sure of knowing what they're doing.
 export type SubscriptionMetadata = {
-  chainId: number,
-  superTokenAddress: Address,
+  chainId: number;
+  superTokenAddress: Address;
 
-  senderAddress: Address, // TODO(KK): Any way to use array here? Answer: kind of no.
-  receiverAddress: Address,
-}
+  senderAddress: Address; // TODO(KK): Any way to use array here? Answer: kind of no.
+  receiverAddress: Address;
+};
 
 /**
  *
@@ -37,7 +37,10 @@ export class CheckoutSessionProcesser extends WorkerHost {
     super();
   }
 
-  async process(job: CheckoutSessionJob, token?: string): Promise<CheckoutSessionJob['returnvalue']> {
+  async process(
+    job: CheckoutSessionJob,
+    token?: string,
+  ): Promise<CheckoutSessionJob['returnvalue']> {
     const data = job.data;
 
     const currency = this.stripeToSupefluidService.mapSuperTokenToStripeCurrency({
@@ -87,7 +90,9 @@ export class CheckoutSessionProcesser extends WorkerHost {
         // Anything to put into the metadata?
       };
 
-      const customersCreateResponse = await this.stripeClient.customers.create(customerCreateParams);
+      const customersCreateResponse = await this.stripeClient.customers.create(
+        customerCreateParams,
+      );
       customerId = customersCreateResponse.id;
     } else {
       // What if there's more than one?
@@ -99,7 +104,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       superTokenAddress: data.superTokenAddress as Address,
       senderAddress: data.senderAddress as Address,
       receiverAddress: data.receiverAddress as Address,
-    }
+    };
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       collection_method: 'send_invoice',
@@ -111,13 +116,15 @@ export class CheckoutSessionProcesser extends WorkerHost {
           quantity: 1, // KK: This should be fine. In what cases wouldn't it be 1?
         },
       ],
-      metadata: subscriptionMetadata
+      metadata: subscriptionMetadata,
     };
-    const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
+    const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create(
+      subscriptionsCreateParams,
+    );
 
     // Handle job for ensuring customer on Stripe's end here
     // Have the job be self-scheduling, i.e. it reschedules for a while until it dies off if user didn't finish with the details
-  
+
     // Call Stripe Listener Module to get invoice processing right away?
   }
 }

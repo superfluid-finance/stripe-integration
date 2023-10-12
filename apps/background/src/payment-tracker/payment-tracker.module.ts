@@ -7,7 +7,12 @@ import { SuperTokenAccountingModule } from 'src/super-token-accounting/super-tok
 import { StripeToSuperfluidModule } from 'src/stripe-to-superfluid/stripe-to-superfluid.module';
 
 @Module({
-  imports: [...registerQueueModules(), registerStripeModule(), SuperTokenAccountingModule, StripeToSuperfluidModule],
+  imports: [
+    ...registerQueueModules(),
+    registerStripeModule(),
+    SuperTokenAccountingModule,
+    StripeToSuperfluidModule,
+  ],
   providers: [PaymentTrackerProcessor, PaymentTrackerService],
   exports: [PaymentTrackerService],
 })

@@ -7,7 +7,9 @@ export class BasicAuthMiddleware implements NestMiddleware {
   private readonly username = 'user';
   private readonly password = 'password';
 
-  private readonly encodedCreds = Buffer.from(this.username + ':' + this.password).toString('base64');
+  private readonly encodedCreds = Buffer.from(this.username + ':' + this.password).toString(
+    'base64',
+  );
 
   constructor(configService: ConfigService) {
     this.username = configService.getOrThrow('QUEUE_DASHBOARD_USER');

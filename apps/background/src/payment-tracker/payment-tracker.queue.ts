@@ -8,6 +8,6 @@ export const registerQueueModules = () => [
     name: QUEUE_NAME,
   }),
   BullModule.registerFlowProducer({
-    name: FLOW_PRODUCER_NAME
+    name: FLOW_PRODUCER_NAME,
   }),
 ];

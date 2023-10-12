@@ -1,4 +1,12 @@
-import { BadRequestException, Controller, Logger, Post, Body, Headers, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Logger,
+  Post,
+  Body,
+  Headers,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { toZod } from 'tozod';
 import { z } from 'zod';
 import { QUEUE_NAME } from './checkout-session.queue';
@@ -33,12 +41,18 @@ export class CreateSessionData {
 export class CheckoutSessionController {
   private readonly apiKey: string;
 
-  constructor(@InjectQueue(QUEUE_NAME) private readonly queue: Queue, configService: ConfigService) {
+  constructor(
+    @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
+    configService: ConfigService,
+  ) {
     this.apiKey = configService.getOrThrow('API_KEY');
   }
 
   @Post('create')
-  async createSession(@Headers('x-api-key') apiKey: string, @Body() data: CreateSessionData): Promise<void> {
+  async createSession(
+    @Headers('x-api-key') apiKey: string,
+    @Body() data: CreateSessionData,
+  ): Promise<void> {
     if (apiKey !== this.apiKey) {
       throw new UnauthorizedException();
     }

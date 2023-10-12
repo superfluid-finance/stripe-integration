@@ -26,19 +26,32 @@ interface StripeProductToWidgetConfigMapper {
 
 type PriceId = string;
 interface SuperTokenToStripeCurrencyMapper {
-  mapSuperTokenToStripeCurrency(superToken: { chainId: number; address: string }): PriceId | undefined;
+  mapSuperTokenToStripeCurrency(superToken: {
+    chainId: number;
+    address: string;
+  }): PriceId | undefined;
 }
 
 @Injectable()
-export class StripeToSuperfluidService implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper {
+export class StripeToSuperfluidService
+  implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper
+{
   // TODO(KK): Inject
   private readonly chainToSuperTokenReceiverMap = defaultChainToSuperTokenReceiverMap;
   private readonly stripeCurrencyToSuperTokenMap = defaultStripeCurrencyToSuperTokenMap;
 
-  mapSuperTokenToStripeCurrency(superToken: { chainId: number; address: string }): PriceId | undefined {
-    for (const [stripeCurrency, chainToSuperTokenMap] of Array.from(this.stripeCurrencyToSuperTokenMap)) {
+  mapSuperTokenToStripeCurrency(superToken: {
+    chainId: number;
+    address: string;
+  }): PriceId | undefined {
+    for (const [stripeCurrency, chainToSuperTokenMap] of Array.from(
+      this.stripeCurrencyToSuperTokenMap,
+    )) {
       for (const [chainId, superTokenAddress] of Array.from(chainToSuperTokenMap)) {
-        if (superToken.chainId === chainId && superToken.address.toLowerCase() === superTokenAddress.toLowerCase()) {
+        if (
+          superToken.chainId === chainId &&
+          superToken.address.toLowerCase() === superTokenAddress.toLowerCase()
+        ) {
           return stripeCurrency;
         }
       }

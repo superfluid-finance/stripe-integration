@@ -20,8 +20,10 @@ export class QueueDashboardModule implements NestModule {
   constructor(
     @InjectQueue(CheckoutSession.QUEUE_NAME)
     private readonly checkoutSessionQueue: Queue,
-    @InjectQueue(PaymentTracker.QUEUE_NAME) private readonly paymentTrackerQueue: Queue,
-    @InjectQueue(StripeListener.QUEUE_NAME) private readonly stripeListenerQueue: Queue,
+    @InjectQueue(PaymentTracker.QUEUE_NAME)
+    private readonly paymentTrackerQueue: Queue,
+    @InjectQueue(StripeListener.QUEUE_NAME)
+    private readonly stripeListenerQueue: Queue,
   ) {}
 
   configure(consumer: MiddlewareConsumer) {

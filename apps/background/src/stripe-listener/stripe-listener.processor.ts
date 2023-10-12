@@ -10,9 +10,13 @@ import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const STRIPE_LISTENER_JOB_NAME = 'poll-new-invoices';
 
-type StripeListenerJob = Job<{
-  stripeCustomerId?: string;
-}, any, typeof STRIPE_LISTENER_JOB_NAME>;
+type StripeListenerJob = Job<
+  {
+    stripeCustomerId?: string;
+  },
+  any,
+  typeof STRIPE_LISTENER_JOB_NAME
+>;
 
 /**
  *

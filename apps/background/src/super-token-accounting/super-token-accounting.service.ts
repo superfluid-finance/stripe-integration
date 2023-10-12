@@ -8,13 +8,15 @@ type Currency = components['schemas']['Currency'];
 
 @Injectable()
 export class SuperTokenAccountingService {
-  private readonly accountingClient = createClient<paths>({ baseUrl: 'https://accounting.superfluid.dev/v1/' }); // TODO: Use injection? Use environment variable?
+  private readonly accountingClient = createClient<paths>({
+    baseUrl: 'https://accounting.superfluid.dev/v1/',
+  }); // TODO: Use injection? Use environment variable?
 
   async getAccountToAccountBalance({
     chainId,
     superTokenAddress,
     senderAddress,
-    receiverAddress
+    receiverAddress,
   }: {
     chainId: number;
     superTokenAddress: string;
@@ -37,7 +39,7 @@ export class SuperTokenAccountingService {
           chains: [chainId as ChainId],
           counterparties: [receiverAddress],
 
-          currency: "USD", // Pretty meh that this is required.
+          currency: 'USD', // Pretty meh that this is required.
           priceGranularity: 'year', // I guess this is the average price for the token over the period?
 
           start: 0, // Get all history
@@ -51,9 +53,14 @@ export class SuperTokenAccountingService {
     if (error) {
       throw error;
     } else {
-      const streamPeriods = response.data.filter(x => x.token!.id!.toLowerCase() === superTokenAddress.toLowerCase());
+      const streamPeriods = response.data.filter(
+        (x) => x.token!.id!.toLowerCase() === superTokenAddress.toLowerCase(),
+      );
       const sumTransferred = streamPeriods.reduce(
-        (acc, { sender, totalAmountStreamed }) => acc + (sender.toLowerCase() === senderAddress.toLowerCase() ? 1n : -1n) * (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
+        (acc, { sender, totalAmountStreamed }) =>
+          acc +
+          (sender.toLowerCase() === senderAddress.toLowerCase() ? 1n : -1n) *
+            (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
         0n,
       );
       return sumTransferred;

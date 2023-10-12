@@ -17,7 +17,9 @@ export class StripeToSuperfluidController {
   ) {}
 
   @Get('checkout-widget')
-  async mapStripeProductToCheckoutWidget(@Query('product-id') productId: string): Promise<Response> {
+  async mapStripeProductToCheckoutWidget(
+    @Query('product-id') productId: string,
+  ): Promise<Response> {
     const [stripeProductsResponse, stripePricesResponse] = await Promise.all([
       this.stripeClient.products.retrieve(productId),
       this.stripeClient.prices.list({
