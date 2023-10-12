@@ -14,6 +14,7 @@ import { Queue } from 'bullmq';
 import { CHECKOUT_SESSION_JOB_NAME } from './checkout-session.processer';
 import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
+import stringify from 'fast-json-stable-stringify';
 
 export const AddressSchema = z.string().trim().toLowerCase().length(42);
 type Address = z.infer<typeof AddressSchema>;
@@ -63,10 +64,11 @@ export class CheckoutSessionController {
       throw new BadRequestException(validationResult.error);
     }
 
-    // Use encoded data as job ID for duplicate request idempotency.
-    const jobId = Buffer.from(JSON.stringify(validationResult.data), 'utf-8').toString('base64');
+    // Consider request de-duplication here with the deterministic job ID.
+    const jobId = stringify(validationResult.data);
     await this.queue.add(CHECKOUT_SESSION_JOB_NAME, validationResult.data, {
       jobId: jobId,
+      // Remove finished job ASAP in case a new fresh job is triggered.
       removeOnComplete: true,
       removeOnFail: true,
     });

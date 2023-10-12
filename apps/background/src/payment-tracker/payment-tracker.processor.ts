@@ -12,6 +12,8 @@ import {
   SuperfluidStripeSubscriptionsMetadataSchema,
 } from 'src/checkout-session/checkout-session.processer';
 import stringify from 'fast-json-stable-stringify';
+import { currencyDecimalMapping } from 'src/currencies';
+import { formatUnits } from 'viem';
 
 export const PAYMENT_TRACKER_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
 
@@ -49,6 +51,7 @@ export class PaymentTrackerProcessor extends WorkerHost {
       throw new Error('Customer does not exist.');
     }
 
+    // TODO: Fetching subscriptions is not actually necessary? 
     // const subscriptions = await this.stripeClient.subscriptions.list({
     //   collection_method: "send_invoice",
     //   customer: customer.id,
@@ -77,30 +80,43 @@ export class PaymentTrackerProcessor extends WorkerHost {
 
       return NOT_TRACKED_INVOICE_GROUP_KEY; // We don't know what to do with these.
     });
-
+    
     for (const [metadataAsString, invoices] of Object.entries(
       invoicesGroupedBySubscriptionMetadata,
-    )) {
+      )) {
       if (metadataAsString === NOT_TRACKED_INVOICE_GROUP_KEY) {
         // TODO: Warn? Return from job as statistics? Log how many were there?
       } else {
-        const { totalAmountPaid, totalAmountDue } = invoices.reduce(
+        const metadata = JSON.parse(metadataAsString) as SuperfluidStripeSubscriptionsMetadata;
+
+        const uniqueCurrencies = _.uniqBy(invoices, x => x.currency).map(i => i.currency);
+        if (uniqueCurrencies.length !== 1) {
+          throw new Error(`There is some confusion with the Stripe currencies and their Super Token mappings -- more than one Stripe currency has been mapped to a Super Token. Currencies: [${uniqueCurrencies.join(",")}], Chain ID: [${metadata.superfluid_chain_id}], Super Token: [${metadata.superfluid_token_address}]`);
+        }
+        const currency = uniqueCurrencies[0]!;
+        const currencyDecimals = currencyDecimalMapping.get(currency.toUpperCase());
+        if (typeof currencyDecimals === "undefined") {
+          throw new Error(`The currency Stripe currency to Super Token mapping is not properly configured. Currency: ${currency}`);
+        }
+
+        // The Stripe currency to wei conversion is needed to account for on-chain transfers and Stripe payments on the same denominator.
+        // Note that Stripe currency values are already in "units". Most common being 2 decimals.
+        const multitudeNeededForWei = BigInt(18 - currencyDecimals); // Super Tokens are always 18 decimals!
+        const { totalAmountPaidWei: totalPaid, totalAmountDueWei: totalDue } = invoices.reduce(
+          // Ensure currency is always the same.
           (accumulator, invoice) => {
-            // This is not perfectly correct.
             return {
-              totalAmountPaid: accumulator.totalAmountPaid + BigInt(invoice.amount_paid),
-              totalAmountDue: accumulator.totalAmountDue + BigInt(invoice.amount_due),
+              totalAmountPaidWei: accumulator.totalAmountPaidWei + BigInt(invoice.amount_paid) * multitudeNeededForWei,
+              totalAmountDueWei: accumulator.totalAmountDueWei + BigInt(invoice.amount_due) * multitudeNeededForWei,
             };
           },
           {
-            totalAmountPaid: 0n,
-            totalAmountDue: 0n,
+            totalAmountPaidWei: 0n,
+            totalAmountDueWei: 0n,
           },
         );
 
-        const metadata = JSON.parse(metadataAsString) as SuperfluidStripeSubscriptionsMetadata;
-
-        const totalAmountTransferred =
+        const totalSentOnChain =
           await this.superTokenAccountingService.getAccountToAccountBalance({
             chainId: metadata.superfluid_chain_id,
             superTokenAddress: metadata.superfluid_token_address,
@@ -108,44 +124,40 @@ export class PaymentTrackerProcessor extends WorkerHost {
             receiverAddress: metadata.superfluid_receiver_address,
           });
 
-        if (totalAmountPaid > totalAmountTransferred) {
+        if (totalPaid > totalSentOnChain) {
           throw new Error(
-            "This would mean we're missing data most likely... There could be some refund scenarios?",
-          );
+            `There's more marked as paid than we have on record how much was transferred on-chain. Was there a refund?
+            Chain ID: [${metadata.superfluid_chain_id}], Super Token: [${metadata.superfluid_token_address}], Sender Address: [${metadata.superfluid_sender_address}], Receiver Address: [${metadata.superfluid_receiver_address}]`,
+            );
+          }
+            
+        const totalDueOnChain = totalDue - totalSentOnChain;
+        if (totalDueOnChain < 0) {
+          // This means that there's more sent on-chain than was billed. The extra funds will be used for the next invoice.
         }
 
-        const leftOverToDisburse = totalAmountTransferred - totalAmountPaid;
-        if (leftOverToDisburse > totalAmountDue) {
-          for (const invoice of invoices) {
-            const updatedInvoice = await this.stripeClient.invoices.update(invoice.id, {
+        const leftToUseForOpenInvoices = totalSentOnChain - totalPaid;
+        
+        if (leftToUseForOpenInvoices > totalDue) {
+          // Mark invoices paid in chronological order based on dude date.
+          
+          const openInvoices = invoices.filter(x => x.status === "open");
+          const openInvoicesOrdered = _.orderBy(openInvoices, x => x.amount_due, "asc")
+
+          for (const invoice of openInvoicesOrdered) {
+            await this.stripeClient.invoices.update(invoice.id, {
               metadata,
             });
-            await this.stripeClient.invoices.pay(updatedInvoice.id, { paid_out_of_band: true });
+            await this.stripeClient.invoices.pay(invoice.id, { paid_out_of_band: true });
             // Note, we can't do update of metadata and marking as paid atomically, i.e. needs to be 2 HTTP calls.
 
             // It's not too bad if this fails as there will be a retry of the job which will get fresh info.
           }
         } else {
-          throw new Error('Not enough funds transferred...');
+          // This is not ideal because one invoice failure will stop the whole loop. This could be decently common too...
+          throw new Error(`Not enough on-chain transfers to mark any invoice as paid. Total due: ${formatUnits(totalDue, currencyDecimals)} ${currency}`);
         }
-
-        // TODO(KK): Do we double-check with "superTokenAccountingService" here that super token and currency match? Because the config might have changed? I don't love it as it should probably be grandfather in with the previous token.
       }
     }
-
-    // this.flowProducer.add({
-    //   name: PAYMENT_TRACKER_JOB_NAME,
-    //   queueName: QUEUE_NAME,
-    //   children: {
-
-    //   }
-    // })
-
-    // Decide how to handle different tokens?
-    // Decide if FlowProducer should be used per Customer?
-    // Decide if should split anything based on receiver address?
-
-    // Create FIFO strategy for dispersing payments
-    // How to track used up payments?
   }
 }

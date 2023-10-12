@@ -77,7 +77,7 @@ export class StripeToSuperfluidService
       if (!superTokens) {
         return;
       }
-      
+
       if (!p.recurring && p.billing_scheme !== 'per_unit') {
         return; // Not a recurring subscription payment.
         // Anything else regarding recurring to check here?
