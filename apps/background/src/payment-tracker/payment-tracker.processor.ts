@@ -7,8 +7,11 @@ import _ from 'lodash';
 import { SuperTokenAccountingService } from 'src/super-token-accounting/super-token-accounting.service';
 import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
-import { SubscriptionMetadata } from 'src/checkout-session/checkout-session.processer';
-import { getAddress } from 'viem';
+import {
+  SuperfluidStripeSubscriptionsMetadata,
+  SuperfluidStripeSubscriptionsMetadataSchema,
+} from 'src/checkout-session/checkout-session.processer';
+import stringify from 'fast-json-stable-stringify';
 
 export const PAYMENT_TRACKER_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
 
@@ -20,7 +23,7 @@ type PaymentTrackerJob = Job<
   typeof PAYMENT_TRACKER_JOB_NAME
 >;
 
-type TRACKED_INVOICE_GROUP_KEY = `${number}:0x${string}:0x${string}:0x${string}`;
+type TRACKED_INVOICE_GROUP_KEY = `${number}:${string}:${string}:${string}`;
 const NOT_TRACKED_INVOICE_GROUP_KEY = null;
 
 /**
@@ -41,64 +44,68 @@ export class PaymentTrackerProcessor extends WorkerHost {
 
   async process(job: PaymentTrackerJob, token?: string): Promise<void> {
     const customer = await this.stripeClient.customers.retrieve(job.data.stripeCustomerId);
+    // Is stripe already ensuring the customer exists? Should I check for .deleted?
     if (!customer) {
-      throw new Error('Customer not found. Confused...');
+      throw new Error('Customer does not exist.');
     }
 
-    const invoices = await this.stripeClient.invoices
+    // const subscriptions = await this.stripeClient.subscriptions.list({
+    //   collection_method: "send_invoice",
+    //   customer: customer.id,
+    //   expand: []
+    // }).autoPagingToArray(DEFAULT_PAGING);
+
+    const customerInvoices = await this.stripeClient.invoices
       .list({
         collection_method: 'send_invoice',
         customer: customer.id,
-        status: 'open',
         expand: ['data.subscription'],
       })
       .autoPagingToArray(DEFAULT_PAGING);
 
     // TODO: Warn if there are subscriptions without the token address?
-    const groupBySuperToken = _.groupBy(invoices, (x) => {
-      const subscriptionMetadata = x.subscription_details?.metadata as
-        | Partial<SubscriptionMetadata>
+
+    const invoicesGroupedBySubscriptionMetadata = _.groupBy(customerInvoices, (x) => {
+      const rawMetadata = x.subscription_details?.metadata as
+        | Partial<SuperfluidStripeSubscriptionsMetadata>
         | undefined;
-      if (subscriptionMetadata) {
-        const { chainId, superTokenAddress, senderAddress, receiverAddress } = subscriptionMetadata;
-        if (chainId && superTokenAddress && senderAddress && receiverAddress) {
-          // TODO: validate more strictly?
-          const groupKey: TRACKED_INVOICE_GROUP_KEY = `${chainId}:${superTokenAddress}:${senderAddress}:${receiverAddress}`;
-          return groupKey;
-        }
+
+      const metadata = SuperfluidStripeSubscriptionsMetadataSchema.safeParse(rawMetadata);
+      if (metadata.success) {
+        return stringify(metadata.data); // Note: extra keys should have already been stripped by Zod.
       }
 
       return NOT_TRACKED_INVOICE_GROUP_KEY; // We don't know what to do with these.
     });
 
-    for (const [key, invoices_] of Object.entries(groupBySuperToken)) {
-      if (key === NOT_TRACKED_INVOICE_GROUP_KEY) {
-        // TODO: Warn? Return from job as statistics?
+    for (const [metadataAsString, invoices] of Object.entries(
+      invoicesGroupedBySubscriptionMetadata,
+    )) {
+      if (metadataAsString === NOT_TRACKED_INVOICE_GROUP_KEY) {
+        // TODO: Warn? Return from job as statistics? Log how many were there?
       } else {
-        const { totalAmountPaid, totalAmountDue } = invoices_.reduce(
-          (accumulator, invoice) => ({
-            totalAmountPaid: accumulator.totalAmountPaid + BigInt(invoice.amount_paid),
-            totalAmountDue: accumulator.totalAmountDue + BigInt(invoice.amount_due),
-          }),
+        const { totalAmountPaid, totalAmountDue } = invoices.reduce(
+          (accumulator, invoice) => {
+            // This is not perfectly correct.
+            return {
+              totalAmountPaid: accumulator.totalAmountPaid + BigInt(invoice.amount_paid),
+              totalAmountDue: accumulator.totalAmountDue + BigInt(invoice.amount_due),
+            };
+          },
           {
             totalAmountPaid: 0n,
             totalAmountDue: 0n,
           },
         );
 
-        const keySplit = key.split(':');
-
-        const chainId = Number(keySplit[0]);
-        const superTokenAddress = keySplit[1];
-        const senderAddress = keySplit[2];
-        const receiverAddress = keySplit[3];
+        const metadata = JSON.parse(metadataAsString) as SuperfluidStripeSubscriptionsMetadata;
 
         const totalAmountTransferred =
           await this.superTokenAccountingService.getAccountToAccountBalance({
-            chainId,
-            superTokenAddress,
-            senderAddress,
-            receiverAddress,
+            chainId: metadata.superfluid_chain_id,
+            superTokenAddress: metadata.superfluid_token_address,
+            senderAddress: metadata.superfluid_sender_address,
+            receiverAddress: metadata.superfluid_receiver_address,
           });
 
         if (totalAmountPaid > totalAmountTransferred) {
@@ -109,14 +116,20 @@ export class PaymentTrackerProcessor extends WorkerHost {
 
         const leftOverToDisburse = totalAmountTransferred - totalAmountPaid;
         if (leftOverToDisburse > totalAmountDue) {
-          for (const invoice in invoices_) {
-            await this.stripeClient.invoices.pay(invoice); // It's not too bad if this fails as there will be a retry of the job which will get fresh info.
+          for (const invoice of invoices) {
+            const updatedInvoice = await this.stripeClient.invoices.update(invoice.id, {
+              metadata,
+            });
+            await this.stripeClient.invoices.pay(updatedInvoice.id, { paid_out_of_band: true });
+            // Note, we can't do update of metadata and marking as paid atomically, i.e. needs to be 2 HTTP calls.
+
+            // It's not too bad if this fails as there will be a retry of the job which will get fresh info.
           }
         } else {
           throw new Error('Not enough funds transferred...');
         }
 
-        // TODO(KK): Do we double-check with "superTokenAccountingService" here that super token and currency match?
+        // TODO(KK): Do we double-check with "superTokenAccountingService" here that super token and currency match? Because the config might have changed? I don't love it as it should probably be grandfather in with the previous token.
       }
     }
 

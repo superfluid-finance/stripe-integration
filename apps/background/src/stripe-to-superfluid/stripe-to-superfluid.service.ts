@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
 import {
   ChainToSuperTokenReceiverMap,
@@ -9,6 +9,8 @@ import {
   defaultStripeCurrencyToSuperTokenMap,
 } from './price-conversion-strategy/StripeCurrencyToSuperTokenMap';
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
+import { currencyDecimalMapping } from 'src/currencies';
+import { formatUnits } from 'viem';
 
 type Input = {
   product: Stripe.Product;
@@ -44,10 +46,8 @@ export class StripeToSuperfluidService
     chainId: number;
     address: string;
   }): PriceId | undefined {
-    for (const [stripeCurrency, chainToSuperTokenMap] of Array.from(
-      this.stripeCurrencyToSuperTokenMap,
-    )) {
-      for (const [chainId, superTokenAddress] of Array.from(chainToSuperTokenMap)) {
+    for (const [stripeCurrency, superTokens] of Array.from(this.stripeCurrencyToSuperTokenMap)) {
+      for (const { chainId, address: superTokenAddress } of superTokens) {
         if (
           superToken.chainId === chainId &&
           superToken.address.toLowerCase() === superTokenAddress.toLowerCase()
@@ -73,15 +73,23 @@ export class StripeToSuperfluidService
     // I'm thinking to create a map for Stripe payment options to crypto payment options. The merchant can choose the network.
     const paymentOptions: PaymentOption[] = [];
     stripe.prices.forEach((p) => {
-      const superTokenMap = this.stripeCurrencyToSuperTokenMap.get(p.currency);
-      if (!superTokenMap) {
+      const superTokens = this.stripeCurrencyToSuperTokenMap.get(p.currency);
+      if (!superTokens) {
         return;
       }
+      
+      if (!p.recurring && p.billing_scheme !== 'per_unit') {
+        return; // Not a recurring subscription payment.
+        // Anything else regarding recurring to check here?
+      }
 
-      for (const [chainId, superTokenAddress] of Array.from(superTokenMap)) {
+      const currencyDecimals = currencyDecimalMapping.get(p.currency.toUpperCase());
+      const amount = formatUnits(BigInt(p.unit_amount!), currencyDecimals!) as `${number}`; // TODO: bangs
+
+      for (const { chainId, address: superTokenAddress } of superTokens) {
         const receiverAddress = this.chainToSuperTokenReceiverMap.get(chainId);
         if (!receiverAddress) {
-          return;
+          continue;
         }
 
         const paymentOption: PaymentOption = {
@@ -90,6 +98,11 @@ export class StripeToSuperfluidService
             address: superTokenAddress,
           },
           receiverAddress,
+          flowRate: {
+            amountEther: amount,
+            period: p.recurring!.interval,
+          },
+          transferAmountEther: amount,
         };
         paymentOptions.push(paymentOption);
       }
@@ -105,3 +118,5 @@ export class StripeToSuperfluidService
     };
   }
 }
+
+const logger = new Logger(StripeToSuperfluidService.name);

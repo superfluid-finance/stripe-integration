@@ -52,7 +52,7 @@ export default function SupefluidWidgetProvider({ productId, paymentDetails, pro
                 createSession(data);
             }
         }
-    }), [email, paymentOption, accountAddress, createSession]);
+    }), [productId, email, paymentOption, accountAddress, createSession]);
 
     return (<>
         <SuperfluidWidget
