@@ -16,6 +16,7 @@ export class StripeToSuperfluidController {
     private readonly stripeToSuperfluidService: StripeToSuperfluidService,
   ) {}
 
+  // TODO: Does this need auth?
   @Get('checkout-widget')
   async mapStripeProductToCheckoutWidget(
     @Query('product-id') productId: string,
@@ -33,12 +34,12 @@ export class StripeToSuperfluidController {
       prices: stripePricesResponse.data,
     });
 
-    logger.debug({
-      stripeProductsResponse,
-      stripePricesResponse,
-      productId,
-      config,
-    });
+    // logger.debug({
+    //   stripeProductsResponse,
+    //   stripePricesResponse,
+    //   productId,
+    //   config,
+    // });
 
     return config;
   }

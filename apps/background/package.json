@@ -59,12 +59,12 @@
     "@types/lodash": "^4.14.199",
     "bullmq": "^4.11.4",
     "date-fns": "^2.30.0",
+    "fast-json-stable-stringify": "^2.1.0",
     "lodash": "^4.17.21",
     "openapi-fetch": "^0.7.10",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "stripe": "^13.8.0",
-    "tozod": "^3.0.0",
     "viem": "^1.13.1",
     "zod": "^3.22.4"
   },

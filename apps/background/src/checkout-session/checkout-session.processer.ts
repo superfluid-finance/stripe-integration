@@ -4,28 +4,57 @@ import { Job, Queue } from 'bullmq';
 import { QUEUE_NAME } from './checkout-session.queue';
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
-import { CreateSessionData } from './checkout-session.controller';
+import { AddressSchema, CreateSessionData } from './checkout-session.controller';
 import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
+import { z } from 'zod';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';
 
-type Address = `0x${string}`;
+type Address = string;
 type CustomerId = string;
 type CheckoutSessionJob = Job<CreateSessionData, void, typeof CHECKOUT_SESSION_JOB_NAME>;
 
-// This should probably also have a version?
-// It should be nested/named in a way that human wouldn't want to change it without being absolutely sure of knowing what they're doing.
-export type SubscriptionMetadata = {
-  chainId: number;
-  superTokenAddress: Address;
-
-  senderAddress: Address; // TODO(KK): Any way to use array here? Answer: kind of no.
-  receiverAddress: Address;
+type SuperfluidNamespace<T> = {
+  [P in keyof T as `superfluid_${string & P}`]: T[P];
 };
 
 /**
+ * This should be stored on Stripe.Subscription.
+ */
+export type SuperfluidStripeSubscriptionsMetadata = SuperfluidNamespace<{
+  NOTE?: string;
+  chain_id: number;
+  token_address: Address;
+  sender_address: Address;
+  receiver_address: Address;
+  // TODO(KK): Any value in storing flow rate here?
+}>;
+
+export const SuperfluidStripeSubscriptionsMetadataSchema: z.ZodType<SuperfluidStripeSubscriptionsMetadata> =
+  z
+    .object({
+      superfluid_NOTE: z.string().optional(),
+      superfluid_chain_id: z.number(),
+      superfluid_token_address: AddressSchema,
+      superfluid_sender_address: AddressSchema,
+      superfluid_receiver_address: AddressSchema,
+    })
+    .strip();
+
+export type SuperfluidStripeCustomerMetadata = SuperfluidNamespace<{
+  NOTE?: string;
+}>;
+
+/**
+ * What is this? This handles the job of creating a new Stripe customer and subscription.
+ * The complexity of this task comes from the fact that we don't want to accidentally miss any customers,
+ * we also don't want to create spam on Stripe,
+ * and we want to be swift for the users that go through the whole flow and do become customers.
  *
+ * Why not handle this with a blocking step in the UI? Too many error possibilities.
+ * It's perfectly possible for the user to send a transaction and not see the final success screen of the widget.
+ * Or for the transaction to fail on-chain and for the user to end the session.
  */
 @Processor(QUEUE_NAME)
 export class CheckoutSessionProcesser extends WorkerHost {
@@ -48,13 +77,16 @@ export class CheckoutSessionProcesser extends WorkerHost {
       address: data.superTokenAddress,
     });
     if (!currency) {
-      throw new Error('How to handle this?');
+      throw new Error(
+        `The Super Token is not mapped to any Stripe Currency. It does not make sense to handle this job without that mapping. Please fix the mapping! Chain ID: ${data.chainId}, Super Token: [${data.superTokenAddress}]`,
+      );
     }
 
     const product = await this.stripeClient.products.retrieve(data.productId);
     if (!product) {
-      // if not found, probably fail the job
-      throw new Error('Product not found. What are you subscribing to?');
+      throw new Error(
+        `Product not found. What are you subscribing to? Product ID: [${data.productId}]`,
+      );
     }
 
     const prices = await this.stripeClient.prices
@@ -64,15 +96,16 @@ export class CheckoutSessionProcesser extends WorkerHost {
         currency: currency,
       })
       .autoPagingToArray(DEFAULT_PAGING);
-
     if (prices.length > 1) {
-      throw new Error("More than one price for the currency. It's throwing me off...");
+      throw new Error(
+        'The Stripe-Superfluid Integration does not know how to handle more than one price for the currency... Please reduce to a single price on Stripe. Or take contact for an added feature.',
+      );
     }
-
     if (prices.length === 0) {
-      throw new Error('No Stripe price found for the Super Token.');
+      throw new Error(
+        `No price on Stripe found for the product and the currency. Currency: [${currency}], Product ID: [${product.id}]`,
+      );
     }
-
     const price = prices[0];
 
     const customers = await this.stripeClient.customers
@@ -80,40 +113,57 @@ export class CheckoutSessionProcesser extends WorkerHost {
         email: data.email,
       })
       .autoPagingToArray(DEFAULT_PAGING);
-
     let customerId: CustomerId;
     if (customers.length === 0) {
-      // create customer if it doesn't exist? Probably don't do it too eagerly without first receiving some payment.
-
+      // Create customer if it doesn't exist? Probably don't do it too eagerly without first receiving some payment on the block-chain?
+      // A solution could be to create the Stripe Customer eagerly but then create a job that would delete stale Customers after some time that didn't follow throuwgh with their Subscription.
+      // Or have it more blocking in the UI so that spam wouldn't as easily be created?
+      const customerMetadata: SuperfluidStripeCustomerMetadata = {
+        superfluid_NOTE: 'This user was auto-generated.',
+      };
       const customerCreateParams: Stripe.CustomerCreateParams = {
         email: data.email,
-        // Anything to put into the metadata?
+        metadata: customerMetadata,
       };
-
       const customersCreateResponse = await this.stripeClient.customers.create(
         customerCreateParams,
       );
       customerId = customersCreateResponse.id;
-    } else {
-      // What if there's more than one?
+    } else if (customers.length === 1) {
       customerId = customers[0].id;
+    } else {
+      throw new Error(
+        `There is more than one Stripe Customer in the system with the given e-mail. E-mail: [${data.email}] Please contact support for guidance on how to handle this situation.`,
+      );
     }
 
-    const subscriptionMetadata: SubscriptionMetadata = {
-      chainId: data.chainId,
-      superTokenAddress: data.superTokenAddress as Address,
-      senderAddress: data.senderAddress as Address,
-      receiverAddress: data.receiverAddress as Address,
+    const subscriptionMetadata: SuperfluidStripeSubscriptionsMetadata = {
+      superfluid_NOTE: 'Auto-generated. Be careful when editing!',
+      superfluid_chain_id: data.chainId,
+      superfluid_token_address: data.superTokenAddress as Address,
+      superfluid_sender_address: data.senderAddress as Address,
+      superfluid_receiver_address: data.receiverAddress as Address,
     };
+
+    // Note that we are creating a Stripe Subscription here that will send invoices and e-mails to the user.
+    // There could be scenarios where someone was using the checkout widget to pay for an existing subscription.
+    // Then we wouldn't want to create a new subscription here...
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       collection_method: 'send_invoice',
-      days_until_due: 0, // TODO(KK): I'm not sure about this value...
+      // Note that there is also 1 hour "draft" period.
+      // Sending an invoice to the user straight away is likely not preferrable for A LOT of scenarios.
+      // Consider a better solution or an environment variable here!
+      days_until_due: 0,
       currency: currency,
       items: [
         {
           price: price.id,
-          quantity: 1, // KK: This should be fine. In what cases wouldn't it be 1?
+          // This most of the time should be 1 for expected use-cases.
+          // There definitely are real-life scenarios where the quantity could be more than 1.
+          // The handling of that is not prioritized yet.
+          // The handling of that solution should start from the checkout widget's configuration.
+          quantity: 1,
         },
       ],
       metadata: subscriptionMetadata,
@@ -122,11 +172,10 @@ export class CheckoutSessionProcesser extends WorkerHost {
       subscriptionsCreateParams,
     );
 
-    // Handle job for ensuring customer on Stripe's end here
-    // Have the job be self-scheduling, i.e. it reschedules for a while until it dies off if user didn't finish with the details
-
     // Call Stripe Listener Module to get invoice processing right away?
   }
+
+  // TODO! Fire off a "delete user after 24 hours without any on-chain streams" type of a job here?
 }
 
 const logger = new Logger(CheckoutSessionProcesser.name);

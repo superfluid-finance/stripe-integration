@@ -19,7 +19,6 @@ export class PaymentTrackerService {
    * @param invoices
    */
   async handleOpenStripeInvoices(invoices: ReadonlyArray<Stripe.Invoice>) {
-    // TODO: handle "has_more"?
     logger.debug('Queried stripe invoices count: ' + invoices.length);
 
     // Validate invoice is open

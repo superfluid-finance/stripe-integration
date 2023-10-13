@@ -50,6 +50,9 @@ dependencies:
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
+  fast-json-stable-stringify:
+    specifier: ^2.1.0
+    version: 2.1.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -65,9 +68,6 @@ dependencies:
   stripe:
     specifier: ^13.8.0
     version: 13.8.0
-  tozod:
-    specifier: ^3.0.0
-    version: 3.0.0(zod@3.22.4)
   viem:
     specifier: ^1.13.1
     version: 1.16.0(typescript@5.2.2)(zod@3.22.4)
@@ -5108,7 +5108,6 @@ packages:
 
   /fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
-    dev: true
 
   /fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}
@@ -8556,14 +8555,6 @@ packages:
       '@tokenizer/token': 0.3.0
       ieee754: 1.2.1
     dev: true
-
-  /tozod@3.0.0(zod@3.22.4):
-    resolution: {integrity: sha512-R03/moNPEGgWKoTdCsEJuyEoP6NtXyhWg9L9lJhF2XyCR2Ce9XE+yXaswaVmqyBpHsRPC2Pk38mK8Ex7iHaXcg==}
-    peerDependencies:
-      zod: ^3.0.0-alpha.2
-    dependencies:
-      zod: 3.22.4
-    dev: false
 
   /tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
