@@ -1,5 +1,5 @@
 {
-  "name": "stripe-superfluid-frontend",
+  "name": "@superfluid-finance/stripe-frontend",
   "version": "0.1.0",
   "private": true,
   "description": "Self-hostable Stripe & Superfluid Checkout Front-end",
@@ -15,8 +15,8 @@
     "clean:next": "rimraf \"./.next\"",
     "clean:node-modules": "rimraf \"./node_modules\"",
     "docker": "pnpm docker:build && pnpm docker:run",
-    "docker:build": "docker build -t stripe-superfluid-frontend .",
-    "docker:run": "docker run -d -p 8000:8000 stripe-superfluid-frontend"
+    "docker:build": "docker build -t superfluid-finance/stripe-frontend .",
+    "docker:run": "docker run -d -p 8000:8000 superfluid-finance/stripe-frontend"
   },
   "dependencies": {
     "@superfluid-finance/widget": "^0.4.3",

@@ -14,6 +14,7 @@
     "docker:build": "pnpm -r docker:build",
     "docker:redis": "docker-compose -f docker-compose.redis.yml up",
     "docker:run": "docker-compose -f docker-compose.all.yml up",
+    "minikube": "minikube start && eval $(minikube docker-env)",
     "format": "pnpm -r format",
     "lint": "pnpm -r lint"
   }

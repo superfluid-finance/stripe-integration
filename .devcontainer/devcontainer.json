@@ -16,18 +16,18 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": [
 		"pnpm install",
-		"pnpm add -g @nestjs/cli" // You can now globally use "nest" commands.
+		"pnpm add -g @nestjs/cli", // You can now globally use "nest" commands.
+		"pnpm docker:redis"
 	],
 	"postStartCommand": [
 		// For Kubernetes local testing. If you have Docker Desktop then you probably don't need this:
-		"minikube start",
+		// "minikube start",
 		// Redirect docker commands to minikube:
-		"eval $(minikube docker-env)",
+		// "eval $(minikube docker-env)"
 		// Localhost port forwarding (https://github.com/devcontainers/features/tree/main/src/kubectl-helm-minikube#ingress-and-port-forwarding):
 		// "minikube addons enable ingress",
 		// "nohup kubectl port-forward --pod-running-timeout=24h -n ingress-nginx service/ingress-nginx-controller :80 &",
 		// For local development, `pnpm dev` instance should connect to this:
-		"pnpm docker:redis"
 	]
 	// Configure tool-specific properties.
 	// "customizations": {},

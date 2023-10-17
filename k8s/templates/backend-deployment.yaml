@@ -33,7 +33,7 @@ spec:
                 name: api-key
                 key: API_KEY
           - name: PORT
-            value: "3000"
+            value: "3001"
           - name: REDIS_HOST
             value: stripe-backend-redis-master
           - name: REDIS_PORT
@@ -43,6 +43,6 @@ spec:
           - name: QUEUE_DASHBOARD_PASSWORD
             value: password
         ports:
-        - containerPort: 3000
+        - containerPort: 3001
         resources: {}
 status: {}

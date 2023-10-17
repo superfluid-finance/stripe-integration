@@ -1,5 +1,5 @@
 {
-  "name": "stripe-superfluid-background",
+  "name": "@superfluid-finance/stripe-backend",
   "version": "1.0.0",
   "private": true,
   "description": "Self-hostable Stripe & Superfluid Checkout Back-end",
@@ -19,8 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "docker": "pnpm docker:build && pnpm docker:run",
-    "docker:build": "docker build -t stripe-superfluid-background .",
-    "docker:run": "docker run -d -p 8000:8000 stripe-superfluid-background",
+    "docker:build": "docker build -t superfluid-finance/stripe-backend .",
+    "docker:run": "docker run -d -p 8000:8000 superfluid-finance/stripe-backend",
     "clean": "npm-run-all -s clean:*",
     "clean:dist": "rimraf \"./dist\"",
     "clean:node-modules": "rimraf \"./node_modules\"",
