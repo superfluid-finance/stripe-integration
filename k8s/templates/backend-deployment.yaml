@@ -35,7 +35,7 @@ spec:
           - name: PORT
             value: "3001"
           - name: REDIS_HOST
-            value: stripe-backend-redis-master
+            value: stripe-integration-redis-master
           - name: REDIS_PORT
             value: "6379"
           - name: QUEUE_DASHBOARD_USER
