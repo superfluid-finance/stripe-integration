@@ -12,7 +12,7 @@ services:
   backend:
     build: ./apps/background
     ports:
-      - '8080:8080'
+      - '3001:3001'
     depends_on: 
       - redis
 

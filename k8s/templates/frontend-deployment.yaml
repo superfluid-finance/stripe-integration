@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   labels:
     app: stripe-frontend
-  name: stripe-frontend
+  name: stripe-frontend-service
 spec:
   replicas: 1
   selector:
