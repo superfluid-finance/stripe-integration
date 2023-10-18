@@ -1,13 +1,17 @@
-# Use Node.js for Server Runtime
+# Use BullMQ for Job Queues
+
+## Status
+
+Accepted
 
 ## Context
 
-In order to integrate with Stripe, a stable and widely adopted back-end runtime is required. Node.js, a powerful JavaScript runtime built on Chrome's V8 JavaScript engine, provides a suitable platform with robust stability and a high adoption rate in the developer community.
+In a system-to-system integration project, using a job queue becomes essential to manage and sequence tasks securely and efficiently. Factors such as reliability, idempotency and monitorability are paramount when integrating systems over the internet.
 
 ## Decision
 
-Given the need for a stable, well-supported backend runtime to assist the Stripe integration, Node.js has been selected.
+We have decided to leverage BullMQ, a Redis-based queue library, for job queue management due to its popularity, scalability, and durability in the JavaScript ecosystem. Furthermore, it is open-source, free and MIT-licensed, well-maintainted and backed by a company (https://taskforce.sh/).
 
 ## Consequences
 
-Using Node.js as our back-end runtime will provide the necessary stability for the integration and ease of adoption for developers with JavaScript knowledge.
+By choosing BullMQ, we will acquire a robust system for job queuing, that is reliable, idempotent, and easily monitorable.
