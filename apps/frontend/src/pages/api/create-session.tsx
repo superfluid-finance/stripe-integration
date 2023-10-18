@@ -10,8 +10,6 @@ export type CreateSessionData = {
     email: string;
 };
 
-export const backendBaseUrl = new URL(`http://${internalConfig.background.host}:${internalConfig.background.port}`);;
-
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
@@ -20,11 +18,11 @@ export default async function handler(
 
         const createSessionRequest: CreateSessionData = req.body as CreateSessionData
 
-        const url = new URL("/checkout-session/create", backendBaseUrl);
+        const url = new URL("/checkout-session/create", internalConfig.getBackendBaseUrl());
         const response = await fetch(url, {
             method: "POST",
             headers: {
-                "x-api-key": internalConfig.background.apiKey,
+                "x-api-key": internalConfig.getApiKey(),
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(createSessionRequest)

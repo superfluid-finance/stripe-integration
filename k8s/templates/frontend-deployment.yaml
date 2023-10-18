@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: stripe-frontend
+  name: stripe-frontend-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stripe-frontend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: stripe-frontend
+    spec:
+      containers:
+      - image: superfluid-finance/stripe-frontend:latest
+        imagePullPolicy: Never
+        name: stripe-frontend
+        env:
+          - name: BACKGROUND_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: api-key
+                key: API_KEY
+          - name: BACKGROUND_PORT
+            value: "3001"
+          - name: BACKGROUND_HOST
+            value: localhost
+          - name: NEXT_PUBLIC_WALLECT_CONNECT_PROJECT_ID
+            value: 952483bf7a0f5ace4c40eb53967f1368
+        ports:
+        - containerPort: 3000
+        resources: {}
+status: {}
