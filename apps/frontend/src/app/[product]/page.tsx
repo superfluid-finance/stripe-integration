@@ -2,7 +2,7 @@ import ConnectKitProvider from '@/components/ConnectKitProvider';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import { backendBaseUrl } from '@/pages/api/create-session';
-import { EmailField, WidgetProps } from '@superfluid-finance/widget';
+import { WidgetProps } from '@superfluid-finance/widget';
 
 export default async function Product({ params }: { params: { product: string } }) {
   // TODO(KK): validate params?
@@ -32,34 +32,19 @@ export default async function Product({ params }: { params: { product: string } 
             <SupefluidWidgetProvider
               productId={productId}
               productDetails={config.productDetails}
-              paymentDetails={{
-                ...config.paymentDetails,
-                paymentOptions: [
-                  {
-                    receiverAddress: '0xf26ce9749f29e61c25d0333bce2301cb2dfd3a22',
-                    chainId: 5,
-                    superToken: {
-                      address: '0xf2d68898557ccb2cf4c10c3ef2b034b2a69dad00',
-                    },
-                    flowRate: {
-                      amountEther: '1',
-                      period: 'month',
-                    },
-                  },
-                ],
-              }}
+              paymentDetails={config.paymentDetails}
               personalData={[
-                // This works
                 {
                   label: 'Email',
                   required: {
                     pattern:
                       /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g.toString(),
-                    message: 'Please enter a valid email address',
+                    message: 'Invalid email address',
                   },
                 },
-                // This doesn't
-                // EmailField,
+
+                //This doesn't work
+                // EmailField
               ]}
             />
           )}
