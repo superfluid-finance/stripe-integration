@@ -51,7 +51,7 @@ export class PaymentTrackerProcessor extends WorkerHost {
       throw new Error('Customer does not exist.');
     }
 
-    // TODO: Fetching subscriptions is not actually necessary? 
+    // TODO: Fetching subscriptions is not actually necessary?
     // const subscriptions = await this.stripeClient.subscriptions.list({
     //   collection_method: "send_invoice",
     //   customer: customer.id,
@@ -80,23 +80,31 @@ export class PaymentTrackerProcessor extends WorkerHost {
 
       return NOT_TRACKED_INVOICE_GROUP_KEY; // We don't know what to do with these.
     });
-    
+
     for (const [metadataAsString, invoices] of Object.entries(
       invoicesGroupedBySubscriptionMetadata,
-      )) {
+    )) {
       if (metadataAsString === NOT_TRACKED_INVOICE_GROUP_KEY) {
         // TODO: Warn? Return from job as statistics? Log how many were there?
       } else {
         const metadata = JSON.parse(metadataAsString) as SuperfluidStripeSubscriptionsMetadata;
 
-        const uniqueCurrencies = _.uniqBy(invoices, x => x.currency).map(i => i.currency);
+        const uniqueCurrencies = _.uniqBy(invoices, (x) => x.currency).map((i) => i.currency);
         if (uniqueCurrencies.length !== 1) {
-          throw new Error(`There is some confusion with the Stripe currencies and their Super Token mappings -- more than one Stripe currency has been mapped to a Super Token. Currencies: [${uniqueCurrencies.join(",")}], Chain ID: [${metadata.superfluid_chain_id}], Super Token: [${metadata.superfluid_token_address}]`);
+          throw new Error(
+            `There is some confusion with the Stripe currencies and their Super Token mappings -- more than one Stripe currency has been mapped to a Super Token. Currencies: [${uniqueCurrencies.join(
+              ',',
+            )}], Chain ID: [${metadata.superfluid_chain_id}], Super Token: [${
+              metadata.superfluid_token_address
+            }]`,
+          );
         }
         const currency = uniqueCurrencies[0]!;
         const currencyDecimals = currencyDecimalMapping.get(currency.toUpperCase());
-        if (typeof currencyDecimals === "undefined") {
-          throw new Error(`The currency Stripe currency to Super Token mapping is not properly configured. Currency: ${currency}`);
+        if (typeof currencyDecimals === 'undefined') {
+          throw new Error(
+            `The currency Stripe currency to Super Token mapping is not properly configured. Currency: ${currency}`,
+          );
         }
 
         // The Stripe currency to wei conversion is needed to account for on-chain transfers and Stripe payments on the same denominator.
@@ -106,8 +114,11 @@ export class PaymentTrackerProcessor extends WorkerHost {
           // Ensure currency is always the same.
           (accumulator, invoice) => {
             return {
-              totalAmountPaidWei: accumulator.totalAmountPaidWei + BigInt(invoice.amount_paid) * multitudeNeededForWei,
-              totalAmountDueWei: accumulator.totalAmountDueWei + BigInt(invoice.amount_due) * multitudeNeededForWei,
+              totalAmountPaidWei:
+                accumulator.totalAmountPaidWei +
+                BigInt(invoice.amount_paid) * multitudeNeededForWei,
+              totalAmountDueWei:
+                accumulator.totalAmountDueWei + BigInt(invoice.amount_due) * multitudeNeededForWei,
             };
           },
           {
@@ -116,33 +127,32 @@ export class PaymentTrackerProcessor extends WorkerHost {
           },
         );
 
-        const totalSentOnChain =
-          await this.superTokenAccountingService.getAccountToAccountBalance({
-            chainId: metadata.superfluid_chain_id,
-            superTokenAddress: metadata.superfluid_token_address,
-            senderAddress: metadata.superfluid_sender_address,
-            receiverAddress: metadata.superfluid_receiver_address,
-          });
+        const totalSentOnChain = await this.superTokenAccountingService.getAccountToAccountBalance({
+          chainId: metadata.superfluid_chain_id,
+          superTokenAddress: metadata.superfluid_token_address,
+          senderAddress: metadata.superfluid_sender_address,
+          receiverAddress: metadata.superfluid_receiver_address,
+        });
 
         if (totalPaid > totalSentOnChain) {
           throw new Error(
             `There's more marked as paid than we have on record how much was transferred on-chain. Was there a refund?
             Chain ID: [${metadata.superfluid_chain_id}], Super Token: [${metadata.superfluid_token_address}], Sender Address: [${metadata.superfluid_sender_address}], Receiver Address: [${metadata.superfluid_receiver_address}]`,
-            );
-          }
-            
+          );
+        }
+
         const totalDueOnChain = totalDue - totalSentOnChain;
         if (totalDueOnChain < 0) {
           // This means that there's more sent on-chain than was billed. The extra funds will be used for the next invoice.
         }
 
         const leftToUseForOpenInvoices = totalSentOnChain - totalPaid;
-        
+
         if (leftToUseForOpenInvoices > totalDue) {
           // Mark invoices paid in chronological order based on dude date.
-          
-          const openInvoices = invoices.filter(x => x.status === "open");
-          const openInvoicesOrdered = _.orderBy(openInvoices, x => x.amount_due, "asc")
+
+          const openInvoices = invoices.filter((x) => x.status === 'open');
+          const openInvoicesOrdered = _.orderBy(openInvoices, (x) => x.amount_due, 'asc');
 
           for (const invoice of openInvoicesOrdered) {
             await this.stripeClient.invoices.update(invoice.id, {
@@ -155,7 +165,12 @@ export class PaymentTrackerProcessor extends WorkerHost {
           }
         } else {
           // This is not ideal because one invoice failure will stop the whole loop. This could be decently common too...
-          throw new Error(`Not enough on-chain transfers to mark any invoice as paid. Total due: ${formatUnits(totalDue, currencyDecimals)} ${currency}`);
+          throw new Error(
+            `Not enough on-chain transfers to mark any invoice as paid. Total due: ${formatUnits(
+              totalDue,
+              currencyDecimals,
+            )} ${currency}`,
+          );
         }
       }
     }

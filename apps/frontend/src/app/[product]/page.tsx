@@ -1,7 +1,7 @@
 import ConnectKitProvider from '@/components/ConnectKitProvider';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
-import { backendBaseUrl } from '@/pages/api/create-session';
+import internalConfig from '@/internalConfig';
 import { WidgetProps } from '@superfluid-finance/widget';
 
 export default async function Product({ params }: { params: { product: string } }) {
@@ -9,10 +9,7 @@ export default async function Product({ params }: { params: { product: string } 
 
   const productId = params.product;
 
-  const url = new URL(
-    `/stripe-to-superfluid/checkout-widget?product-id=${productId}`,
-    backendBaseUrl,
-  );
+  const url = new URL(`/stripe-to-superfluid/checkout-widget?product-id=${productId}`, internalConfig.getBackendBaseUrl());
   const response = await fetch(url, {
     method: 'GET',
     headers: {

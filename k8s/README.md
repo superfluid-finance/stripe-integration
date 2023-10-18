@@ -1,6 +1,7 @@
 # Kubernetes setup
 
-- build the back-end container: `docker build -t superfluid-finance/stripe-backend:latest .`
+- (optional) run `pnpm minikube` when using GitHub Codespaces (Dev Containers)
+- build the back-end containers: `pnpm docker:builder`
 - install [helm](https://helm.sh/docs/intro/install/)
 - cd into the `k8s` folder
 - add dependency repo `helm repo add bitnami https://charts.bitnami.com/bitnami`
@@ -8,8 +9,8 @@
 - set up secrets:
     - `kubectl create secret generic api-key --from-literal=API_KEY=my-secret-key`
     - `kubectl create secret generic stripe-sk --from-literal=STRIPE_SECRET_KEY=my-stripe-sk`
-- run `helm install stripe-backend .`
-- (optional) upgrade with `helm upgrade stripe-backend .`
+- run `helm install stripe-integration .`
+- (optional) upgrade with `helm upgrade stripe-integration .`
 - verify that pods are running with `kubectl get pods`
 
 ## Useful commands
