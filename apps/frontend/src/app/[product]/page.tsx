@@ -32,12 +32,12 @@ export default async function Product({ params }: { params: { product: string } 
               paymentDetails={config.paymentDetails}
               personalData={[
                 {
-                  label: 'Email',
-                  required: {
-                    pattern:
-                      /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/g.toString(),
-                    message: 'Invalid email address',
-                  },
+                  "name": "email",
+                  "label": "Email",
+                  "required": {
+                    "pattern": "/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g",
+                    "message": "Invalid email address"
+                  }
                 },
 
                 //This doesn't work

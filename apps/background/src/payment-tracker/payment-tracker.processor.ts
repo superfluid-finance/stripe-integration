@@ -11,7 +11,7 @@ import {
   SuperfluidStripeSubscriptionsMetadata,
   SuperfluidStripeSubscriptionsMetadataSchema,
 } from 'src/checkout-session/checkout-session.processer';
-import stringify from 'fast-json-stable-stringify';
+import stringify from 'safe-stable-stringify';
 import { currencyDecimalMapping } from 'src/currencies';
 import { formatUnits } from 'viem';
 

@@ -26,7 +26,7 @@ This section provides an overview of the principal technologies used in the fron
 1. [TypeScript](https://www.typescriptlang.org/)
 2. [React](https://react.dev/): Javascript library for building user interfaces.
 3. [Next.js](https://nextjs.org/): An opinionated React Framework for building full-stack web applications.
-4. [@superfluid-finance/widget](https://www.superfluid.finance/subscriptions): Superfluid Checkout
+4. [@superfluid-finance/widget](https://www.superfluid.finance/subscriptions): Superfluid Checkout Widget
 
 ## Development
 

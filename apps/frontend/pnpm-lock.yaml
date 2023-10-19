@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@superfluid-finance/widget':
-    specifier: 0.0.0-dev-20231018084411
-    version: 0.0.0-dev-20231018084411(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3)
+    specifier: 0.0.0-dev-20231019091646
+    version: 0.0.0-dev-20231019091646(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3)
   connectkit:
     specifier: ^1.5.3
     version: 1.5.3(@babel/core@7.23.0)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.15.4)(wagmi@1.4.3)
@@ -1305,8 +1305,8 @@ packages:
       '@uniswap/token-lists': 1.0.0-beta.33
     dev: false
 
-  /@superfluid-finance/widget@0.0.0-dev-20231018084411(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3):
-    resolution: {integrity: sha512-xvndzJasXk0ontNZbxva6IZylaTXbV7XwvJ2e4E4dkqrOeFULio5yGGL3vncdQHQHhYz6fpmdWu3G74xWCD0LQ==}
+  /@superfluid-finance/widget@0.0.0-dev-20231019091646(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3):
+    resolution: {integrity: sha512-zUhSzHUXkoXHpV9kYKBil5JY41feDPZgRgr/M0BhO56eA6hHf0jBMg4kAq8Mvz3N3MLnQUtAc/uojtefQ21gzw==}
     peerDependencies:
       viem: '>=1'
       wagmi: '>=1'
@@ -1433,7 +1433,7 @@ packages:
   /@types/react-transition-group@4.4.7:
     resolution: {integrity: sha512-ICCyBl5mvyqYp8Qeq9B5G/fyBSRC0zx3XM3sCC6KkcMsNeAHqXBKkmat4GqdJET5jtYUpZXrxI5flve5qhi2Eg==}
     dependencies:
-      '@types/react': 18.2.28
+      '@types/react': 18.2.29
     dev: false
 
   /@types/react@18.2.28:
@@ -1442,6 +1442,14 @@ packages:
       '@types/prop-types': 15.7.8
       '@types/scheduler': 0.16.4
       csstype: 3.1.2
+
+  /@types/react@18.2.29:
+    resolution: {integrity: sha512-Z+ZrIRocWtdD70j45izShRwDuiB4JZqDegqMFW/I8aG5DxxLKOzVNoq62UIO82v9bdgi+DO1jvsb9sTEZUSm+Q==}
+    dependencies:
+      '@types/prop-types': 15.7.8
+      '@types/scheduler': 0.16.4
+      csstype: 3.1.2
+    dev: false
 
   /@types/scheduler@0.16.4:
     resolution: {integrity: sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==}

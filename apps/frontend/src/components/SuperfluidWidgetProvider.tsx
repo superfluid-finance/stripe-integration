@@ -51,14 +51,14 @@ export default function SupefluidWidgetProvider({
   const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();
   const { address: accountAddress } = useAccount();
 
-  const [email, setEmail] = useState<string | undefined>();
-
   const eventListeners = useMemo<EventListeners>(
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
         console.log('onRouteChange');
-        if (accountAddress && paymentOption && arg?.route === 'transactions') {
+
+        const email = arg?.data?.["email"];
+        if (email && accountAddress && paymentOption && arg?.route === 'transactions') {
           console.log('creating session');
           const data: CreateSessionData = {
             productId,
@@ -66,29 +66,23 @@ export default function SupefluidWidgetProvider({
             superTokenAddress: paymentOption.superToken.address,
             senderAddress: accountAddress,
             receiverAddress: paymentOption.receiverAddress,
-            email: email ?? '',
+            email: email,
           };
           createSession(data);
         }
       },
     }),
-    [productId, email, paymentOption, accountAddress, createSession],
+    [productId, paymentOption, accountAddress, createSession],
   );
 
   return (
-    <>
-      <SuperfluidWidget
-        type="page"
-        walletManager={walletManager}
-        eventListeners={eventListeners}
-        paymentDetails={paymentDetails}
-        productDetails={productDetails}
-        personalData={personalData}
-      />
-      <div className="bg-neutral-500 text-black">
-        <p>e-mail:</p>
-        <input type="email" onChange={(e) => setEmail(e.target.value)}></input>
-      </div>
-    </>
+    <SuperfluidWidget
+      type="page"
+      walletManager={walletManager}
+      eventListeners={eventListeners}
+      paymentDetails={paymentDetails}
+      productDetails={productDetails}
+      personalData={personalData}
+    />
   );
 }
