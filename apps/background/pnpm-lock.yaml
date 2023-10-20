@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -50,9 +50,6 @@ dependencies:
   date-fns:
     specifier: ^2.30.0
     version: 2.30.0
-  fast-json-stable-stringify:
-    specifier: ^2.1.0
-    version: 2.1.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -65,6 +62,9 @@ dependencies:
   rxjs:
     specifier: ^7.8.1
     version: 7.8.1
+  safe-stable-stringify:
+    specifier: ^2.4.3
+    version: 2.4.3
   stripe:
     specifier: ^13.8.0
     version: 13.8.0
@@ -5108,6 +5108,7 @@ packages:
 
   /fast-json-stable-stringify@2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}
+    dev: true
 
   /fast-levenshtein@2.0.6:
     resolution: {integrity: sha512-DCXu6Ifhqcks7TZKY3Hxp3y6qphY5SJZmrWMDrKcERSOXWQdMhU9Ig/PYrzyw/ul9jOIyh0N4M0tbC5hodg8dw==}

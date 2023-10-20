@@ -14,7 +14,7 @@ import { Queue } from 'bullmq';
 import { CHECKOUT_SESSION_JOB_NAME } from './checkout-session.processer';
 import { ConfigService } from '@nestjs/config';
 import { ApiProperty } from '@nestjs/swagger';
-import stringify from 'fast-json-stable-stringify';
+import stringify from 'safe-stable-stringify';
 
 export const AddressSchema = z.string().trim().toLowerCase().length(42);
 type Address = z.infer<typeof AddressSchema>;

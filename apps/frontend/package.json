@@ -19,7 +19,7 @@
     "docker:run": "docker run -d -p 8000:8000 superfluid-finance/stripe-frontend"
   },
   "dependencies": {
-    "@superfluid-finance/widget": "^0.4.3",
+    "@superfluid-finance/widget": "0.0.0-dev-20231019091646",
     "connectkit": "^1.5.3",
     "next": "latest",
     "react": "latest",
