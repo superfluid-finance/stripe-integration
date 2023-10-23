@@ -6,14 +6,12 @@ metadata:
     app: stripe-backend
   name: stripe-backend-service
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: stripe-backend
-  strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: stripe-backend
     spec:
@@ -25,12 +23,12 @@ spec:
           - name: STRIPE_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: stripe-sk
+                name: stripe-integration
                 key: STRIPE_SECRET_KEY
           - name: API_KEY
             valueFrom:
               secretKeyRef:
-                name: api-key
+                name: stripe-integration
                 key: API_KEY
           - name: PORT
             value: "3001"
@@ -45,4 +43,3 @@ spec:
         ports:
         - containerPort: 3001
         resources: {}
-status: {}
