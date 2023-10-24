@@ -1,5 +1,3 @@
-'use client';
-
 import { CreateSessionData } from '@/pages/api/create-session';
 import SuperfluidWidget, {
   EventListeners,
@@ -10,6 +8,10 @@ import SuperfluidWidget, {
 import { useModal } from 'connectkit';
 import { useMemo, useState } from 'react';
 import { useAccount, useMutation } from 'wagmi';
+
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 type Props = {
   productId: string;

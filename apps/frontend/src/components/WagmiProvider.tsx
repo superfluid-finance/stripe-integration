@@ -1,5 +1,3 @@
-"use client"
-
 import { WagmiConfig, configureChains, createConfig } from "wagmi";
 import { getDefaultConfig } from "connectkit";
 import publicConfig from '@/publicConfig';

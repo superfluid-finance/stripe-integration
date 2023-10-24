@@ -125,9 +125,8 @@ export class CheckoutSessionProcesser extends WorkerHost {
         email: data.email,
         metadata: customerMetadata,
       };
-      const customersCreateResponse = await this.stripeClient.customers.create(
-        customerCreateParams,
-      );
+      const customersCreateResponse =
+        await this.stripeClient.customers.create(customerCreateParams);
       customerId = customersCreateResponse.id;
     } else if (customers.length === 1) {
       customerId = customers[0].id;
@@ -168,9 +167,8 @@ export class CheckoutSessionProcesser extends WorkerHost {
       ],
       metadata: subscriptionMetadata,
     };
-    const subscriptionsCreateResponse = await this.stripeClient.subscriptions.create(
-      subscriptionsCreateParams,
-    );
+    const subscriptionsCreateResponse =
+      await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
 
     // Call Stripe Listener Module to get invoice processing right away?
   }
