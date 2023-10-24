@@ -13,6 +13,3 @@ spec:
     targetPort: 3001
   selector:
     app: stripe-backend
-  type: NodePort
-status:
-  loadBalancer: {}

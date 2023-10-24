@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   redis:
+    container_name: redis
     image: redis:6-alpine
     restart: always
     ports:
@@ -10,18 +11,30 @@ services:
       - cache:/data
 
   backend:
-    build: ./apps/background
+    container_name: stripe-backend
+    image: ghcr.io/superfluid-finance/stripe-integration/backend:master
     ports:
       - '3001:3001'
     depends_on: 
       - redis
+    env_file:
+      - .env
+    environment:
+      - REDIS_PORT=6379
+      - REDIS_HOST=redis
 
   frontend:
-    build: ./apps/frontend
+    container_name: stripe-frontend
+    image: ghcr.io/superfluid-finance/stripe-integration/frontend:master
     ports:
       - '3000:3000'
     depends_on: 
       - backend
+    env_file:
+      - .env
+    environment:
+      - BACKGROUND_HOST=stripe-backend
+      - BACKGROUND_PORT=3001
 
 volumes:
   cache:

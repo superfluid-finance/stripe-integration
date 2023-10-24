@@ -23,6 +23,8 @@ const registerBullModule = () =>
       connection: {
         host: configService.getOrThrow('REDIS_HOST'),
         port: configService.getOrThrow('REDIS_PORT'),
+        password: configService.get('REDIS_PASSWORD'),
+        username: configService.get('REDIS_USER'),
       },
       defaultJobOptions: {
         attempts: 3,
