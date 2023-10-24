@@ -39,8 +39,8 @@ export class StripeToSuperfluidService
   implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper
 {
   // TODO(KK): Inject
-  private readonly chainToSuperTokenReceiverMap = defaultChainToSuperTokenReceiverMap;
-  private readonly stripeCurrencyToSuperTokenMap = defaultStripeCurrencyToSuperTokenMap;
+  public readonly chainToSuperTokenReceiverMap = defaultChainToSuperTokenReceiverMap;
+  public readonly stripeCurrencyToSuperTokenMap = defaultStripeCurrencyToSuperTokenMap;
 
   mapSuperTokenToStripeCurrency(superToken: {
     chainId: number;

@@ -43,6 +43,16 @@ export class StripeToSuperfluidController {
 
     return config;
   }
+
+  @Get("currency-token-map")
+  async stripeCurrencyToSuperTokenMap() {
+    return Object.fromEntries(this.stripeToSuperfluidService.stripeCurrencyToSuperTokenMap);
+  }
+
+  @Get("chain-receiver-map")
+  async chainToSuperTokenReceiverMap() {
+    return Object.fromEntries(this.stripeToSuperfluidService.chainToSuperTokenReceiverMap);
+  }
 }
 
 const logger = new Logger(StripeToSuperfluidController.name);
