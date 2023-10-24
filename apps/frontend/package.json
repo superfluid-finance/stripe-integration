@@ -1,6 +1,7 @@
 {
   "name": "@superfluid-finance/stripe-frontend",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "description": "Self-hostable Stripe & Superfluid Checkout Front-end",
   "license": "MIT",
