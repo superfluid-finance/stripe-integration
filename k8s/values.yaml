@@ -1,3 +1,10 @@
+secret:
+  enabled: true
+  name: stripe-integration
+  data:
+    STRIPE_SECRET_KEY: "test"
+    API_KEY: "test"
+
 redis: 
   auth:
    enabled: false
