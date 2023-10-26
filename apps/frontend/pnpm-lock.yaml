@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@superfluid-finance/widget':
-    specifier: 0.0.0-dev-20231019091646
-    version: 0.0.0-dev-20231019091646(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3)
+    specifier: 0.0.0-dev-20231026111944
+    version: 0.0.0-dev-20231026111944(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3)
   connectkit:
     specifier: ^1.5.3
     version: 1.5.3(@babel/core@7.23.0)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(viem@1.15.4)(wagmi@1.4.3)
@@ -274,6 +274,13 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.0
+
+  /@babel/runtime@7.23.2:
+    resolution: {integrity: sha512-mM8eg4yl5D6i3lu2QKPuPH4FArvJ8KhTofbE7jwMUv9KX5mBvwPAqnV3MlyBNqdp9RyRKP6Yck8TrfYrPvX3bg==}
+    engines: {node: '>=6.9.0'}
+    dependencies:
+      regenerator-runtime: 0.14.0
+    dev: false
 
   /@babel/template@7.22.15:
     resolution: {integrity: sha512-QPErUVm4uyJa60rkI73qneDacvdvzxshT3kksGqlGWYdOTIUOwJ7RDUL8sGqslY1uXWSL6xMFKEXDS3ox2uF0w==}
@@ -542,8 +549,8 @@ packages:
     resolution: {integrity: sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==}
     dev: false
 
-  /@hookform/resolvers@3.3.1(react-hook-form@7.47.0):
-    resolution: {integrity: sha512-K7KCKRKjymxIB90nHDQ7b9nli474ru99ZbqxiqDAWYsYhOsU3/4qLxW91y+1n04ic13ajjZ66L3aXbNef8PELQ==}
+  /@hookform/resolvers@3.3.2(react-hook-form@7.47.0):
+    resolution: {integrity: sha512-Tw+GGPnBp+5DOsSg4ek3LCPgkBOuOgS5DsDV7qsWNH9LZc433kgsWICjlsh2J9p04H2K66hsXPPb9qn9ILdUtA==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
@@ -723,7 +730,7 @@ packages:
       '@babel/runtime': 7.23.1
       '@floating-ui/react-dom': 2.0.2(react-dom@18.2.0)(react@18.2.0)
       '@mui/types': 7.2.5(@types/react@18.2.28)
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
       '@popperjs/core': 2.11.8
       '@types/react': 18.2.28
       clsx: 2.0.0
@@ -736,8 +743,8 @@ packages:
     resolution: {integrity: sha512-WZhCkKqhrXaSVBzoC6LNcVkIawS000OOt7gmnp4g9HhyvN0PSclRXc/JrkC7EwfzUAZJh+hiK2LaVsbtOpNuOg==}
     dev: false
 
-  /@mui/icons-material@5.14.12(@mui/material@5.14.12)(@types/react@18.2.28)(react@18.2.0):
-    resolution: {integrity: sha512-aFm6g/AIB3RQN9h/4MKoBoBybLZXeR3aDHWNx6KzemEpIlElUxv5uXRX5Qk1VC6v/YPkhbaPsiLLjsRSTiZF3w==}
+  /@mui/icons-material@5.14.15(@mui/material@5.14.12)(@types/react@18.2.28)(react@18.2.0):
+    resolution: {integrity: sha512-Dqu21vN/mVNzebJ+ofnKG+CeJYIhHuDs5+0fMEpdpzRt6UojelzdrEkNv+XkO0e1JMclzeXIRx404FirK/CFRw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       '@mui/material': ^5.0.0
@@ -747,7 +754,7 @@ packages:
       '@types/react':
         optional: true
     dependencies:
-      '@babel/runtime': 7.23.1
+      '@babel/runtime': 7.23.2
       '@mui/material': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.28
       react: 18.2.0
@@ -778,7 +785,7 @@ packages:
       '@mui/material': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@mui/system': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.28)(react@18.2.0)
       '@mui/types': 7.2.5(@types/react@18.2.28)
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
       '@mui/x-tree-view': 6.0.0-alpha.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@mui/base@5.0.0-beta.18)(@mui/material@5.14.12)(@mui/system@5.14.12)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.28
       clsx: 2.0.0
@@ -834,7 +841,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.23.1
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
       '@types/react': 18.2.28
       prop-types: 15.8.1
       react: 18.2.0
@@ -884,7 +891,7 @@ packages:
       '@mui/private-theming': 5.14.12(@types/react@18.2.28)(react@18.2.0)
       '@mui/styled-engine': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(react@18.2.0)
       '@mui/types': 7.2.5(@types/react@18.2.28)
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
       '@types/react': 18.2.28
       clsx: 2.0.0
       csstype: 3.1.2
@@ -921,6 +928,24 @@ packages:
       react-is: 18.2.0
     dev: false
 
+  /@mui/utils@5.14.15(@types/react@18.2.28)(react@18.2.0):
+    resolution: {integrity: sha512-QBfHovAvTa0J1jXuYDaXGk+Yyp7+Fm8GSqx6nK2JbezGqzCFfirNdop/+bL9Flh/OQ/64PeXcW4HGDdOge+n3A==}
+    engines: {node: '>=12.0.0'}
+    peerDependencies:
+      '@types/react': ^17.0.0 || ^18.0.0
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@types/prop-types': 15.7.8
+      '@types/react': 18.2.28
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-is: 18.2.0
+    dev: false
+
   /@mui/x-tree-view@6.0.0-alpha.1(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@mui/base@5.0.0-beta.18)(@mui/material@5.14.12)(@mui/system@5.14.12)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-JUG3HmBrmGEALbCFg1b+i7h726e1dWYZs4db3syO1j+Q++E3nbvE4Lehp5yGTFm+8esH0Tny50tuJaa4WX6VSA==}
     engines: {node: '>=14.0.0'}
@@ -939,7 +964,7 @@ packages:
       '@mui/base': 5.0.0-beta.18(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@mui/material': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
       '@mui/system': 5.14.12(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.28)(react@18.2.0)
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
       '@types/react-transition-group': 4.4.7
       clsx: 2.0.0
       prop-types: 15.8.1
@@ -1295,37 +1320,37 @@ packages:
       '@stablelib/wipe': 1.0.1
     dev: false
 
-  /@superfluid-finance/metadata@1.1.17:
-    resolution: {integrity: sha512-aSIbzrkwUzxPp97mWqPie4x6RDNhdaPvFXmJX5eT+bcjnBx1AH4jyQDnldFRYpwisBByWjT1VU+/wkTU1yiBow==}
+  /@superfluid-finance/metadata@1.1.18:
+    resolution: {integrity: sha512-9AyKSLjOmdhfg90TjEi+dv4FkMW1tEibMqlE1xLgHabuhHYARivBHgvZAX9psERQuld/8iYnSCMscSE+Vhn3KA==}
     dev: false
 
-  /@superfluid-finance/tokenlist@3.2.0:
-    resolution: {integrity: sha512-xglpVMeV52ab8v+IhYygaLqcTDjtTBSXVIZoaeaJ3NLTjj4IJaIqHBeSvKZYUnWTKzh2+2N5owYQTuoMCjdfZA==}
+  /@superfluid-finance/tokenlist@3.3.2:
+    resolution: {integrity: sha512-Hvs1leo0rhJ1JANUKpsPUyM0pb1Vf+mneBxE8Qf4Wbl+nAApThI3vQFezdQ4aLeUXw99gCisepIyoUcLpXkZ5g==}
     dependencies:
       '@uniswap/token-lists': 1.0.0-beta.33
     dev: false
 
-  /@superfluid-finance/widget@0.0.0-dev-20231019091646(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3):
-    resolution: {integrity: sha512-zUhSzHUXkoXHpV9kYKBil5JY41feDPZgRgr/M0BhO56eA6hHf0jBMg4kAq8Mvz3N3MLnQUtAc/uojtefQ21gzw==}
+  /@superfluid-finance/widget@0.0.0-dev-20231026111944(@mui/material@5.14.12)(@types/react@18.2.28)(typescript@5.2.2)(viem@1.15.4)(wagmi@1.4.3):
+    resolution: {integrity: sha512-nPqPqhY5Yygo6LZmIWmyaqlvqzQx+4EuRnpIHVga1rksFHMBFi8R1q5qweDavMKG3xcabA047LtisDfSVQN4OQ==}
     peerDependencies:
       viem: '>=1'
       wagmi: '>=1'
     dependencies:
       '@emotion/react': 11.11.1(@types/react@18.2.28)(react@18.2.0)
       '@emotion/styled': 11.11.0(@emotion/react@11.11.1)(@types/react@18.2.28)(react@18.2.0)
-      '@hookform/resolvers': 3.3.1(react-hook-form@7.47.0)
-      '@mui/icons-material': 5.14.12(@mui/material@5.14.12)(@types/react@18.2.28)(react@18.2.0)
+      '@hookform/resolvers': 3.3.2(react-hook-form@7.47.0)
+      '@mui/icons-material': 5.14.15(@mui/material@5.14.12)(@types/react@18.2.28)(react@18.2.0)
       '@mui/lab': 5.0.0-alpha.147(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@mui/material@5.14.12)(@types/react@18.2.28)(react-dom@18.2.0)(react@18.2.0)
-      '@mui/utils': 5.14.12(@types/react@18.2.28)(react@18.2.0)
-      '@superfluid-finance/metadata': 1.1.17
-      '@superfluid-finance/tokenlist': 3.2.0
-      abitype: 0.9.10(typescript@5.2.2)(zod@3.22.4)
+      '@mui/utils': 5.14.15(@types/react@18.2.28)(react@18.2.0)
+      '@superfluid-finance/metadata': 1.1.18
+      '@superfluid-finance/tokenlist': 3.3.2
+      abitype: 0.10.1(typescript@5.2.2)(zod@3.22.4)
       blockies-ts: 1.0.0
       immer: 10.0.3
       lodash.isequal: 4.5.0
       lodash.memoize: 4.1.2
       lodash.uniqwith: 4.5.0
-      nanoid: 5.0.1
+      nanoid: 5.0.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-error-boundary: 4.0.11(react@18.2.0)
@@ -1433,7 +1458,7 @@ packages:
   /@types/react-transition-group@4.4.7:
     resolution: {integrity: sha512-ICCyBl5mvyqYp8Qeq9B5G/fyBSRC0zx3XM3sCC6KkcMsNeAHqXBKkmat4GqdJET5jtYUpZXrxI5flve5qhi2Eg==}
     dependencies:
-      '@types/react': 18.2.29
+      '@types/react': 18.2.33
     dev: false
 
   /@types/react@18.2.28:
@@ -1443,8 +1468,8 @@ packages:
       '@types/scheduler': 0.16.4
       csstype: 3.1.2
 
-  /@types/react@18.2.29:
-    resolution: {integrity: sha512-Z+ZrIRocWtdD70j45izShRwDuiB4JZqDegqMFW/I8aG5DxxLKOzVNoq62UIO82v9bdgi+DO1jvsb9sTEZUSm+Q==}
+  /@types/react@18.2.33:
+    resolution: {integrity: sha512-v+I7S+hu3PIBoVkKGpSYYpiBT1ijqEzWpzQD62/jm4K74hPpSP7FF9BnKG6+fg2+62weJYkkBWDJlZt5JO/9hg==}
     dependencies:
       '@types/prop-types': 15.7.8
       '@types/scheduler': 0.16.4
@@ -1983,12 +2008,14 @@ packages:
       through: 2.3.8
     dev: false
 
-  /abitype@0.8.7(typescript@5.2.2)(zod@3.22.4):
-    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
+  /abitype@0.10.1(typescript@5.2.2)(zod@3.22.4):
+    resolution: {integrity: sha512-nFx5F2RniXGXw2Ci1uu6iDGnP/z3hW+H65G7cxrs5JDF3Ot9GuYkBJCRAB9EZ5QIi3dNByZaCrGFUn8LLkLQbw==}
     peerDependencies:
       typescript: '>=5.0.4'
-      zod: ^3 >=3.19.1
+      zod: ^3 >=3.22.0
     peerDependenciesMeta:
+      typescript:
+        optional: true
       zod:
         optional: true
     dependencies:
@@ -1996,14 +2023,12 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /abitype@0.9.10(typescript@5.2.2)(zod@3.22.4):
-    resolution: {integrity: sha512-FIS7U4n7qwAT58KibwYig5iFG4K61rbhAqaQh/UWj8v1Y8mjX3F8TC9gd8cz9yT1TYel9f8nS5NO5kZp2RW0jQ==}
+  /abitype@0.8.7(typescript@5.2.2)(zod@3.22.4):
+    resolution: {integrity: sha512-wQ7hV8Yg/yKmGyFpqrNZufCxbszDe5es4AZGYPBitocfSqXtjrTG9JMWFcc4N30ukl2ve48aBTwt7NJxVQdU3w==}
     peerDependencies:
       typescript: '>=5.0.4'
-      zod: ^3 >=3.22.0
+      zod: ^3 >=3.19.1
     peerDependenciesMeta:
-      typescript:
-        optional: true
       zod:
         optional: true
     dependencies:
@@ -4137,8 +4162,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  /nanoid@5.0.1:
-    resolution: {integrity: sha512-vWeVtV5Cw68aML/QaZvqN/3QQXc6fBfIieAlu05m7FZW2Dgb+3f0xc0TTxuJW+7u30t7iSDTV/j3kVI0oJqIfQ==}
+  /nanoid@5.0.2:
+    resolution: {integrity: sha512-2ustYUX1R2rL/Br5B/FMhi8d5/QzvkJ912rBYxskcpu0myTHzSZfTr1LAS2Sm7jxRUObRrSBFoyzwAhL49aVSg==}
     engines: {node: ^18 || >=20}
     hasBin: true
     dev: false
