@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - dockerfilePath: ./apps/background/
+          - dockerfilePath: ./apps/backend/
             dockerImageSuffix: backend
           - dockerfilePath: ./apps/frontend/
             dockerImageSuffix: frontend

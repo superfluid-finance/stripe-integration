@@ -7,12 +7,12 @@ type InternalConfig = {
 
 const internalConfig: InternalConfig = {
   getApiKey() {
-    const apiKey = ensureDefined(process.env.BACKGROUND_API_KEY, 'BACKGROUND_API_KEY');
+    const apiKey = ensureDefined(process.env.BACKEND_API_KEY, 'BACKEND_API_KEY');
     return apiKey;
   },
   getBackendBaseUrl() {
-    const host = ensureDefined(process.env.BACKGROUND_HOST, 'BACKGROUND_HOST');
-    const port = Number(ensureDefined(process.env.BACKGROUND_PORT, 'BACKGROUND_PORT'));
+    const host = ensureDefined(process.env.BACKEND_HOST, 'BACKEND_HOST');
+    const port = Number(ensureDefined(process.env.BACKEND_PORT, 'BACKEND_PORT'));
     return new URL(`http://${host}:${port}`);
   },
 };

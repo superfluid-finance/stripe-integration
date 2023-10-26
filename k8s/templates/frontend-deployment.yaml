@@ -22,14 +22,14 @@ spec:
         imagePullPolicy: Never
         name: stripe-frontend
         env:
-          - name: BACKGROUND_API_KEY
+          - name: BACKEND_API_KEY
             valueFrom:
               secretKeyRef:
                 name: stripe-integration
                 key: API_KEY
-          - name: BACKGROUND_PORT
+          - name: BACKEND_PORT
             value: "3001"
-          - name: BACKGROUND_HOST
+          - name: BACKEND_HOST
             value: localhost
           - name: NEXT_PUBLIC_WALLECT_CONNECT_PROJECT_ID
             value: 952483bf7a0f5ace4c40eb53967f1368
