@@ -1,5 +1,9 @@
+import { paths } from '@/backend-openapi-client';
 import internalConfig from '@/internalConfig';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import createClient from 'openapi-fetch';
+
+// import { } "@/backend-openapi-client"
 
 export type CreateSessionData = {
   productId: string;
@@ -14,14 +18,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const createSessionRequest: CreateSessionData = req.body as CreateSessionData
 
-    const url = new URL("/checkout-session/create", internalConfig.getBackendBaseUrl());
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "x-api-key": internalConfig.getApiKey(),
-        'Content-Type': 'application/json',
+    const client = createClient<paths>({
+      baseUrl: internalConfig.getBackendBaseUrl().toString(),
+    });
+
+    const { response } = await client.POST("/checkout-session/create", {
+      params: {
+        header: {
+          "x-api-key": internalConfig.getApiKey()
+        }
       },
-      body: JSON.stringify(createSessionRequest)
+      body: createSessionRequest
     });
 
     const status = response.status;

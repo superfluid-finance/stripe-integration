@@ -8,6 +8,8 @@ import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { WidgetProps } from '@superfluid-finance/widget';
 import { GetServerSideProps } from 'next';
 import { use, useEffect, useState } from 'react';
+import { paths } from '@/backend-openapi-client';
+import createClient from 'openapi-fetch';
 
 type Props = {
   product: string;
@@ -57,12 +59,16 @@ export default function Product({ product: productId, ...config }: Props) {
 export const getServerSideProps = (async (context) => {
   const productId = context.query.product as string;
 
-  const url = new URL(`/superfluid-stripe-converter/checkout-widget?product-id=${productId}`, internalConfig.getBackendBaseUrl());
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
+  const client = createClient<paths>({
+    baseUrl: internalConfig.getBackendBaseUrl().toString()
+  });
+
+  const { response } = await client.GET("/superfluid-stripe-converter/checkout-widget", {
+    params: {
+      query: {
+        "product-id": productId
+      }
+    }
   });
 
   const config = (await response.json()) as {
