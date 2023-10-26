@@ -36,7 +36,28 @@ To work on this integration, ensure that you have a Stripe account set up with S
 
 ### Requirements
 
+**Docker**
 **Redis** needs to be set up locally. A very easy way to do that is to use **Docker**. Install Docker in your system, pull the Redis image, and start up a container. You can easily start up the container by running the `docker:redis` task from the `package.json`'s scripts.
+
+
+### Local Deployment
+- Create a local .env file from example.env file with values for:
+```
+#Stripe Secret Key
+STRIPE_SECRET_KEY=""
+# Strip API Key
+API_KEY=""
+#Redis queue user
+QUEUE_DASHBOARD_USER=
+#Redis queue password
+QUEUE_DASHBOARD_PASSWORD=
+```
+
+- Start the containers using:
+```
+docker compose -f docker-compose.all.yml up -d
+```
+
 
 ### Checkout
 

@@ -25,7 +25,7 @@ spec:
           - name: BACKGROUND_API_KEY
             valueFrom:
               secretKeyRef:
-                name: api-key
+                name: stripe-integration
                 key: API_KEY
           - name: BACKGROUND_PORT
             value: "3001"
