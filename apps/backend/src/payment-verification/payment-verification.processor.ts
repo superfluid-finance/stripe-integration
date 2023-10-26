@@ -1,6 +1,6 @@
 import { InjectFlowProducer, InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { FlowProducer, Job } from 'bullmq';
-import { FLOW_PRODUCER_NAME, QUEUE_NAME } from './payment-tracker.queue';
+import { FLOW_PRODUCER_NAME, QUEUE_NAME } from './payment-verification.queue';
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import _ from 'lodash';
@@ -15,14 +15,14 @@ import stringify from 'safe-stable-stringify';
 import { currencyDecimalMapping } from 'src/currencies';
 import { formatUnits } from 'viem';
 
-export const PAYMENT_TRACKER_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
+export const PAYMENT_VERIFICATION_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';
 
-type PaymentTrackerJob = Job<
+type PaymentVerificationJob = Job<
   {
     stripeCustomerId: string;
   },
   any,
-  typeof PAYMENT_TRACKER_JOB_NAME
+  typeof PAYMENT_VERIFICATION_JOB_NAME
 >;
 
 type TRACKED_INVOICE_GROUP_KEY = `${number}:${string}:${string}:${string}`;
@@ -32,7 +32,7 @@ const NOT_TRACKED_INVOICE_GROUP_KEY = null;
  *
  */
 @Processor(QUEUE_NAME)
-export class PaymentTrackerProcessor extends WorkerHost {
+export class PaymentVerificationProcessor extends WorkerHost {
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue,
     @InjectFlowProducer(FLOW_PRODUCER_NAME)
@@ -44,7 +44,7 @@ export class PaymentTrackerProcessor extends WorkerHost {
     super();
   }
 
-  async process(job: PaymentTrackerJob, token?: string): Promise<void> {
+  async process(job: PaymentVerificationJob, token?: string): Promise<void> {
     const customer = await this.stripeClient.customers.retrieve(job.data.stripeCustomerId);
     // Is stripe already ensuring the customer exists? Should I check for .deleted?
     if (!customer) {

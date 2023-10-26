@@ -1,7 +1,7 @@
 import { BullModule } from '@nestjs/bullmq';
 
-export const QUEUE_NAME = 'payment-tracker';
-export const FLOW_PRODUCER_NAME = 'payment-tracker-flow-producer';
+export const QUEUE_NAME = 'payment-verification';
+export const FLOW_PRODUCER_NAME = 'payment-verification-flow-producer';
 
 export const registerQueueModules = () => [
   BullModule.registerQueue({

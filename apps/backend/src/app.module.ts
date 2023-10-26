@@ -5,7 +5,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { QueueDashboardModule } from './queue-dashboard/queue-dashboard.module';
 import { CheckoutSessionModule } from './checkout-session/checkout-session.module';
 import { StripeListenerModule } from './stripe-listener/stripe-listener.module';
-import { PaymentTrackerModule } from './payment-tracker/payment-tracker.module';
+import { PaymentVerificationModule } from './payment-verification/payment-verification.module';
 import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
 import { StripeToSuperfluidModule } from './stripe-to-superfluid/stripe-to-superfluid.module';
 import { HealthModule } from './health/health.module';
@@ -44,7 +44,7 @@ const registerBullModule = () =>
     QueueDashboardModule,
     CheckoutSessionModule,
     StripeListenerModule,
-    PaymentTrackerModule,
+    PaymentVerificationModule,
     SuperTokenAccountingModule,
     StripeToSuperfluidModule,
     HealthModule,

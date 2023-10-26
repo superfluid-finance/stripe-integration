@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { PaymentTrackerProcessor } from './payment-tracker.processor';
-import { PaymentTrackerService } from './payment-tracker.service';
-import { registerQueueModules } from './payment-tracker.queue';
+import { PaymentVerificationProcessor } from './payment-verification.processor';
+import { PaymentVerificationService } from './payment-verification.service';
+import { registerQueueModules } from './payment-verification.queue';
 import { registerStripeModule } from 'src/stripeModuleConfig';
 import { SuperTokenAccountingModule } from 'src/super-token-accounting/super-token-accounting.module';
 import { StripeToSuperfluidModule } from 'src/stripe-to-superfluid/stripe-to-superfluid.module';
@@ -13,7 +13,7 @@ import { StripeToSuperfluidModule } from 'src/stripe-to-superfluid/stripe-to-sup
     SuperTokenAccountingModule,
     StripeToSuperfluidModule,
   ],
-  providers: [PaymentTrackerProcessor, PaymentTrackerService],
-  exports: [PaymentTrackerService],
+  providers: [PaymentVerificationProcessor, PaymentVerificationService],
+  exports: [PaymentVerificationService],
 })
-export class PaymentTrackerModule {}
+export class PaymentVerificationModule {}

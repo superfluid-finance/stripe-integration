@@ -4,8 +4,8 @@ import { Job, Queue } from 'bullmq';
 import { QUEUE_NAME } from './stripe-listener.queue';
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
-import { PAYMENT_TRACKER_JOB_NAME } from 'src/payment-tracker/payment-tracker.processor';
-import { PaymentTrackerService } from 'src/payment-tracker/payment-tracker.service';
+import { PAYMENT_VERIFICATION_JOB_NAME } from 'src/payment-verification/payment-verification.processor';
+import { PaymentVerificationService } from 'src/payment-verification/payment-verification.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 
 export const STRIPE_LISTENER_JOB_NAME = 'poll-new-invoices';
@@ -25,7 +25,7 @@ type StripeListenerJob = Job<
 export class StripeListenerProcessor extends WorkerHost {
   constructor(
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly paymentTrackerService: PaymentTrackerService,
+    private readonly paymentVerificationService: PaymentVerificationService,
   ) {
     super();
   }
@@ -39,7 +39,7 @@ export class StripeListenerProcessor extends WorkerHost {
       })
       .autoPagingToArray(DEFAULT_PAGING);
 
-    await this.paymentTrackerService.handleOpenStripeInvoices(invoices);
+    await this.paymentVerificationService.handleOpenStripeInvoices(invoices);
   }
 }
 

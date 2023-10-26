@@ -5,11 +5,11 @@ import { QUEUE_NAME, registerQueueModule } from './stripe-listener.queue';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { StripeModule } from '@golevelup/nestjs-stripe';
-import { PaymentTrackerModule } from 'src/payment-tracker/payment-tracker.module';
+import { PaymentVerificationModule } from 'src/payment-verification/payment-verification.module';
 import { registerStripeModule } from 'src/stripeModuleConfig';
 
 @Module({
-  imports: [registerQueueModule(), registerStripeModule(), PaymentTrackerModule],
+  imports: [registerQueueModule(), registerStripeModule(), PaymentVerificationModule],
   providers: [StripeListenerProcessor],
   controllers: [StripeListenerController],
 })
