@@ -11,6 +11,10 @@ import {
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { formatUnits } from 'viem';
+import { InjectStripeClient } from '@golevelup/nestjs-stripe';
+import { DEFAULT_PAGING } from 'src/stripe-module-config';
+
+const configurationCustomerEmail = 'auto-generated@superfluid.finance' as const;
 
 type Input = {
   product: Stripe.Product;
@@ -20,10 +24,11 @@ type Input = {
 type Output = {
   productDetails: ProductDetails;
   paymentDetails: WidgetProps['paymentDetails'];
+  theme: any; // TODO: get rid of any
 };
 
 interface StripeProductToWidgetConfigMapper {
-  mapStripeProductToWidgetConfig(stripe: Input): Output;
+  mapStripeProductToWidgetConfig(stripe: Input): Promise<Output>;
 }
 
 type PriceId = string;
@@ -34,13 +39,53 @@ interface SuperTokenToStripeCurrencyMapper {
   }): PriceId | undefined;
 }
 
+interface ConfigurationCustomerManager {
+  ensureConfigurationCustomer(): Promise<Stripe.Customer>;
+}
+
 @Injectable()
 export class SuperfluidStripeConverterService
-  implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper
+  implements
+    StripeProductToWidgetConfigMapper,
+    SuperTokenToStripeCurrencyMapper,
+    ConfigurationCustomerManager
 {
   // TODO(KK): Inject
   private readonly chainToSuperTokenReceiverMap = defaultChainToSuperTokenReceiverMap;
   private readonly stripeCurrencyToSuperTokenMap = defaultStripeCurrencyToSuperTokenMap;
+
+  constructor(@InjectStripeClient() private readonly stripeClient: Stripe) {}
+
+  async ensureConfigurationCustomer(): Promise<Stripe.Customer> {
+    // TODO: caching
+    // TODO: use better constants
+
+    let configurationCustomer: Stripe.Customer;
+
+    const customers = await this.stripeClient.customers
+      .list({
+        email: configurationCustomerEmail,
+      })
+      .autoPagingToArray(DEFAULT_PAGING);
+
+    if (customers.length === 1) {
+      configurationCustomer = customers[0];
+    } else if (customers.length === 0) {
+      configurationCustomer = await this.stripeClient.customers.create({
+        email: configurationCustomerEmail,
+        metadata: {
+          note: 'Auto-generated. Be careful when editing!',
+          theme: `{"palette":{"mode":"light","primary":{"main":"#3f51b5"},"secondary":{"main":"#f50057"}}}`,
+        },
+      });
+    } else {
+      throw new Error(
+        `There should not be more than one Superfluid-Stripe configuration customer. Please remove one of the customers with e-mail: [${configurationCustomerEmail}]`,
+      );
+    }
+
+    return configurationCustomer;
+  }
 
   mapSuperTokenToStripeCurrency(superToken: {
     chainId: number;
@@ -60,8 +105,10 @@ export class SuperfluidStripeConverterService
     return undefined;
   }
 
-  mapStripeProductToWidgetConfig(stripe: Input): Output {
+  async mapStripeProductToWidgetConfig(stripe: Input): Promise<Output> {
     // TODO(KK): Enforce it's a subscription-based product?
+
+    const configurationCustomer = await this.ensureConfigurationCustomer();
 
     const productDetails: Output['productDetails'] = {
       name: stripe.product.name,
@@ -112,9 +159,22 @@ export class SuperfluidStripeConverterService
       paymentOptions,
     };
 
+    // TODO: use Zod for validation?
+    // TODO: get rid of any
+    let theme: any;
+    try {
+      theme = JSON.parse(configurationCustomer.metadata['theme']);
+    } catch (e) {
+      logger.error(e);
+    }
+
+    logger.debug('theme');
+    logger.debug(theme);
+
     return {
       productDetails,
       paymentDetails,
+      theme,
     };
   }
 }

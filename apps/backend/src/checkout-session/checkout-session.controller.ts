@@ -69,7 +69,7 @@ export class CheckoutSessionController {
     await this.queue.add(CHECKOUT_SESSION_JOB_NAME, validationResult.data, {
       jobId: jobId,
       // Remove finished job ASAP in case a new fresh job is triggered.
-      removeOnComplete: true,
+      removeOnComplete: false,
       removeOnFail: true,
     });
   }
