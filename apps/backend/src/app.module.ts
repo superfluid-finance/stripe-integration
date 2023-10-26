@@ -9,7 +9,7 @@ import { PaymentVerificationModule } from './payment-verification/payment-verifi
 import { SuperTokenAccountingModule } from './super-token-accounting/super-token-accounting.module';
 import { SuperfluidStripeConverterModule } from './superfluid-stripe-converter/superfluid-stripe-converter.module';
 import { HealthModule } from './health/health.module';
-import { registerStripeModule } from './stripeModuleConfig';
+import { registerStripeModule } from './stripe-module-config';
 
 const registerConfigModule = () =>
   ConfigModule.forRoot({
@@ -24,7 +24,7 @@ const registerBullModule = () =>
         host: configService.getOrThrow('REDIS_HOST'),
         port: configService.getOrThrow('REDIS_PORT'),
         password: configService.get('REDIS_PASSWORD'),
-        username: configService.get('REDIS_USER')
+        username: configService.get('REDIS_USER'),
       },
       defaultJobOptions: {
         attempts: 3,

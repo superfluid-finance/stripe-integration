@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { CheckoutSessionController } from './checkout-session.controller';
 import { CheckoutSessionProcesser } from './checkout-session.processer';
 import { registerQueueModule } from './checkout-session.queue';
-import { registerStripeModule } from 'src/stripeModuleConfig';
+import { registerStripeModule } from 'src/stripe-module-config';
 import { SuperfluidStripeConverterModule } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.module';
 
 @Module({

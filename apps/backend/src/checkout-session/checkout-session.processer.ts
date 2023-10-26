@@ -6,7 +6,7 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import { AddressSchema, CreateSessionData } from './checkout-session.controller';
 import { SuperfluidStripeConverterService } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.service';
-import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
+import { DEFAULT_PAGING } from 'src/stripe-module-config';
 import { z } from 'zod';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';

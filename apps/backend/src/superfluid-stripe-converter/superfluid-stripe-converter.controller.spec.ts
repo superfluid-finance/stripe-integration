@@ -9,7 +9,9 @@ describe('SuperfluidStripeConverterController', () => {
       controllers: [SuperfluidStripeConverterController],
     }).compile();
 
-    controller = module.get<SuperfluidStripeConverterController>(SuperfluidStripeConverterController);
+    controller = module.get<SuperfluidStripeConverterController>(
+      SuperfluidStripeConverterController,
+    );
   });
 
   it('should be defined', () => {

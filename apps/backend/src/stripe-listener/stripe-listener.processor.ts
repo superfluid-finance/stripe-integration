@@ -6,7 +6,7 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import { PAYMENT_VERIFICATION_JOB_NAME } from 'src/payment-verification/payment-verification.processor';
 import { PaymentVerificationService } from 'src/payment-verification/payment-verification.service';
-import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
+import { DEFAULT_PAGING } from 'src/stripe-module-config';
 
 export const STRIPE_LISTENER_JOB_NAME = 'poll-new-invoices';
 

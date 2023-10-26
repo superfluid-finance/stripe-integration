@@ -6,13 +6,13 @@ import Stripe from 'stripe';
 import _ from 'lodash';
 import { SuperTokenAccountingService } from 'src/super-token-accounting/super-token-accounting.service';
 import { SuperfluidStripeConverterService } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.service';
-import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
+import { DEFAULT_PAGING } from 'src/stripe-module-config';
 import {
   SuperfluidStripeSubscriptionsMetadata,
   SuperfluidStripeSubscriptionsMetadataSchema,
 } from 'src/checkout-session/checkout-session.processer';
 import stringify from 'safe-stable-stringify';
-import { currencyDecimalMapping } from 'src/currencies';
+import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { formatUnits } from 'viem';
 
 export const PAYMENT_VERIFICATION_JOB_NAME = 'verify-customer-invoice-payments-by-super-token';

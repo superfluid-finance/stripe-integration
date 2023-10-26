@@ -6,7 +6,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { StripeModule } from '@golevelup/nestjs-stripe';
 import { PaymentVerificationModule } from 'src/payment-verification/payment-verification.module';
-import { registerStripeModule } from 'src/stripeModuleConfig';
+import { registerStripeModule } from 'src/stripe-module-config';
 
 @Module({
   imports: [registerQueueModule(), registerStripeModule(), PaymentVerificationModule],

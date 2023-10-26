@@ -3,13 +3,13 @@ import Stripe from 'stripe';
 import {
   ChainToSuperTokenReceiverMap,
   defaultChainToSuperTokenReceiverMap,
-} from './price-conversion-strategy/ChainToSuperTokenReceiverMap';
+} from './price-conversion-strategy/chain-to-super-token-receiver-map';
 import {
   StripeCurrencyToSuperTokenMap,
   defaultStripeCurrencyToSuperTokenMap,
-} from './price-conversion-strategy/StripeCurrencyToSuperTokenMap';
+} from './price-conversion-strategy/stripe-currency-to-super-token-map';
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
-import { currencyDecimalMapping } from 'src/currencies';
+import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { formatUnits } from 'viem';
 
 type Input = {
