@@ -49,7 +49,7 @@ export default function Product({ product: productId, ...config }: Props) {
 export const getServerSideProps = (async (context) => {
   const productId = context.query.product as string;
 
-  const url = new URL(`/stripe-to-superfluid/checkout-widget?product-id=${productId}`, internalConfig.getBackendBaseUrl());
+  const url = new URL(`/superfluid-stripe-converter/checkout-widget?product-id=${productId}`, internalConfig.getBackendBaseUrl());
   const response = await fetch(url, {
     method: 'GET',
     headers: {

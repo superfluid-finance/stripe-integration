@@ -35,7 +35,7 @@ interface SuperTokenToStripeCurrencyMapper {
 }
 
 @Injectable()
-export class StripeToSuperfluidService
+export class SuperfluidStripeConverterService
   implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper
 {
   // TODO(KK): Inject
@@ -119,4 +119,4 @@ export class StripeToSuperfluidService
   }
 }
 
-const logger = new Logger(StripeToSuperfluidService.name);
+const logger = new Logger(SuperfluidStripeConverterService.name);

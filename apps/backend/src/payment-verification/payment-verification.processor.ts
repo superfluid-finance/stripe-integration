@@ -5,7 +5,7 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import _ from 'lodash';
 import { SuperTokenAccountingService } from 'src/super-token-accounting/super-token-accounting.service';
-import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
+import { SuperfluidStripeConverterService } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 import {
   SuperfluidStripeSubscriptionsMetadata,
@@ -38,7 +38,7 @@ export class PaymentVerificationProcessor extends WorkerHost {
     @InjectFlowProducer(FLOW_PRODUCER_NAME)
     private readonly flowProducer: FlowProducer,
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly stripeToSuperfluidService: StripeToSuperfluidService,
+    private readonly superfluidStripeConverterService: SuperfluidStripeConverterService,
     private readonly superTokenAccountingService: SuperTokenAccountingService,
   ) {
     super();

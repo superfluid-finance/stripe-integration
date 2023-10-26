@@ -4,14 +4,14 @@ import { PaymentVerificationService } from './payment-verification.service';
 import { registerQueueModules } from './payment-verification.queue';
 import { registerStripeModule } from 'src/stripeModuleConfig';
 import { SuperTokenAccountingModule } from 'src/super-token-accounting/super-token-accounting.module';
-import { StripeToSuperfluidModule } from 'src/stripe-to-superfluid/stripe-to-superfluid.module';
+import { SuperfluidStripeConverterModule } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.module';
 
 @Module({
   imports: [
     ...registerQueueModules(),
     registerStripeModule(),
     SuperTokenAccountingModule,
-    StripeToSuperfluidModule,
+    SuperfluidStripeConverterModule,
   ],
   providers: [PaymentVerificationProcessor, PaymentVerificationService],
   exports: [PaymentVerificationService],

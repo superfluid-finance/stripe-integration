@@ -2,18 +2,18 @@ import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { WidgetProps } from '@superfluid-finance/widget';
 import Stripe from 'stripe';
-import { StripeToSuperfluidService } from './stripe-to-superfluid.service';
+import { SuperfluidStripeConverterService } from './superfluid-stripe-converter.service';
 
 type Response = {
   productDetails: WidgetProps['productDetails'];
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
-@Controller('stripe-to-superfluid')
-export class StripeToSuperfluidController {
+@Controller('superfluid-stripe-converter')
+export class SuperfluidStripeConverterController {
   constructor(
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly stripeToSuperfluidService: StripeToSuperfluidService,
+    private readonly superfluidStripeConverterService: SuperfluidStripeConverterService,
   ) {}
 
   // TODO: Does this need auth?
@@ -29,7 +29,7 @@ export class StripeToSuperfluidController {
       }),
     ]);
 
-    const config = this.stripeToSuperfluidService.mapStripeProductToWidgetConfig({
+    const config = this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
       product: stripeProductsResponse,
       prices: stripePricesResponse.data,
     });
@@ -45,4 +45,4 @@ export class StripeToSuperfluidController {
   }
 }
 
-const logger = new Logger(StripeToSuperfluidController.name);
+const logger = new Logger(SuperfluidStripeConverterController.name);

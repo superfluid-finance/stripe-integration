@@ -5,7 +5,7 @@ import { QUEUE_NAME } from './checkout-session.queue';
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import Stripe from 'stripe';
 import { AddressSchema, CreateSessionData } from './checkout-session.controller';
-import { StripeToSuperfluidService } from 'src/stripe-to-superfluid/stripe-to-superfluid.service';
+import { SuperfluidStripeConverterService } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.service';
 import { DEFAULT_PAGING } from 'src/stripeModuleConfig';
 import { z } from 'zod';
 
@@ -61,7 +61,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly stripeToSupefluidService: StripeToSuperfluidService, // Bad name...
+    private readonly stripeToSupefluidService: SuperfluidStripeConverterService, // Bad name...
   ) {
     super();
   }
