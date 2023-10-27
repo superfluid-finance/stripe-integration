@@ -3,7 +3,6 @@ import Layout from '@/components/Layout';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
-import theme from '@/theme';
 import { ThemeOptions, ThemeProvider } from '@mui/material';
 import { WidgetProps } from '@superfluid-finance/widget';
 import { GetServerSideProps } from 'next';
@@ -26,7 +25,7 @@ export default function Product({ product: productId, ...config }: Props) {
 
   // TODO(KK): handle theme any
   return (
-    <ThemeProvider theme={theme}>
+    <Layout themeOptions={config.theme}>
       <WagmiProvider>
         <ConnectKitProvider>
           {!!config && mounted && (
@@ -52,7 +51,7 @@ export default function Product({ product: productId, ...config }: Props) {
           )}
         </ConnectKitProvider>
       </WagmiProvider>
-    </ThemeProvider>
+    </Layout>
   );
 }
 
@@ -63,7 +62,7 @@ export const getServerSideProps = (async (context) => {
     baseUrl: internalConfig.getBackendBaseUrl().toString()
   });
 
-  const { response } = await client.GET("/superfluid-stripe-converter/checkout-widget", {
+  const { response } = await client.GET("/superfluid-stripe-converter/product", {
     params: {
       query: {
         "product-id": productId

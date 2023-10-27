@@ -1,9 +1,5 @@
 # Use BullMQ for Job Queues
 
-## Status
-
-Accepted
-
 ## Context
 
 In a system-to-system integration project, using a job queue becomes essential to manage and sequence tasks securely and efficiently. Factors such as reliability, idempotency and monitorability are paramount when integrating systems over the internet.

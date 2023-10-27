@@ -24,7 +24,7 @@
     "clean": "npm-run-all -s clean:*",
     "clean:dist": "rimraf \"./dist\"",
     "clean:node-modules": "rimraf \"./node_modules\"",
-    "generate:accounting-client": "pnpm exec openapi-typescript https://accounting.superfluid.dev/static/api-docs.yaml -o ./src/super-token-accounting/client/types.d.ts"
+    "generate:accounting-openapi-client": "pnpm exec openapi-typescript https://accounting.superfluid.dev/static/api-docs.yaml -o ./src/super-token-accounting/client/types.d.ts"
   },
   "jest": {
     "collectCoverageFrom": [

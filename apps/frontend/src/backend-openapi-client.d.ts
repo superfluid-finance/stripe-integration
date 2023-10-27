@@ -11,8 +11,11 @@ export interface paths {
   "/checkout-session/create": {
     post: operations["CheckoutSessionController_createSession"];
   };
-  "/superfluid-stripe-converter/checkout-widget": {
+  "/superfluid-stripe-converter/product": {
     get: operations["SuperfluidStripeConverterController_mapStripeProductToCheckoutWidget"];
+  };
+  "/superfluid-stripe-converter/products": {
+    get: operations["SuperfluidStripeConverterController_products"];
   };
   "/health": {
     get: operations["HealthController_check"];
@@ -80,6 +83,13 @@ export interface operations {
         "product-id": string;
       };
     };
+    responses: {
+      200: {
+        content: never;
+      };
+    };
+  };
+  SuperfluidStripeConverterController_products: {
     responses: {
       200: {
         content: never;

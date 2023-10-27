@@ -10,7 +10,7 @@ import Layout from '@/components/Layout';
 
 export default function Home() {
   return (
-    <Layout theme={theme}>
+    <Layout themeOptions={theme}>
       <Container maxWidth="lg">
         <Box
           sx={{

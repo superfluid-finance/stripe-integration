@@ -19,6 +19,7 @@ const configurationCustomerEmail = 'auto-generated@superfluid.finance' as const;
 type Input = {
   product: Stripe.Product;
   prices: Stripe.Price[]; // NOTE: These need to be fetched separately from the Product based on Product ID.
+  configurationCustomer?: Stripe.Customer;
 };
 
 type Output = {
@@ -39,6 +40,7 @@ interface SuperTokenToStripeCurrencyMapper {
   }): PriceId | undefined;
 }
 
+// Rename to "global config"?
 interface ConfigurationCustomerManager {
   ensureConfigurationCustomer(): Promise<Stripe.Customer>;
 }
@@ -108,7 +110,7 @@ export class SuperfluidStripeConverterService
   async mapStripeProductToWidgetConfig(stripe: Input): Promise<Output> {
     // TODO(KK): Enforce it's a subscription-based product?
 
-    const configurationCustomer = await this.ensureConfigurationCustomer();
+    const configurationCustomer = stripe.configurationCustomer ?? await this.ensureConfigurationCustomer();
 
     const productDetails: Output['productDetails'] = {
       name: stripe.product.name,

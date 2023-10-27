@@ -3,8 +3,10 @@ import { Controller, Get, Logger, Query } from '@nestjs/common';
 import { WidgetProps } from '@superfluid-finance/widget';
 import Stripe from 'stripe';
 import { SuperfluidStripeConverterService } from './superfluid-stripe-converter.service';
+import { DEFAULT_PAGING } from 'src/stripe-module-config';
 
-type Response = {
+type ProductResponse = {
+  stripeProduct: Stripe.Product;
   productDetails: WidgetProps['productDetails'];
   paymentDetails: WidgetProps['paymentDetails'];
 };
@@ -17,31 +19,56 @@ export class SuperfluidStripeConverterController {
   ) {}
 
   // TODO: Does this need auth?
-  @Get('checkout-widget')
+  @Get('product')
   async mapStripeProductToCheckoutWidget(
     @Query('product-id') productId: string,
-  ): Promise<Response> {
-    const [stripeProductsResponse, stripePricesResponse] = await Promise.all([
+  ): Promise<ProductResponse> {
+    const [stripeProduct, stripePrices, configurationCustomer] = await Promise.all([
       this.stripeClient.products.retrieve(productId),
       this.stripeClient.prices.list({
         product: productId,
         active: true,
-      }),
+      }).autoPagingToArray(DEFAULT_PAGING),
+      this.superfluidStripeConverterService.ensureConfigurationCustomer()
     ]);
 
-    const config = this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
-      product: stripeProductsResponse,
-      prices: stripePricesResponse.data,
+    // check eligibility somewhere?
+
+    const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
+      configurationCustomer,
+      product: stripeProduct,
+      prices: stripePrices,
     });
 
-    // logger.debug({
-    //   stripeProductsResponse,
-    //   stripePricesResponse,
-    //   productId,
-    //   config,
-    // });
+    return { ...config, stripeProduct: stripeProduct };
+  }
 
-    return config;
+  @Get('products')
+  async products(): Promise<ProductResponse[]> {
+    const [stripeProducts, stripePrices, configurationCustomer] = await Promise.all([
+      this.stripeClient.products.list({
+        active: true,
+      }).autoPagingToArray(DEFAULT_PAGING),
+      this.stripeClient.prices.list({
+        active: true,
+      }).autoPagingToArray(DEFAULT_PAGING),
+      this.superfluidStripeConverterService.ensureConfigurationCustomer(),
+    ]);
+
+    // check eligibility somewhere?
+
+    const results = await Promise.all(stripeProducts.map(async (stripeProduct) => {
+      const pricesForProduct = stripePrices.filter(price => price.product === stripeProduct.id)
+
+      const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
+        product: stripeProduct,
+        prices: pricesForProduct,
+      });
+
+      return { ...config, stripeProduct };
+    }))
+
+    return results;
   }
 }
 

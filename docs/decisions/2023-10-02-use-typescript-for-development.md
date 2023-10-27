@@ -1,4 +1,4 @@
-# Adopt TypeScript for Development 
+# Use TypeScript for Development 
 
 ## Context
 
