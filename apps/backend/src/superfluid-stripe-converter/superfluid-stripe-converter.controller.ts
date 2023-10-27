@@ -25,11 +25,13 @@ export class SuperfluidStripeConverterController {
   ): Promise<ProductResponse> {
     const [stripeProduct, stripePrices, configurationCustomer] = await Promise.all([
       this.stripeClient.products.retrieve(productId),
-      this.stripeClient.prices.list({
-        product: productId,
-        active: true,
-      }).autoPagingToArray(DEFAULT_PAGING),
-      this.superfluidStripeConverterService.ensureConfigurationCustomer()
+      this.stripeClient.prices
+        .list({
+          product: productId,
+          active: true,
+        })
+        .autoPagingToArray(DEFAULT_PAGING),
+      this.superfluidStripeConverterService.ensureConfigurationCustomer(),
     ]);
 
     // check eligibility somewhere?
@@ -46,27 +48,33 @@ export class SuperfluidStripeConverterController {
   @Get('products')
   async products(): Promise<ProductResponse[]> {
     const [stripeProducts, stripePrices, configurationCustomer] = await Promise.all([
-      this.stripeClient.products.list({
-        active: true,
-      }).autoPagingToArray(DEFAULT_PAGING),
-      this.stripeClient.prices.list({
-        active: true,
-      }).autoPagingToArray(DEFAULT_PAGING),
+      this.stripeClient.products
+        .list({
+          active: true,
+        })
+        .autoPagingToArray(DEFAULT_PAGING),
+      this.stripeClient.prices
+        .list({
+          active: true,
+        })
+        .autoPagingToArray(DEFAULT_PAGING),
       this.superfluidStripeConverterService.ensureConfigurationCustomer(),
     ]);
 
     // check eligibility somewhere?
 
-    const results = await Promise.all(stripeProducts.map(async (stripeProduct) => {
-      const pricesForProduct = stripePrices.filter(price => price.product === stripeProduct.id)
+    const results = await Promise.all(
+      stripeProducts.map(async (stripeProduct) => {
+        const pricesForProduct = stripePrices.filter((price) => price.product === stripeProduct.id);
 
-      const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
-        product: stripeProduct,
-        prices: pricesForProduct,
-      });
+        const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
+          product: stripeProduct,
+          prices: pricesForProduct,
+        });
 
-      return { ...config, stripeProduct };
-    }))
+        return { ...config, stripeProduct };
+      }),
+    );
 
     return results;
   }

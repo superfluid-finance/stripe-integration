@@ -110,7 +110,8 @@ export class SuperfluidStripeConverterService
   async mapStripeProductToWidgetConfig(stripe: Input): Promise<Output> {
     // TODO(KK): Enforce it's a subscription-based product?
 
-    const configurationCustomer = stripe.configurationCustomer ?? await this.ensureConfigurationCustomer();
+    const configurationCustomer =
+      stripe.configurationCustomer ?? (await this.ensureConfigurationCustomer());
 
     const productDetails: Output['productDetails'] = {
       name: stripe.product.name,
