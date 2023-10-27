@@ -19,6 +19,7 @@ type Props = {
   productDetails: WidgetProps['productDetails'];
   paymentDetails: WidgetProps['paymentDetails'];
   personalData: WidgetProps['personalData'];
+  theme: WidgetProps['theme'];
 };
 
 export default function SupefluidWidgetProvider({
@@ -26,6 +27,7 @@ export default function SupefluidWidgetProvider({
   paymentDetails,
   productDetails,
   personalData,
+  theme
 }: Props) {
   const { open, setOpen } = useModal();
 
@@ -57,11 +59,8 @@ export default function SupefluidWidgetProvider({
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
-        console.log('onRouteChange');
-
         const email = arg?.data?.["email"];
         if (email && accountAddress && paymentOption && arg?.route === 'transactions') {
-          console.log('creating session');
           const data: CreateSessionData = {
             productId,
             chainId: paymentOption.chainId,
@@ -85,6 +84,7 @@ export default function SupefluidWidgetProvider({
       paymentDetails={paymentDetails}
       productDetails={productDetails}
       personalData={personalData}
+      theme={theme}
     />
   );
 }

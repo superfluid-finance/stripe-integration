@@ -1,9 +1,9 @@
 import * as React from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
-import { ThemeProvider } from '@mui/material/styles';
+import { ThemeProvider as MUI_ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { CacheProvider, EmotionCache } from '@emotion/react';
+import { CacheProvider, EmotionCache, Global, css } from '@emotion/react';
 import theme from '../theme';
 import createEmotionCache from '../createEmotionCache';
 
@@ -21,11 +21,11 @@ export default function MyApp(props: MyAppProps) {
       <Head>
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
-      <ThemeProvider theme={theme}>
+      <MUI_ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
         <Component {...pageProps} />
-      </ThemeProvider>
+      </MUI_ThemeProvider>
     </CacheProvider>
   );
 }
