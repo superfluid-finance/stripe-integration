@@ -12,8 +12,13 @@ const internalConfig: InternalConfig = {
   },
   getBackendBaseUrl() {
     const host = ensureDefined(process.env.BACKEND_HOST, 'BACKEND_HOST');
-    const port = Number(ensureDefined(process.env.BACKEND_PORT, 'BACKEND_PORT'));
-    return new URL(`http://${host}:${port}`);
+    const protocol = process.env.BACKEND_PROTOCOL ?? "https";
+    const port = Number(process.env.BACKEND_PORT);
+    if (port) {
+      return new URL(`${protocol}://${host}:${port}`);
+    } else {
+      return new URL(`${protocol}://${host}`);
+    }
   },
 };
 
