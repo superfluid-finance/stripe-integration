@@ -47,7 +47,8 @@ export class CheckoutSessionController {
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     configService: ConfigService,
   ) {
-    this.apiKey = configService.getOrThrow('API_KEY');
+    // Fallback to Stripe secret key.
+    this.apiKey =configService.get('API_KEY') ?? configService.getOrThrow('STRIPE_SECRET_KEY');;
   }
 
   @Post('create')

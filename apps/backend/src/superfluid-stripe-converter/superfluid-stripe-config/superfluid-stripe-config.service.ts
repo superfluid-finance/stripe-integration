@@ -1,15 +1,13 @@
 import { InjectStripeClient } from '@golevelup/nestjs-stripe';
 import { Injectable, Logger } from '@nestjs/common';
-import { ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 import { DEFAULT_PAGING } from 'src/stripe-module-config';
 import Stripe from 'stripe';
-import { ChainToSuperTokenReceiverMap } from './chain-to-super-token-receiver-map';
-import { StripeCurrencyToSuperTokenMap } from './stripe-currency-to-super-token-map';
 import { Address, ChainId, StripeCurrencyKey } from './basic-types';
+import { isAddress } from 'viem';
 
 const CUSTOMER_EMAIL = "stripe@superfluid.finance"; // This is the key for finding the customer.
 const LOOK_AND_FEEL_CUSTOMER_NAME = "Superfluid ♥ Stripe: Look and Feel";
-const BLOCKCHAIN_CUSTOMER_NAME = "Superfluid ♥ Stripe: Look and Feel";
+const BLOCKCHAIN_CUSTOMER_NAME = "Superfluid ♥ Stripe: Blockchain";
 
 const DEFAULT_LOOK_AND_FEEL_CUSTOMER = {
   email: CUSTOMER_EMAIL,
@@ -21,10 +19,6 @@ const DEFAULT_LOOK_AND_FEEL_CUSTOMER = {
     }
 } as const satisfies Stripe.CustomerCreateParams;
 
-type SuperfluidStripeSubscriptionsMetadata = {
-
-};
-
 const DEFAULT_BLOCKCHAIN_CUSTOMER = {
   email: CUSTOMER_EMAIL,
   name: BLOCKCHAIN_CUSTOMER_NAME,
@@ -32,19 +26,19 @@ const DEFAULT_BLOCKCHAIN_CUSTOMER = {
   metadata:
     {
       "chain_43114_usd_token": "0x288398f314d472b82c44855f3f6ff20b633c2a97",
-      "chain_43114_receiver": "",
+      "chain_43114_receiver": "0x...",
       "chain_42161_usd_token": "0x1dbc1809486460dcd189b8a15990bca3272ee04e",
-      "chain_42161_receiver": "",
+      "chain_42161_receiver": "0x...",
       "chain_100_usd_token": "0x1234756ccf0660e866305289267211823ae86eec",
-      "chain_100_receiver": "",
+      "chain_100_receiver": "0x...",
       "chain_1_usd_token": "0x1ba8603da702602a75a25fca122bb6898b8b1282",
-      "chain_1_receiver": "",
+      "chain_1_receiver": "0x...",
       "chain_10_usd_token": "0x8430f084b939208e2eded1584889c9a66b90562f",
-      "chain_10_receiver": "",
+      "chain_10_receiver": "0x...",
       "chain_137_usd_token": "0xcaa7349cea390f89641fe306d93591f87595dc1f",
-      "chain_137_receiver": "",
+      "chain_137_receiver": "0x...",
       "chain_5_usd_token": "0x8ae68021f6170e5a766be613cea0d75236ecca9a",
-      "chain_5_receiver": "",
+      "chain_5_receiver": "0x...",
       "default_receiver": "",
     }
 } as const satisfies Stripe.CustomerCreateParams;
@@ -127,7 +121,7 @@ const mapBlockchainCustomerMetadataIntoChainConfigs = (metadata: Record<string, 
 
   for (const chainId of chainIds) {
     const receiverAddress = metadata[`chain_${chainId}_receiver`] || defaultReceiverAddress;
-    if (!receiverAddress) {
+    if (!isAddress(receiverAddress)) {
       continue;
     }
     
@@ -137,9 +131,12 @@ const mapBlockchainCustomerMetadataIntoChainConfigs = (metadata: Record<string, 
     for(const key of chainSpecificKeys) {
       const match = key.match(/chain_\d+_(.+)_token/);
       const currency = match ? match[1] : undefined;
+      // TODO(KK): Validate if Stripe currency
       if (currency) {
         const superTokenAddress = metadata[key];
-        chainConfigs.push({ chainId, currency, superTokenAddress, receiverAddress });
+        if (isAddress(superTokenAddress)) {
+          chainConfigs.push({ chainId, currency, superTokenAddress, receiverAddress });
+        }
       } 
     }
   }

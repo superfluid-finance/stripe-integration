@@ -1,31 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import Stripe from 'stripe';
-import {
-  ChainToSuperTokenReceiverMap,
-} from './superfluid-stripe-config/chain-to-super-token-receiver-map';
-import {
-  StripeCurrencyToSuperTokenMap,
-} from './superfluid-stripe-config/stripe-currency-to-super-token-map';
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { Address, formatUnits } from 'viem';
-import { InjectStripeClient } from '@golevelup/nestjs-stripe';
-import { DEFAULT_PAGING } from 'src/stripe-module-config';
-import { ChainConfig, IntegrationConfig, SuperfluidStripeConfigService } from './superfluid-stripe-config/superfluid-stripe-config.service';
-import { chain } from 'lodash';
+import { IntegrationConfig, SuperfluidStripeConfigService } from './superfluid-stripe-config/superfluid-stripe-config.service';
 import { StripeCurrencyKey } from './superfluid-stripe-config/basic-types';
-
-const GLOBAL_CONFIGURATION_CUSTOMER_EMAIL = "stripe@superfluid.finance"; // This is the key for finding the customer.
-
-const DEFAULT_GLOBAL_CONFIGURATION_CUSTOMER = {
-  email: GLOBAL_CONFIGURATION_CUSTOMER_EMAIL,
-  name: "Superfluid-Stripe Configuration",
-  description: 'This is a "fake" customer for Superfluid-Stripe integration configuration that can be used to configure how the integrations works and looks.',
-  metadata:
-    {
-      theme: `{"palette":{"mode":"light","primary":{"main":"#3f51b5"},"secondary":{"main":"#f50057"}}}`,
-    }
-} as const satisfies Stripe.CustomerCreateParams;
 
 type Input = {
   product: Stripe.Product;
