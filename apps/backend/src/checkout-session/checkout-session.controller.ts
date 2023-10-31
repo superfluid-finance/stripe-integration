@@ -48,7 +48,7 @@ export class CheckoutSessionController {
     configService: ConfigService,
   ) {
     // Fallback to Stripe secret key.
-    this.apiKey =configService.get('API_KEY') ?? configService.getOrThrow('STRIPE_SECRET_KEY');;
+    this.apiKey = configService.get('INTERNAL_API_KEY') ?? configService.getOrThrow('STRIPE_SECRET_KEY');;
   }
 
   @Post('create')

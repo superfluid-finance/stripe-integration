@@ -46,7 +46,7 @@ To work on this integration, ensure that you have a Stripe account set up with S
 #Stripe Secret Key
 STRIPE_SECRET_KEY=""
 # Strip API Key
-API_KEY=""
+INTERNAL_API_KEY=""
 #Redis queue user
 QUEUE_DASHBOARD_USER=
 #Redis queue password
