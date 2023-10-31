@@ -3,7 +3,7 @@ secret:
   name: stripe-integration
   data:
     STRIPE_SECRET_KEY: "test"
-    API_KEY: "test"
+    INTERNAL_API_KEY: "test"
 
 redis: 
   auth:

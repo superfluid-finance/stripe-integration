@@ -41,13 +41,19 @@ export class CreateSessionData {
 
 @Controller('checkout-session')
 export class CheckoutSessionController {
-  private readonly apiKey: string;
+  private readonly apiKeys: string[];
 
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     configService: ConfigService,
   ) {
-    this.apiKey = configService.getOrThrow('API_KEY');
+    const internalApiKey = configService.get('INTERNAL_API_KEY');
+    const stripeSecretKey = configService.getOrThrow('STRIPE_SECRET_KEY');
+    if (internalApiKey) {
+      this.apiKeys = [internalApiKey, stripeSecretKey]
+    } else {
+      this.apiKeys = [stripeSecretKey]
+    }
   }
 
   @Post('create')
@@ -55,7 +61,7 @@ export class CheckoutSessionController {
     @Headers('x-api-key') apiKey: string,
     @Body() data: CreateSessionData,
   ): Promise<void> {
-    if (apiKey !== this.apiKey) {
+    if (!this.apiKeys.includes(apiKey)) {
       throw new UnauthorizedException();
     }
 

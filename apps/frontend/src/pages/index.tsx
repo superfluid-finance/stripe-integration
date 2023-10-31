@@ -3,8 +3,6 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '../Link';
-import ProTip from '../ProTip';
-import Copyright from '../Copyright';
 import theme from '../theme';
 import Layout from '@/components/Layout';
 
@@ -21,14 +19,30 @@ export default function Home() {
             alignItems: 'center',
           }}
         >
-          <Typography variant="h4" component="h1" gutterBottom>
-            Material UI - Next.js example in TypeScript
+          <Typography
+            component="h1"
+            variant="h3"
+            align="center"
+            color="text.primary"
+            gutterBottom
+          >
+            Superfluid ♥ Stripe
           </Typography>
-          <Link href="/about" color="secondary">
-            Go to the about page
-          </Link>
-          <ProTip />
-          <Copyright />
+          <Typography variant="h5" align="center" color="text.secondary" component="p">
+            The Superfluid-Stripe Integration provides a bridge between the conventional and the progressive world of digital finance, refining the process of managing subscription-based services.
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            my: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            height: "100%"
+          }}
+        >
+          <Link align="center" href="/pricing">Pricing Table</Link>
         </Box>
       </Container>
     </Layout>

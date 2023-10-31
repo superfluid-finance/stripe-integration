@@ -16,7 +16,7 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": [
 		"pnpm install",
-		"pnpm add -g @nestjs/cli", // You can now globally use "nest" commands.
+		"npm install -g @nestjs/cli", // You can now globally use "nest" commands.
 		"pnpm docker:redis"
 	],
 	"postStartCommand": [

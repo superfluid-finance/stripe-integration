@@ -27,7 +27,7 @@ export default function Product({ product: productId, ...config }: Props) {
   return (
     <Layout themeOptions={config.theme}>
       <WagmiProvider>
-        <ConnectKitProvider>
+        <ConnectKitProvider mode={config.theme.palette?.mode}>
           {!!config && mounted && (
             <SupefluidWidgetProvider
               productId={productId}
