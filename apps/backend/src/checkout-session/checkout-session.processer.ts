@@ -61,7 +61,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly stripeToSupefluidService: SuperfluidStripeConverterService, // Bad name...
+    private readonly converterService: SuperfluidStripeConverterService
   ) {
     super();
   }
@@ -72,10 +72,11 @@ export class CheckoutSessionProcesser extends WorkerHost {
   ): Promise<CheckoutSessionJob['returnvalue']> {
     const data = job.data;
 
-    const currency = this.stripeToSupefluidService.mapSuperTokenToStripeCurrency({
+    const currency = await this.converterService.mapSuperTokenToStripeCurrency({
       chainId: data.chainId,
       address: data.superTokenAddress,
     });
+
     if (!currency) {
       throw new Error(
         `The Super Token is not mapped to any Stripe Currency. It does not make sense to handle this job without that mapping. Please fix the mapping! Chain ID: ${data.chainId}, Super Token: [${data.superTokenAddress}]`,

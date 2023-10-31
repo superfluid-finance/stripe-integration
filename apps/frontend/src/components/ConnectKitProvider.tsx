@@ -2,6 +2,7 @@ import { ConnectKitProvider as ConnectKitProvider_, ConnectKitButton, getDefault
 import { PropsWithChildren, useState, createContext, useMemo } from "react"
 
 type InitialChainId = number | undefined;
+type Mode = "dark" | "light";
 type ConnectKitContextValue = {
     initialChainId: InitialChainId,
     setInitialChainId: (chainId: InitialChainId) => void;
@@ -9,14 +10,16 @@ type ConnectKitContextValue = {
 
 const ConnectKitContext = createContext<ConnectKitContextValue>(undefined!);
 
-export default function ConnectKitProvider({ children }: PropsWithChildren) {
+type Props = PropsWithChildren<{ mode?: Mode }>;
+
+export default function ConnectKitProvider({ children, mode }: Props) {
     const [initialChainId, setInitialChainId] = useState<number | undefined>();
 
     return (<ConnectKitContext.Provider value={useMemo(() => ({
         initialChainId,
         setInitialChainId
     }), [initialChainId, setInitialChainId])}>
-        <ConnectKitProvider_ options={{
+        <ConnectKitProvider_ mode={mode} options={{
             initialChainId
         }}>
             {children}

@@ -7,7 +7,7 @@
 - add dependency repo `helm repo add bitnami https://charts.bitnami.com/bitnami`
 - build dependencies `helm dependency build`
 - set up secrets:
-    - `kubectl create secret generic api-key --from-literal=API_KEY=my-secret-key`
+    - `kubectl create secret generic api-key --from-literal=INTERNAL_API_KEY=my-secret-key`
     - `kubectl create secret generic stripe-sk --from-literal=STRIPE_SECRET_KEY=my-stripe-sk`
 - run `helm install stripe-integration .`
 - (optional) upgrade with `helm upgrade stripe-integration .`

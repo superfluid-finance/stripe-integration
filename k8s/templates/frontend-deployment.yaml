@@ -18,22 +18,22 @@ spec:
         app: stripe-frontend
     spec:
       containers:
-      - image: superfluid-finance/stripe-frontend:latest
-        imagePullPolicy: Never
-        name: stripe-frontend
-        env:
-          - name: BACKEND_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: stripe-integration
-                key: API_KEY
-          - name: BACKEND_PORT
-            value: "3001"
-          - name: BACKEND_HOST
-            value: localhost
-          - name: NEXT_PUBLIC_WALLECT_CONNECT_PROJECT_ID
-            value: 952483bf7a0f5ace4c40eb53967f1368
-        ports:
-        - containerPort: 3000
-        resources: {}
+        - image: superfluid-finance/stripe-frontend:latest
+          imagePullPolicy: Never
+          name: stripe-frontend
+          env:
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-integration
+                  key: INTERNAL_API_KEY
+            - name: BACKEND_PORT
+              value: "3001"
+            - name: BACKEND_HOST
+              value: localhost
+            - name: NEXT_PUBLIC_WALLECT_CONNECT_PROJECT_ID
+              value: 952483bf7a0f5ace4c40eb53967f1368
+          ports:
+            - containerPort: 3000
+          resources: {}
 status: {}
