@@ -61,7 +61,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
   constructor(
     @InjectQueue(QUEUE_NAME) private readonly queue: Queue,
     @InjectStripeClient() private readonly stripeClient: Stripe,
-    private readonly converterService: SuperfluidStripeConverterService
+    private readonly converterService: SuperfluidStripeConverterService,
   ) {
     super();
   }

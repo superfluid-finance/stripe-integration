@@ -3,7 +3,10 @@ import Stripe from 'stripe';
 import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid-finance/widget';
 import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { Address, formatUnits } from 'viem';
-import { IntegrationConfig, SuperfluidStripeConfigService } from './superfluid-stripe-config/superfluid-stripe-config.service';
+import {
+  IntegrationConfig,
+  SuperfluidStripeConfigService,
+} from './superfluid-stripe-config/superfluid-stripe-config.service';
 import { StripeCurrencyKey } from './superfluid-stripe-config/basic-types';
 
 type Input = {
@@ -31,9 +34,7 @@ interface SuperTokenToStripeCurrencyMapper {
 
 @Injectable()
 export class SuperfluidStripeConverterService
-  implements
-    StripeProductToWidgetConfigMapper,
-    SuperTokenToStripeCurrencyMapper
+  implements StripeProductToWidgetConfigMapper, SuperTokenToStripeCurrencyMapper
 {
   constructor(private readonly stripeConfigService: SuperfluidStripeConfigService) {}
 
@@ -42,9 +43,12 @@ export class SuperfluidStripeConverterService
     address: string;
   }): Promise<StripeCurrencyKey | undefined> {
     const stripeConfig = await this.stripeConfigService.loadConfig();
-    
+
     const addressLowerCased = superToken.address.toLowerCase();
-    const configEntry = stripeConfig.chains.find(x => x.chainId === superToken.chainId && x.superTokenAddress.toLowerCase() === addressLowerCased);
+    const configEntry = stripeConfig.chains.find(
+      (x) =>
+        x.chainId === superToken.chainId && x.superTokenAddress.toLowerCase() === addressLowerCased,
+    );
 
     if (configEntry) {
       return configEntry.currency;
@@ -69,11 +73,10 @@ export class SuperfluidStripeConverterService
         // Anything else regarding recurring to check here?
       }
 
-      const matchingCurrencyConfigs = stripeConfig.chains.filter(x => x.currency === p.currency);
+      const matchingCurrencyConfigs = stripeConfig.chains.filter((x) => x.currency === p.currency);
       if (!matchingCurrencyConfigs) {
         return;
       }
-
 
       const currencyDecimals = currencyDecimalMapping.get(p.currency.toUpperCase());
       const amount = formatUnits(BigInt(p.unit_amount!), currencyDecimals!) as `${number}`; // TODO: bangs

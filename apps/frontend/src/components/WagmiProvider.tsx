@@ -42,6 +42,8 @@ const wagmiConfig = createConfig(
         // alchemyId: process.env.ALCHEMY_ID, // or infuraId
         walletConnectProjectId: publicConfig.walletConnectProjectId,
 
+        // TODO(KK): Take these as inputs?
+
         // Required
         appName: "Your App Name",
 

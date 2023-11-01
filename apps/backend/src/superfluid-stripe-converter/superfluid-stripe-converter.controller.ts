@@ -72,7 +72,7 @@ export class SuperfluidStripeConverterController {
         const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
           product: stripeProduct,
           prices: pricesForProduct,
-          integrationConfig
+          integrationConfig,
         });
 
         return { ...config, stripeProduct };

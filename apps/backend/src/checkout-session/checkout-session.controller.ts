@@ -50,9 +50,9 @@ export class CheckoutSessionController {
     const internalApiKey = configService.get('INTERNAL_API_KEY');
     const stripeSecretKey = configService.getOrThrow('STRIPE_SECRET_KEY');
     if (internalApiKey) {
-      this.apiKeys = [internalApiKey, stripeSecretKey]
+      this.apiKeys = [internalApiKey, stripeSecretKey];
     } else {
-      this.apiKeys = [stripeSecretKey]
+      this.apiKeys = [stripeSecretKey];
     }
   }
 

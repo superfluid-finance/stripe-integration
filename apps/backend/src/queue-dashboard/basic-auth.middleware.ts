@@ -7,16 +7,16 @@ export class BasicAuthMiddleware implements NestMiddleware {
   private readonly encodedCredentials: ReadonlyArray<string>;
 
   constructor(configService: ConfigService) {
-    const stripeSecretKey = configService.getOrThrow('STRIPE_SECRET_KEY')
+    const stripeSecretKey = configService.getOrThrow('STRIPE_SECRET_KEY');
     const stripeSecretKeyEncodedCredentials = base64Encode(`${stripeSecretKey}:`);
 
     if (configService.get('QUEUE_DASHBOARD_USER')) {
       const username = configService.getOrThrow('QUEUE_DASHBOARD_USER');
       const password = configService.getOrThrow('QUEUE_DASHBOARD_PASSWORD');
       const encodedCredentials = base64Encode(username + ':' + password);
-      this.encodedCredentials = [ encodedCredentials, stripeSecretKeyEncodedCredentials]
+      this.encodedCredentials = [encodedCredentials, stripeSecretKeyEncodedCredentials];
     } else {
-      this.encodedCredentials = [ stripeSecretKeyEncodedCredentials ]
+      this.encodedCredentials = [stripeSecretKeyEncodedCredentials];
     }
   }
 
@@ -31,6 +31,4 @@ export class BasicAuthMiddleware implements NestMiddleware {
   }
 }
 
-const base64Encode = (value: string) => Buffer.from(value).toString(
-  'base64',
-)
+const base64Encode = (value: string) => Buffer.from(value).toString('base64');
