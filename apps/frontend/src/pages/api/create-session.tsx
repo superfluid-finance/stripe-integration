@@ -16,19 +16,19 @@ export type CreateSessionData = {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const createSessionRequest: CreateSessionData = req.body as CreateSessionData
+    const createSessionRequest: CreateSessionData = req.body as CreateSessionData;
 
     const client = createClient<paths>({
       baseUrl: internalConfig.getBackendBaseUrl().toString(),
     });
 
-    const { response } = await client.POST("/checkout-session/create", {
+    const { response } = await client.POST('/checkout-session/create', {
       params: {
         header: {
-          "x-api-key": internalConfig.getApiKey()
-        }
+          'x-api-key': internalConfig.getApiKey(),
+        },
       },
-      body: createSessionRequest
+      body: createSessionRequest,
     });
 
     const status = response.status;

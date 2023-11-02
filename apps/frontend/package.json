@@ -10,13 +10,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "clean": "npm-run-all -s clean:*",
     "clean:next": "rimraf \"./.next\"",
     "clean:node-modules": "rimraf \"./node_modules\"",
     "docker": "pnpm docker:build && pnpm docker:run",
     "docker:build": "docker build -t superfluid-finance/stripe-frontend .",
     "docker:run": "docker run -d -p 8000:8000 superfluid-finance/stripe-frontend",
+    "generate": "npm-run-all -s generate:*",
     "generate:backend-openapi-client": "pnpm exec openapi-typescript http://localhost:3001/swagger-json -o ./src/backend-openapi-client.d.ts"
   },
   "dependencies": {

@@ -24,6 +24,7 @@
     "clean": "npm-run-all -s clean:*",
     "clean:dist": "rimraf \"./dist\"",
     "clean:node-modules": "rimraf \"./node_modules\"",
+    "generate": "npm-run-all -s generate:*",
     "generate:accounting-openapi-client": "pnpm exec openapi-typescript https://accounting.superfluid.dev/static/api-docs.yaml -o ./src/super-token-accounting/client/types.d.ts"
   },
   "jest": {
@@ -55,6 +56,7 @@
     "@nestjs/platform-express": "^10.2.7",
     "@nestjs/swagger": "^7.1.14",
     "@nestjs/terminus": "^10.1.1",
+    "@superfluid-finance/tokenlist": "^3.3.2",
     "@superfluid-finance/widget": "^0.4.7",
     "@types/lodash": "^4.14.200",
     "bullmq": "^4.12.6",

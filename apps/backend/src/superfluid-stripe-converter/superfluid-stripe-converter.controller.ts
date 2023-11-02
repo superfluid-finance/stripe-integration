@@ -4,7 +4,10 @@ import { WidgetProps } from '@superfluid-finance/widget';
 import Stripe from 'stripe';
 import { SuperfluidStripeConverterService } from './superfluid-stripe-converter.service';
 import { DEFAULT_PAGING } from 'src/stripe-module-config';
-import { SuperfluidStripeConfigService } from './superfluid-stripe-config/superfluid-stripe-config.service';
+import {
+  LookAndFeelConfig,
+  SuperfluidStripeConfigService,
+} from './superfluid-stripe-config/superfluid-stripe-config.service';
 
 type ProductResponse = {
   stripeProduct: Stripe.Product;
@@ -25,7 +28,7 @@ export class SuperfluidStripeConverterController {
   async mapStripeProductToCheckoutWidget(
     @Query('product-id') productId: string,
   ): Promise<ProductResponse> {
-    const [stripeProduct, stripePrices, integrationConfig] = await Promise.all([
+    const [stripeProduct, stripePrices, blockchainConfig] = await Promise.all([
       this.stripeClient.products.retrieve(productId),
       this.stripeClient.prices
         .list({
@@ -33,23 +36,23 @@ export class SuperfluidStripeConverterController {
           active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
-      this.superfluidStripeConfigService.loadConfig(),
+      this.superfluidStripeConfigService.loadOrInitializeBlockchainConfig(),
     ]);
 
     // check eligibility somewhere?
 
     const wigetConfig = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
-      integrationConfig: integrationConfig,
+      preloadedBlockchainConfig: blockchainConfig,
       product: stripeProduct,
       prices: stripePrices,
     });
 
-    return { ...wigetConfig, stripeProduct: stripeProduct };
+    return { ...wigetConfig, stripeProduct };
   }
 
   @Get('products')
   async products(): Promise<ProductResponse[]> {
-    const [stripeProducts, stripePrices, integrationConfig] = await Promise.all([
+    const [stripeProducts, stripePrices, blockchainConfig] = await Promise.all([
       this.stripeClient.products
         .list({
           active: true,
@@ -60,7 +63,7 @@ export class SuperfluidStripeConverterController {
           active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
-      this.superfluidStripeConfigService.loadConfig(),
+      this.superfluidStripeConfigService.loadOrInitializeCompleteConfig(),
     ]);
 
     // check eligibility somewhere?
@@ -69,17 +72,26 @@ export class SuperfluidStripeConverterController {
       stripeProducts.map(async (stripeProduct) => {
         const pricesForProduct = stripePrices.filter((price) => price.product === stripeProduct.id);
 
-        const config = await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
-          product: stripeProduct,
-          prices: pricesForProduct,
-          integrationConfig,
-        });
+        const widgetConfig =
+          await this.superfluidStripeConverterService.mapStripeProductToWidgetConfig({
+            preloadedBlockchainConfig: blockchainConfig,
+            product: stripeProduct,
+            prices: pricesForProduct,
+          });
 
-        return { ...config, stripeProduct };
+        return { ...widgetConfig, stripeProduct };
       }),
     );
 
     return results;
+  }
+
+  // TODO(KK): cache aggressively
+  @Get('look-and-feel')
+  async lookAndFeel(): Promise<LookAndFeelConfig> {
+    const lookAndFeelConfig =
+      await this.superfluidStripeConfigService.loadOrInitializeLookAndFeelConfig();
+    return lookAndFeelConfig;
   }
 }
 

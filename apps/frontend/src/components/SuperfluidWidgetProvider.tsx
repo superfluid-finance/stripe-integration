@@ -27,7 +27,7 @@ export default function SupefluidWidgetProvider({
   paymentDetails,
   productDetails,
   personalData,
-  theme
+  theme,
 }: Props) {
   const { open, setOpen } = useModal();
 
@@ -59,7 +59,7 @@ export default function SupefluidWidgetProvider({
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
-        const email = arg?.data?.["email"];
+        const email = arg?.data?.['email'];
         if (email && accountAddress && paymentOption && arg?.route === 'transactions') {
           const data: CreateSessionData = {
             productId,
