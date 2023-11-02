@@ -11,12 +11,10 @@ import { SuperfluidStripeConfigService } from './superfluid-stripe-config/superf
   exports: [SuperfluidStripeConverterService],
 })
 export class SuperfluidStripeConverterModule implements OnModuleInit {
-  constructor(
-    private readonly configService: SuperfluidStripeConfigService,
-  ) {}
+  constructor(private readonly configService: SuperfluidStripeConfigService) {}
 
   async onModuleInit() {
     // Initialize the Superfluid-Stripe integration global configuration objects (e.g. the "fake" Stripe Customers)
-    await this.configService.loadOrInitializeConfig();
+    await this.configService.loadOrInitializeCompleteConfig();
   }
 }

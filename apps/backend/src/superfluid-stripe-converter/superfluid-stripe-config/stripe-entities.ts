@@ -1,6 +1,6 @@
-import { tierASuperTokenList } from "@superfluid-finance/tokenlist"
+import { tierASuperTokenList } from '@superfluid-finance/tokenlist';
 
-import Stripe from "stripe";
+import Stripe from 'stripe';
 
 export const CUSTOMER_EMAIL = 'stripe@superfluid.finance'; // This is always the key for finding the customers.
 
@@ -19,30 +19,29 @@ export const DEFAULT_LOOK_AND_FEEL_CUSTOMER = {
 } as const satisfies Stripe.CustomerCreateParams;
 
 const liveCurrencyTokenSymbols = {
-  usd: ["USDCx", "USDTx", "DAIx", "cUSDx", "G$", "mUSDx"],
-  eur: ["cEURx", "EUROex", "EURSx", "agEURx", "jEURx", "EURex"],
-  cad: ["jCADx"],
-  bgn: ["jBGNx"],
-  chf: ["jXOFx"],
-  php: ["jPHPx"],
-  xaf: ["jXAFx"],
-  sgd: ["jSGDx"],
-  jpy: ["JPYCx"],
-}
+  usd: ['USDCx', 'USDTx', 'DAIx', 'cUSDx', 'G$', 'mUSDx'],
+  eur: ['cEURx', 'EUROex', 'EURSx', 'agEURx', 'jEURx', 'EURex'],
+  cad: ['jCADx'],
+  bgn: ['jBGNx'],
+  chf: ['jXOFx'],
+  php: ['jPHPx'],
+  xaf: ['jXAFx'],
+  sgd: ['jSGDx'],
+  jpy: ['JPYCx'],
+};
 
 // This is the default customer for on-chain settings.
 export const createDefaultBlockChainCustomer = (testMode: boolean): Stripe.CustomerCreateParams => {
-
-  return ({
+  return {
     email: CUSTOMER_EMAIL,
     name: BLOCKCHAIN_CUSTOMER_NAME,
     description: 'Auto-generated fake customer for Superfluid integration.',
     metadata: {
       chain_5_usd_token: '0x8ae68021f6170e5a766be613cea0d75236ecca9a',
       chain_5_receiver: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045',
-      default_receiver: ''
+      default_receiver: '',
     },
-  });
+  };
 };
 
 // This is the default customer for on-chain settings.

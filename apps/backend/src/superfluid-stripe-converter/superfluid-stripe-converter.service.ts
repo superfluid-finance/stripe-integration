@@ -4,7 +4,7 @@ import { ChainId, PaymentOption, ProductDetails, WidgetProps } from '@superfluid
 import { currencyDecimalMapping } from 'src/stripe-currencies';
 import { Address, formatUnits } from 'viem';
 import {
-  IntegrationConfig,
+  BlockchainConfig,
   SuperfluidStripeConfigService,
 } from './superfluid-stripe-config/superfluid-stripe-config.service';
 import { StripeCurrencyKey } from './superfluid-stripe-config/basic-types';
@@ -12,13 +12,12 @@ import { StripeCurrencyKey } from './superfluid-stripe-config/basic-types';
 type Input = {
   product: Stripe.Product;
   prices: Stripe.Price[]; // NOTE: These need to be fetched separately from the Product based on Product ID.
-  integrationConfig?: IntegrationConfig;
+  preloadedBlockchainConfig?: BlockchainConfig;
 };
 
 type Output = {
   productDetails: ProductDetails;
   paymentDetails: WidgetProps['paymentDetails'];
-  theme: any; // TODO: get rid of any
 };
 
 interface StripeProductToWidgetConfigMapper {
@@ -42,7 +41,7 @@ export class SuperfluidStripeConverterService
     chainId: number;
     address: string;
   }): Promise<StripeCurrencyKey | undefined> {
-    const stripeConfig = await this.stripeConfigService.loadOrInitializeConfig();
+    const stripeConfig = await this.stripeConfigService.loadOrInitializeCompleteConfig();
 
     const addressLowerCased = superToken.address.toLowerCase();
     const configEntry = stripeConfig.chains.find(
@@ -55,10 +54,15 @@ export class SuperfluidStripeConverterService
     }
   }
 
-  async mapStripeProductToWidgetConfig(stripe: Input): Promise<Output> {
+  async mapStripeProductToWidgetConfig({
+    preloadedBlockchainConfig,
+    ...stripe
+  }: Input): Promise<Output> {
     // TODO(KK): Enforce it's a subscription-based product?
 
-    const stripeConfig = await this.stripeConfigService.loadOrInitializeConfig();
+    const blockchainConfig =
+      preloadedBlockchainConfig ??
+      (await this.stripeConfigService.loadOrInitializeBlockchainConfig());
 
     const productDetails: Output['productDetails'] = {
       name: stripe.product.name,
@@ -73,7 +77,9 @@ export class SuperfluidStripeConverterService
         // Anything else regarding recurring to check here?
       }
 
-      const matchingCurrencyConfigs = stripeConfig.chains.filter((x) => x.currency === p.currency);
+      const matchingCurrencyConfigs = blockchainConfig.chains.filter(
+        (x) => x.currency === p.currency,
+      );
       if (!matchingCurrencyConfigs) {
         return;
       }
@@ -105,7 +111,6 @@ export class SuperfluidStripeConverterService
     return {
       productDetails,
       paymentDetails,
-      theme: stripeConfig.theme,
     };
   }
 }

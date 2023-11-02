@@ -3,21 +3,20 @@ import Layout from '@/components/Layout';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
-import { ThemeOptions, ThemeProvider } from '@mui/material';
+import { Box, ThemeOptions } from '@mui/material';
 import { WidgetProps } from '@superfluid-finance/widget';
 import { GetServerSideProps } from 'next';
 import { use, useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
+import { LookAndFeelConfig, ProductConfig } from './pricing';
 
 type Props = {
-  product: string;
-  productDetails: WidgetProps['productDetails'];
-  paymentDetails: WidgetProps['paymentDetails'];
-  theme: ThemeOptions
-}
+  productConfig: ProductConfig;
+  theme: ThemeOptions;
+};
 
-export default function Product({ product: productId, ...config }: Props) {
+export default function Product({ productConfig, theme }: Props) {
   // TODO(KK): validate params?
 
   const [mounted, setMounted] = useState(false);
@@ -25,27 +24,27 @@ export default function Product({ product: productId, ...config }: Props) {
 
   // TODO(KK): handle theme any
   return (
-    <Layout themeOptions={config.theme}>
+    <Layout themeOptions={theme}>
       <WagmiProvider>
-        <ConnectKitProvider mode={config.theme.palette?.mode}>
-          {!!config && mounted && (
+        <ConnectKitProvider mode={theme.palette?.mode}>
+          {!!productConfig && mounted && (
             <SupefluidWidgetProvider
-              productId={productId}
-              productDetails={config.productDetails}
-              paymentDetails={config.paymentDetails}
-              theme={config.theme}
+              productId={productConfig.stripeProduct.id}
+              productDetails={productConfig.productDetails}
+              paymentDetails={productConfig.paymentDetails}
+              theme={theme}
               personalData={[
                 {
-                  "name": "email",
-                  "label": "Email",
-                  "required": {
-                    "pattern": "/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g",
-                    "message": "Invalid email address"
-                  }
+                  name: 'email',
+                  label: 'Email',
+                  required: {
+                    pattern: '/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g',
+                    message: 'Invalid email address',
+                  },
                 },
 
                 //This doesn't work
-                // EmailField 
+                // EmailField
               ]}
             />
           )}
@@ -59,27 +58,27 @@ export const getServerSideProps = (async (context) => {
   const productId = context.query.product as string;
 
   const client = createClient<paths>({
-    baseUrl: internalConfig.getBackendBaseUrl().toString()
+    baseUrl: internalConfig.getBackendBaseUrl().toString(),
   });
 
-  const { response } = await client.GET("/superfluid-stripe-converter/product", {
-    params: {
-      query: {
-        "product-id": productId
-      }
-    }
-  });
+  const [{ response: productResponse }, { response: lookAndFeelResponse }] = await Promise.all([
+    client.GET('/superfluid-stripe-converter/product', {
+      params: {
+        query: {
+          'product-id': productId,
+        },
+      },
+    }),
+    client.GET('/superfluid-stripe-converter/look-and-feel'),
+  ]);
 
-  const config = (await response.json()) as {
-    productDetails: WidgetProps['productDetails'];
-    paymentDetails: WidgetProps['paymentDetails'];
-    theme: ThemeOptions;
-  };
+  const productConfig = (await productResponse.json()) as ProductConfig;
+  const { theme } = (await lookAndFeelResponse.json()) as LookAndFeelConfig;
 
   return {
     props: {
-      product: productId,
-      ...config
-    }
-  }
-}) satisfies GetServerSideProps<Props>
+      productConfig,
+      theme,
+    },
+  };
+}) satisfies GetServerSideProps<Props>;
