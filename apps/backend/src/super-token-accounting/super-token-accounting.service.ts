@@ -53,17 +53,19 @@ export class SuperTokenAccountingService {
     if (error) {
       throw error;
     } else {
-      const streamPeriods = response.data.filter(
-        (x) => x.token!.id!.toLowerCase() === superTokenAddress.toLowerCase(),
-      );
-      const sumTransferred = streamPeriods.reduce(
-        (acc, { sender, totalAmountStreamed }) =>
-          acc +
-          (sender.toLowerCase() === senderAddress.toLowerCase() ? 1n : -1n) *
-            (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
-        0n,
-      );
-      return sumTransferred;
+      // const streamPeriods = response.data.filter(
+      //   (x) => x.token!.id!.toLowerCase() === superTokenAddress.toLowerCase(),
+      // );
+      // const sumTransferred = streamPeriods.reduce(
+      //   (acc, { sender, totalAmountStreamed }) =>
+      //     acc +
+      //     (sender.toLowerCase() === senderAddress.toLowerCase() ? 1n : -1n) *
+      //       (totalAmountStreamed ? BigInt(totalAmountStreamed) : 0n),
+      //   0n,
+      // );
+      // return sumTransferred;
+
+      return 0n;
     }
   }
 }

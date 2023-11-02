@@ -15,6 +15,11 @@ type ProductResponse = {
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
+type InvoiceResponse = {
+  stripeInvoice: Stripe.Invoice;
+  productConfig: ProductResponse;
+};
+
 @Controller('superfluid-stripe-converter')
 export class SuperfluidStripeConverterController {
   constructor(
@@ -92,6 +97,21 @@ export class SuperfluidStripeConverterController {
     const lookAndFeelConfig =
       await this.superfluidStripeConfigService.loadOrInitializeLookAndFeelConfig();
     return lookAndFeelConfig;
+  }
+
+  @Get('invoice')
+  async invoice(@Query('invoice-id') invoiceId: string): Promise<InvoiceResponse> {
+    const stripeInvoice = await this.stripeClient.invoices.retrieve(invoiceId);
+    const product = await this.stripeClient.products.retrieve(
+      stripeInvoice.lines.data[0].price?.product as string,
+    );
+
+    const productConfig = await this.mapStripeProductToCheckoutWidget(product.id);
+
+    return {
+      stripeInvoice,
+      productConfig,
+    };
   }
 }
 

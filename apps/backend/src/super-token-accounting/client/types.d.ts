@@ -3,14 +3,15 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-  '/v1/stream-periods': {
+  "/v1/stream-periods": {
     /** @description Fetch virtualized stream periods */
     get: {
       parameters: {
         query: {
           /** @description Number array for the Chain IDs you want to limit your accounting data to. */
-          chains: components['schemas']['Network'][];
+          chains: components["schemas"]["Network"][];
           /** @description The addresses array you’re getting accounting data for. */
           addresses: string[];
           /** @description The Unix timestamp where your accounting data is to start from. */
@@ -18,11 +19,11 @@ export interface paths {
           /** @description The Unix timestamp where your accounting data is to end. */
           end: number;
           /** @description When getting pricing data for each accounting record, you have the choice as to whether you want the instanteous price at the end of the timeframe of the accounting record or the average price over a certain lag from the end of the timeframe of the accounting record. */
-          priceGranularity: components['schemas']['VirtualizationPeriod'];
+          priceGranularity: components["schemas"]["VirtualizationPeriod"];
           /** @description The duration represented in each accounting record in your accounting data. (NB! Please use hourly period with small timeframe or single sender/receiver address.) */
-          virtualization: components['schemas']['VirtualizationPeriod'];
+          virtualization: components["schemas"]["VirtualizationPeriod"];
           /** @description The currency with which price data will be displayed in. */
-          currency: components['schemas']['Currency'];
+          currency: components["schemas"]["Currency"];
           /** @description Addresses that are either sending or receiving streams from the addresses account(s) that you want to limit your accounting data to. */
           counterparties?: string[];
         };
@@ -31,7 +32,7 @@ export interface paths {
         /** @description Array of stream periods containing virtualized periods. */
         200: {
           content: {
-            'application/json': components['schemas']['StreamPeriod'][];
+            "application/json": components["schemas"]["StreamPeriod"];
           };
         };
       };
@@ -44,25 +45,9 @@ export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
     /** @enum {string} */
-    VirtualizationPeriod: 'hour' | 'day' | 'week' | 'month' | 'year';
+    VirtualizationPeriod: "hour" | "day" | "week" | "month" | "year";
     /** @enum {string} */
-    Currency:
-      | 'USD'
-      | 'EUR'
-      | 'AUD'
-      | 'BRL'
-      | 'CAD'
-      | 'CHF'
-      | 'CNY'
-      | 'GBP'
-      | 'HKD'
-      | 'INR'
-      | 'JPY'
-      | 'KRW'
-      | 'MXN'
-      | 'NOK'
-      | 'RUB'
-      | 'SEK';
+    Currency: "USD" | "EUR" | "AUD" | "BRL" | "CAD" | "CHF" | "CNY" | "GBP" | "HKD" | "INR" | "JPY" | "KRW" | "MXN" | "NOK" | "RUB" | "SEK";
     /** @enum {number} */
     Network: 1 | 10 | 56 | 100 | 137 | 42161 | 42220 | 43114 | 8453;
     Token: {
@@ -80,8 +65,8 @@ export interface components {
     StreamPeriod: {
       id: string;
       flowRate: string;
-      token: components['schemas']['Token'];
-      chainId: components['schemas']['Network'];
+      token: components["schemas"]["Token"];
+      chainId: components["schemas"]["Network"];
       sender: string;
       receiver: string;
       startedAtTimestamp: number;
@@ -91,11 +76,12 @@ export interface components {
       stoppedAtBlockNumber?: number;
       stoppedAtEvent?: string;
       totalAmountStreamed: string;
-      virtualPeriods?: components['schemas']['VirtualPeriod'][];
+      virtualPeriods?: components["schemas"]["VirtualPeriod"][];
     };
   };
   responses: never;
-  parameters: {};
+  parameters: {
+  };
   requestBodies: never;
   headers: never;
   pathItems: never;
