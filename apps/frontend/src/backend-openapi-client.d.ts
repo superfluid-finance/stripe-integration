@@ -3,24 +3,28 @@
  * Do not make direct changes to the file.
  */
 
+
 export interface paths {
-  '/stripe/webhook': {
-    post: operations['StripeWebhookController_handleWebhook'];
+  "/stripe/webhook": {
+    post: operations["StripeWebhookController_handleWebhook"];
   };
-  '/checkout-session/create': {
-    post: operations['CheckoutSessionController_createSession'];
+  "/checkout-session/create": {
+    post: operations["CheckoutSessionController_createSession"];
   };
-  '/superfluid-stripe-converter/product': {
-    get: operations['SuperfluidStripeConverterController_mapStripeProductToCheckoutWidget'];
+  "/superfluid-stripe-converter/product": {
+    get: operations["SuperfluidStripeConverterController_mapStripeProductToCheckoutWidget"];
   };
-  '/superfluid-stripe-converter/products': {
-    get: operations['SuperfluidStripeConverterController_products'];
+  "/superfluid-stripe-converter/products": {
+    get: operations["SuperfluidStripeConverterController_products"];
   };
-  '/superfluid-stripe-converter/look-and-feel': {
-    get: operations['SuperfluidStripeConverterController_lookAndFeel'];
+  "/superfluid-stripe-converter/look-and-feel": {
+    get: operations["SuperfluidStripeConverterController_lookAndFeel"];
   };
-  '/health': {
-    get: operations['HealthController_check'];
+  "/superfluid-stripe-converter/invoice": {
+    get: operations["SuperfluidStripeConverterController_invoice"];
+  };
+  "/health": {
+    get: operations["HealthController_check"];
   };
 }
 
@@ -49,10 +53,11 @@ export type $defs = Record<string, never>;
 export type external = Record<string, never>;
 
 export interface operations {
+
   StripeWebhookController_handleWebhook: {
     parameters: {
       header: {
-        'stripe-signature': string;
+        "stripe-signature": string;
       };
     };
     responses: {
@@ -64,12 +69,12 @@ export interface operations {
   CheckoutSessionController_createSession: {
     parameters: {
       header: {
-        'x-api-key': string;
+        "x-api-key": string;
       };
     };
     requestBody: {
       content: {
-        'application/json': components['schemas']['CreateSessionData'];
+        "application/json": components["schemas"]["CreateSessionData"];
       };
     };
     responses: {
@@ -81,7 +86,7 @@ export interface operations {
   SuperfluidStripeConverterController_mapStripeProductToCheckoutWidget: {
     parameters: {
       query: {
-        'product-id': string;
+        "product-id": string;
       };
     };
     responses: {
@@ -104,12 +109,24 @@ export interface operations {
       };
     };
   };
+  SuperfluidStripeConverterController_invoice: {
+    parameters: {
+      query: {
+        "invoice-id": string;
+      };
+    };
+    responses: {
+      200: {
+        content: never;
+      };
+    };
+  };
   HealthController_check: {
     responses: {
       /** @description The Health Check is successful */
       200: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @example ok */
             status?: string;
             /**
@@ -119,19 +136,19 @@ export interface operations {
              *   }
              * }
              */
-            info?: {
+            info?: ({
               [key: string]: {
                 status?: string;
                 [key: string]: string | undefined;
               };
-            } | null;
+            }) | null;
             /** @example {} */
-            error?: {
+            error?: ({
               [key: string]: {
                 status?: string;
                 [key: string]: string | undefined;
               };
-            } | null;
+            }) | null;
             /**
              * @example {
              *   "database": {
@@ -151,7 +168,7 @@ export interface operations {
       /** @description The Health Check is not successful */
       503: {
         content: {
-          'application/json': {
+          "application/json": {
             /** @example error */
             status?: string;
             /**
@@ -161,12 +178,12 @@ export interface operations {
              *   }
              * }
              */
-            info?: {
+            info?: ({
               [key: string]: {
                 status?: string;
                 [key: string]: string | undefined;
               };
-            } | null;
+            }) | null;
             /**
              * @example {
              *   "redis": {
@@ -175,12 +192,12 @@ export interface operations {
              *   }
              * }
              */
-            error?: {
+            error?: ({
               [key: string]: {
                 status?: string;
                 [key: string]: string | undefined;
               };
-            } | null;
+            }) | null;
             /**
              * @example {
              *   "database": {

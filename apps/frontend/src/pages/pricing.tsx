@@ -33,6 +33,11 @@ export type ProductConfig = {
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
+export type InvoiceConfig = {
+  stripeInvoice: Stripe.Invoice;
+  productConfig: ProductConfig;
+};
+
 export type LookAndFeelConfig = { theme: ThemeOptions };
 
 type Props = {

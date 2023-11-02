@@ -8,27 +8,29 @@ import { GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
-import { LookAndFeelConfig, ProductConfig } from './pricing';
+import { InvoiceConfig, LookAndFeelConfig, ProductConfig } from '../pricing';
 
 type Props = {
-  productConfig: ProductConfig;
+  invoiceConfig: InvoiceConfig;
   theme: ThemeOptions;
 };
 
-export default function Product({ productConfig, theme }: Props) {
-  // TODO(KK): validate params?
-
+export default function Invoice({ invoiceConfig, theme }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const { productConfig, stripeInvoice } = invoiceConfig;
+
+  console.log(invoiceConfig);
 
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
       <WagmiProvider>
         <ConnectKitProvider mode={theme.palette?.mode}>
-          {!!productConfig && mounted && (
+          {!!invoiceConfig && mounted && (
             <SupefluidWidgetProvider
-              productId={productConfig.stripeProduct.id}
+              productId={invoiceConfig.productConfig.stripeProduct.id}
               productDetails={productConfig.productDetails}
               paymentDetails={productConfig.paymentDetails}
               theme={theme}
@@ -36,10 +38,12 @@ export default function Product({ productConfig, theme }: Props) {
                 {
                   name: 'email',
                   label: 'Email',
+                  disabled: true,
                   required: {
                     pattern: '/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g',
                     message: 'Invalid email address',
                   },
+                  value: stripeInvoice.customer_email ?? '',
                 },
 
                 //This doesn't work
@@ -54,29 +58,29 @@ export default function Product({ productConfig, theme }: Props) {
 }
 
 export const getServerSideProps = (async (context) => {
-  const productId = context.query.product as string;
+  const invoiceId = context.query.id as string;
 
   const client = createClient<paths>({
     baseUrl: internalConfig.getBackendBaseUrl().toString(),
   });
 
-  const [{ response: productResponse }, { response: lookAndFeelResponse }] = await Promise.all([
-    client.GET('/superfluid-stripe-converter/product', {
+  const [{ response: invoiceResponse }, { response: lookAndFeelResponse }] = await Promise.all([
+    client.GET('/superfluid-stripe-converter/invoice', {
       params: {
         query: {
-          'product-id': productId,
+          'invoice-id': invoiceId,
         },
       },
     }),
     client.GET('/superfluid-stripe-converter/look-and-feel'),
   ]);
 
-  const productConfig = (await productResponse.json()) as ProductConfig;
+  const invoiceConfig = (await invoiceResponse.json()) as InvoiceConfig;
   const { theme } = (await lookAndFeelResponse.json()) as LookAndFeelConfig;
 
   return {
     props: {
-      productConfig,
+      invoiceConfig,
       theme,
     },
   };
