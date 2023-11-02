@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
 import { LookAndFeelConfig, ProductConfig } from './pricing';
+import { EmailField } from '@superfluid-finance/widget/utils';
 
 type Props = {
   productConfig: ProductConfig;
@@ -32,19 +33,7 @@ export default function Product({ productConfig, theme }: Props) {
               productDetails={productConfig.productDetails}
               paymentDetails={productConfig.paymentDetails}
               theme={theme}
-              personalData={[
-                {
-                  name: 'email',
-                  label: 'Email',
-                  required: {
-                    pattern: '/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g',
-                    message: 'Invalid email address',
-                  },
-                },
-
-                //This doesn't work
-                // EmailField
-              ]}
+              personalData={[EmailField]}
             />
           )}
         </ConnectKitProvider>

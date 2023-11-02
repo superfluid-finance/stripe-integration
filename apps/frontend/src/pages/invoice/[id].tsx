@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
 import { InvoiceConfig, LookAndFeelConfig, ProductConfig } from '../pricing';
+import { EmailField } from '@superfluid-finance/widget/utils';
 
 type Props = {
   invoiceConfig: InvoiceConfig;
@@ -36,18 +37,11 @@ export default function Invoice({ invoiceConfig, theme }: Props) {
               theme={theme}
               personalData={[
                 {
-                  name: 'email',
-                  label: 'Email',
+                  ...EmailField,
+
                   disabled: true,
-                  required: {
-                    pattern: '/^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$/g',
-                    message: 'Invalid email address',
-                  },
                   value: stripeInvoice.customer_email ?? '',
                 },
-
-                //This doesn't work
-                // EmailField
               ]}
             />
           )}
