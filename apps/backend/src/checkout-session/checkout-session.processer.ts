@@ -28,6 +28,7 @@ export type SuperfluidStripeSubscriptionsMetadata = SuperfluidNamespace<{
   token_address: Address;
   sender_address: Address;
   receiver_address: Address;
+  require_upfront_transfer: string;
   // TODO(KK): Any value in storing flow rate here?
 }>;
 
@@ -39,6 +40,7 @@ export const SuperfluidStripeSubscriptionsMetadataSchema: z.ZodType<SuperfluidSt
       superfluid_token_address: AddressSchema,
       superfluid_sender_address: AddressSchema,
       superfluid_receiver_address: AddressSchema,
+      superfluid_require_upfront_transfer: z.string().toLowerCase().pipe(z.literal("true").or(z.literal("false")))
     })
     .strip();
 
@@ -114,6 +116,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
         email: data.email,
       })
       .autoPagingToArray(DEFAULT_PAGING);
+
     let customerId: CustomerId;
     if (customers.length === 0) {
       // Create customer if it doesn't exist? Probably don't do it too eagerly without first receiving some payment on the block-chain?
@@ -122,10 +125,12 @@ export class CheckoutSessionProcesser extends WorkerHost {
       const customerMetadata: SuperfluidStripeCustomerMetadata = {
         superfluid_NOTE: 'This user was auto-generated.',
       };
+
       const customerCreateParams: Stripe.CustomerCreateParams = {
         email: data.email,
         metadata: customerMetadata,
       };
+
       const customersCreateResponse =
         await this.stripeClient.customers.create(customerCreateParams);
       customerId = customersCreateResponse.id;
@@ -137,12 +142,15 @@ export class CheckoutSessionProcesser extends WorkerHost {
       );
     }
 
+    const requireUpfrontTransfer = false; // TODO(KK): Solve this when Super Token transfer accounting introduced to accounting API
+
     const subscriptionMetadata: SuperfluidStripeSubscriptionsMetadata = {
-      superfluid_NOTE: 'Auto-generated. Be careful when editing!',
+      superfluid_NOTE: 'Auto-generated. Please be careful when editing!',
       superfluid_chain_id: data.chainId,
       superfluid_token_address: data.superTokenAddress as Address,
       superfluid_sender_address: data.senderAddress as Address,
       superfluid_receiver_address: data.receiverAddress as Address,
+      superfluid_require_upfront_transfer: requireUpfrontTransfer.toString() 
     };
 
     // Note that we are creating a Stripe Subscription here that will send invoices and e-mails to the user.
@@ -154,7 +162,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       // Note that there is also 1 hour "draft" period.
       // Sending an invoice to the user straight away is likely not preferrable for A LOT of scenarios.
       // Consider a better solution or an environment variable here!
-      days_until_due: 0,
+      days_until_due: requireUpfrontTransfer ? 0 : undefined, // When undefined, the default behaviour should be to set it as the last day of the first subscription period.
       currency: currency,
       items: [
         {
@@ -168,6 +176,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       ],
       metadata: subscriptionMetadata,
     };
+    
     const subscriptionsCreateResponse =
       await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
 

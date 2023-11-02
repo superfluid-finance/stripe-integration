@@ -4,7 +4,6 @@ import { StripeListenerController } from './stripe-listener.controller';
 import { QUEUE_NAME, registerQueueModule } from './stripe-listener.queue';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { StripeModule } from '@golevelup/nestjs-stripe';
 import { PaymentVerificationModule } from 'src/payment-verification/payment-verification.module';
 import { registerStripeModule } from 'src/stripe-module-config';
 
@@ -26,7 +25,7 @@ export class StripeListenerModule {
       {
         jobId: STRIPE_LISTENER_JOB_NAME, // This avoids duplicate repeating jobs being created.
         repeat: {
-          pattern: '* * * * *', // Repeat every minute. Check with: https://crontab.guru/
+          pattern: '*/3 * * * *', // Repeat every minute. Check with: https://crontab.guru/
         },
       }, // options
     );
