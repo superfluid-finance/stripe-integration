@@ -8,6 +8,7 @@ import { AddressSchema, CreateSessionData } from './checkout-session.controller'
 import { SuperfluidStripeConverterService } from 'src/superfluid-stripe-converter/superfluid-stripe-converter.service';
 import { DEFAULT_PAGING } from 'src/stripe-module-config';
 import { z } from 'zod';
+import { SECONDS_IN_A_DAY, mapTimePeriodToSeconds } from './time-period';
 
 export const CHECKOUT_SESSION_JOB_NAME = 'checkout-session';
 
@@ -156,13 +157,14 @@ export class CheckoutSessionProcesser extends WorkerHost {
     // Note that we are creating a Stripe Subscription here that will send invoices and e-mails to the user.
     // There could be scenarios where someone was using the checkout widget to pay for an existing subscription.
     // Then we wouldn't want to create a new subscription here...
+    const daysUntilDue = requireUpfrontTransfer ? 0 : mapTimePeriodToSeconds(price.recurring!.interval) / SECONDS_IN_A_DAY
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       collection_method: 'send_invoice',
       // Note that there is also 1 hour "draft" period.
       // Sending an invoice to the user straight away is likely not preferrable for A LOT of scenarios.
       // Consider a better solution or an environment variable here!
-      days_until_due: requireUpfrontTransfer ? 0 : undefined, // When undefined, the default behaviour should be to set it as the last day of the first subscription period.
+      days_until_due: Number(daysUntilDue),
       currency: currency,
       items: [
         {

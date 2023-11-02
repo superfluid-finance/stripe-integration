@@ -9,10 +9,6 @@ import { useModal } from 'connectkit';
 import { useMemo, useState } from 'react';
 import { useAccount, useMutation } from 'wagmi';
 
-import getConfig from 'next/config';
-
-const { publicRuntimeConfig } = getConfig();
-
 type Props = {
   productId: string;
   // setInitialChainId: (chainId: number | undefined) => void;
@@ -55,7 +51,7 @@ export default function SupefluidWidgetProvider({
   const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();
   const { address: accountAddress } = useAccount();
 
-  const eventListeners = useMemo<EventListeners>(
+  const eventListeners = useMemo<EventListeners>( 
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
@@ -68,6 +64,7 @@ export default function SupefluidWidgetProvider({
             senderAddress: accountAddress,
             receiverAddress: paymentOption.receiverAddress,
             email: email,
+            idempotencyKey: idempotencyKey
           };
           createSession(data);
         }
@@ -88,3 +85,5 @@ export default function SupefluidWidgetProvider({
     />
   );
 }
+
+const idempotencyKey = Math.random().toString(20).substr(2, 8); // Random key, generated once per front-end initialization.

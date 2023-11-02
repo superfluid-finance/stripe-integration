@@ -27,6 +27,8 @@ export class StripeListenerModule {
         repeat: {
           pattern: '*/3 * * * *', // Repeat every minute. Check with: https://crontab.guru/
         },
+        removeOnComplete: 50,
+        removeOnFail: 50
       }, // options
     );
     logger.debug('onModuleInit');
