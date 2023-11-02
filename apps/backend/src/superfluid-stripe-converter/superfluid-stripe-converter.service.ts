@@ -42,7 +42,7 @@ export class SuperfluidStripeConverterService
     chainId: number;
     address: string;
   }): Promise<StripeCurrencyKey | undefined> {
-    const stripeConfig = await this.stripeConfigService.loadConfig();
+    const stripeConfig = await this.stripeConfigService.loadOrInitializeConfig();
 
     const addressLowerCased = superToken.address.toLowerCase();
     const configEntry = stripeConfig.chains.find(
@@ -58,7 +58,7 @@ export class SuperfluidStripeConverterService
   async mapStripeProductToWidgetConfig(stripe: Input): Promise<Output> {
     // TODO(KK): Enforce it's a subscription-based product?
 
-    const stripeConfig = await this.stripeConfigService.loadConfig();
+    const stripeConfig = await this.stripeConfigService.loadOrInitializeConfig();
 
     const productDetails: Output['productDetails'] = {
       name: stripe.product.name,

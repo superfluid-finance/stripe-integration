@@ -33,7 +33,7 @@ export class SuperfluidStripeConverterController {
           active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
-      this.superfluidStripeConfigService.loadConfig(),
+      this.superfluidStripeConfigService.loadOrInitializeConfig(),
     ]);
 
     // check eligibility somewhere?
@@ -60,7 +60,7 @@ export class SuperfluidStripeConverterController {
           active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
-      this.superfluidStripeConfigService.loadConfig(),
+      this.superfluidStripeConfigService.loadOrInitializeConfig(),
     ]);
 
     // check eligibility somewhere?

@@ -4,63 +4,8 @@ import { DEFAULT_PAGING } from 'src/stripe-module-config';
 import Stripe from 'stripe';
 import { Address, ChainId, StripeCurrencyKey } from './basic-types';
 import { isAddress } from 'viem';
-
-const CUSTOMER_EMAIL = 'stripe@superfluid.finance'; // This is the key for finding the customer.
-const LOOK_AND_FEEL_CUSTOMER_NAME = 'Superfluid ♥ Stripe: Look and Feel';
-const BLOCKCHAIN_CUSTOMER_NAME = 'Superfluid ♥ Stripe: Blockchain';
-
-const DEFAULT_LOOK_AND_FEEL_CUSTOMER = {
-  email: CUSTOMER_EMAIL,
-  name: LOOK_AND_FEEL_CUSTOMER_NAME,
-  description: 'Auto-generated fake customer for Superfluid integration.',
-  metadata: {
-    theme: `{"palette":{"mode":"light","primary":{"main":"#3f51b5"},"secondary":{"main":"#f50057"}}}`,
-  },
-} as const satisfies Stripe.CustomerCreateParams;
-
-const DEFAULT_BLOCKCHAIN_CUSTOMER = {
-  email: CUSTOMER_EMAIL,
-  name: BLOCKCHAIN_CUSTOMER_NAME,
-  description: 'Auto-generated fake customer for Superfluid integration.', // TODO(KK): Add documentation here.
-  metadata: {
-    chain_43114_usd_token: '0x288398f314d472b82c44855f3f6ff20b633c2a97',
-    chain_43114_receiver: '0x...',
-    chain_42161_usd_token: '0x1dbc1809486460dcd189b8a15990bca3272ee04e',
-    chain_42161_receiver: '0x...',
-    chain_100_usd_token: '0x1234756ccf0660e866305289267211823ae86eec',
-    chain_100_receiver: '0x...',
-    chain_1_usd_token: '0x1ba8603da702602a75a25fca122bb6898b8b1282',
-    chain_1_receiver: '0x...',
-    chain_10_usd_token: '0x8430f084b939208e2eded1584889c9a66b90562f',
-    chain_10_receiver: '0x...',
-    chain_137_usd_token: '0xcaa7349cea390f89641fe306d93591f87595dc1f',
-    chain_137_receiver: '0x...',
-    chain_5_usd_token: '0x8ae68021f6170e5a766be613cea0d75236ecca9a',
-    chain_5_receiver: '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045', // vitalik.eth
-    default_receiver: '',
-  },
-} as const satisfies Stripe.CustomerCreateParams;
-
-const FIRST_TIME_EXAMPLE_PRODUCT: Stripe.ProductCreateParams = {
-  name: 'Example Superfluid Integration Product',
-  features: [
-    { name: 'decentralized' },
-    { name: 'pseudoanonymous' },
-    { name: 'pay and get paid every second' },
-    { name: 'complete control of your money streams' },
-  ],
-  default_price_data: {
-    currency: 'USD',
-    recurring: {
-      interval: 'month',
-    },
-    unit_amount: 500,
-  },
-
-  // metadata: {
-  //   superfluid: `The value here does not matter. When "superfluid" metadata key is specified then it is valid for the Superfluid integration.`
-  // }
-};
+import { BLOCKCHAIN_CUSTOMER_NAME, CUSTOMER_EMAIL, DEFAULT_LOOK_AND_FEEL_CUSTOMER, FIRST_TIME_EXAMPLE_PRODUCT, LOOK_AND_FEEL_CUSTOMER_NAME, createDefaultBlockChainCustomer } from './stripe-entities';
+import { ConfigService } from '@nestjs/config';
 
 export type IntegrationConfig = {
   version: string;
@@ -70,18 +15,18 @@ export type IntegrationConfig = {
 };
 
 interface GlobalConfigCustomerManager {
-  loadConfig(): Promise<IntegrationConfig>;
+  loadOrInitializeConfig(): Promise<IntegrationConfig>;
 }
 
 @Injectable()
 export class SuperfluidStripeConfigService implements GlobalConfigCustomerManager {
-  constructor(@InjectStripeClient() private readonly stripeClient: Stripe) {}
+  constructor(@InjectStripeClient() private readonly stripeClient: Stripe, private readonly configService: ConfigService) {}
 
-  async loadConfig(): Promise<IntegrationConfig> {
+  async loadOrInitializeConfig(): Promise<IntegrationConfig> {
+    const stripeTestMode = this.configService.get("STRIPE_TEST_MODE") === "true";
+
     // TODO: caching
     // TODO: use better constants
-
-    let configurationCustomer: Stripe.Customer;
 
     const customers = await this.stripeClient.customers
       .list({
@@ -92,13 +37,15 @@ export class SuperfluidStripeConfigService implements GlobalConfigCustomerManage
     let blockchainCustomer = customers.find((x) => x.name === BLOCKCHAIN_CUSTOMER_NAME);
     let lookAndFeelCustomer = customers.find((x) => x.name === LOOK_AND_FEEL_CUSTOMER_NAME);
 
-    const isFirstTimeUsage = !blockchainCustomer && !lookAndFeelCustomer;
-    if (isFirstTimeUsage) {
-      await this.stripeClient.products.create(FIRST_TIME_EXAMPLE_PRODUCT);
+    if (stripeTestMode) {
+      const isFirstTimeUsage = !blockchainCustomer && !lookAndFeelCustomer;
+      if (isFirstTimeUsage) {
+        await this.stripeClient.products.create(FIRST_TIME_EXAMPLE_PRODUCT);
+      }
     }
 
     if (!blockchainCustomer) {
-      blockchainCustomer = await this.stripeClient.customers.create(DEFAULT_BLOCKCHAIN_CUSTOMER);
+      blockchainCustomer = await this.stripeClient.customers.create(createDefaultBlockChainCustomer(stripeTestMode));
     }
 
     if (!lookAndFeelCustomer) {

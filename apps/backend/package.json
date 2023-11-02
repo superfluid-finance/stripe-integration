@@ -55,6 +55,7 @@
     "@nestjs/platform-express": "^10.2.7",
     "@nestjs/swagger": "^7.1.14",
     "@nestjs/terminus": "^10.1.1",
+    "@superfluid-finance/tokenlist": "^3.3.2",
     "@superfluid-finance/widget": "^0.4.7",
     "@types/lodash": "^4.14.200",
     "bullmq": "^4.12.6",

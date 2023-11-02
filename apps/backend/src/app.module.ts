@@ -52,4 +52,6 @@ const registerBullModule = () =>
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  
+}
