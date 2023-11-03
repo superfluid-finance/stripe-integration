@@ -45,7 +45,13 @@ export default function Home({ theme }: Props) {
             height: '100%',
           }}
         >
-          <Button component={Link} href="/pricing" variant="contained" size="medium">
+          <Button
+            component={Link}
+            href="/pricing"
+            variant="contained"
+            size="large"
+            sx={{ width: '200px' }}
+          >
             Continue
           </Button>
         </Box>

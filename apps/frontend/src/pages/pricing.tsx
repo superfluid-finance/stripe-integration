@@ -2,7 +2,7 @@ import { paths } from '@/backend-openapi-client';
 import Layout from '@/components/Layout';
 import internalConfig from '@/internalConfig';
 import StarIcon from '@mui/icons-material/StarBorder';
-import { Stack, useTheme } from '@mui/material';
+import { List, ListItem, ListItemIcon, ListItemText, Stack, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -17,6 +17,7 @@ import { GetServerSideProps } from 'next';
 import createClient from 'openapi-fetch';
 import { FC, useMemo } from 'react';
 import Stripe from 'stripe';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 type Tier = {
   title: string;
@@ -82,20 +83,14 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
             /mo
           </Typography>
         </Box>
-        <ul>
+        <List dense>
           {tier.description.map((line) => (
-            <Typography
-              component="li"
-              variant="subtitle1"
-              align="center"
-              key={line}
-              dangerouslySetInnerHTML={{ __html: line }}
-            >
-              {/* TODO(KK): clean up */}
-              {/* {line} */}
-            </Typography>
+            <ListItem key={line} disableGutters>
+              <ArrowRightIcon />
+              <ListItemText primary={line} />
+            </ListItem>
           ))}
-        </ul>
+        </List>
       </CardContent>
       <CardActions>
         <Button
