@@ -43,14 +43,17 @@ type Props = {
 export default function Pricing({ productConfigs, theme }: Props) {
   const tiers = useMemo<Tier[]>(
     () =>
-      productConfigs.map((p) => ({
-        title: p.stripeProduct.name,
-        description: p.stripeProduct.features.map((f) => f.name),
-        price: 'X',
-        buttonText: 'Get Started',
-        buttonVariant: 'contained',
-        productId: p.stripeProduct.id,
-      })),
+      productConfigs.map((x) => {
+        const price = x.stripeProduct.default_price as Stripe.Price | null;
+        return ({
+          title: x.stripeProduct.name,
+          description: x.stripeProduct.features.map((f) => f.name),
+          price: price && price.unit_amount ? new Intl.NumberFormat('en-US', { style: 'currency', currency: price.currency }).format(price.unit_amount) : "",
+          buttonText: 'Get Started',
+          buttonVariant: 'contained',
+          productId: x.stripeProduct.id,
+        });
+      }),
     [productConfigs],
   );
 
@@ -98,7 +101,7 @@ export default function Pricing({ productConfigs, theme }: Props) {
                     }}
                   >
                     <Typography component="h2" variant="h3" color="text.primary">
-                      ${tier.price}
+                      {tier.price}
                     </Typography>
                     <Typography variant="h6" color="text.secondary">
                       /mo

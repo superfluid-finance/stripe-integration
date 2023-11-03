@@ -9,11 +9,19 @@ import {
   SuperfluidStripeConfigService,
 } from './superfluid-stripe-config/superfluid-stripe-config.service';
 
+type StripeProductWithPriceExpanded = Stripe.Product & {
+  default_price: Stripe.Price
+}
+
 type ProductResponse = {
   stripeProduct: Stripe.Product;
   productDetails: WidgetProps['productDetails'];
   paymentDetails: WidgetProps['paymentDetails'];
 };
+
+type ProductsResponse = (ProductResponse & {
+  stripeProduct: StripeProductWithPriceExpanded
+})[]
 
 @Controller('superfluid-stripe-converter')
 export class SuperfluidStripeConverterController {
@@ -33,7 +41,7 @@ export class SuperfluidStripeConverterController {
       this.stripeClient.prices
         .list({
           product: productId,
-          active: true,
+          active: true
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.superfluidStripeConfigService.loadOrInitializeBlockchainConfig(),
@@ -51,11 +59,12 @@ export class SuperfluidStripeConverterController {
   }
 
   @Get('products')
-  async products(): Promise<ProductResponse[]> {
-    const [stripeProducts, stripePrices, blockchainConfig] = await Promise.all([
+  async products(): Promise<ProductsResponse> {
+    const [stripeProducts_, stripePrices, blockchainConfig] = await Promise.all([
       this.stripeClient.products
         .list({
           active: true,
+          expand: ["data.default_price"]
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.stripeClient.prices
@@ -65,6 +74,8 @@ export class SuperfluidStripeConverterController {
         .autoPagingToArray(DEFAULT_PAGING),
       this.superfluidStripeConfigService.loadOrInitializeCompleteConfig(),
     ]);
+
+    const stripeProducts = stripeProducts_ as StripeProductWithPriceExpanded[];
 
     // check eligibility somewhere?
 
