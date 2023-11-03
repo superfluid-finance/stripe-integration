@@ -26,6 +26,7 @@ export class CreateSessionData {
   @ApiProperty() senderAddress: Address;
   @ApiProperty() receiverAddress: Address;
   @ApiProperty() email: string;
+  @ApiProperty() idempotencyKey: string;
 
   static schema: z.ZodType<CreateSessionData> = z
     .object({
@@ -35,6 +36,7 @@ export class CreateSessionData {
       senderAddress: AddressSchema,
       receiverAddress: AddressSchema,
       email: z.string().trim().max(320).email(),
+      idempotencyKey: z.string(),
     })
     .strip();
 }
@@ -76,7 +78,7 @@ export class CheckoutSessionController {
       jobId: jobId,
       // Remove finished job ASAP in case a new fresh job is triggered.
       removeOnComplete: false,
-      removeOnFail: true,
+      removeOnFail: false,
     });
   }
 

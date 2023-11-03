@@ -3,8 +3,6 @@ import internalConfig from '@/internalConfig';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import createClient from 'openapi-fetch';
 
-// import { } "@/backend-openapi-client"
-
 export type CreateSessionData = {
   productId: string;
   chainId: number;
@@ -12,6 +10,7 @@ export type CreateSessionData = {
   senderAddress: string;
   receiverAddress: string;
   email: string;
+  idempotencyKey: string;
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

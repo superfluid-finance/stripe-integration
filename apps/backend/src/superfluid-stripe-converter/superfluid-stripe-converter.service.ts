@@ -98,7 +98,7 @@ export class SuperfluidStripeConverterService
             amountEther: amount,
             period: p.recurring!.interval,
           },
-          transferAmountEther: amount,
+          // transferAmountEther: amount,
         };
         paymentOptions.push(paymentOption);
       }

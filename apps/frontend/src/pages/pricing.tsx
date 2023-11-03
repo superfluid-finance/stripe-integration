@@ -1,22 +1,23 @@
-import { ThemeOptions } from '@mui/material/styles';
+import { paths } from '@/backend-openapi-client';
+import Layout from '@/components/Layout';
+import internalConfig from '@/internalConfig';
+import StarIcon from '@mui/icons-material/StarBorder';
+import { List, ListItem, ListItemIcon, ListItemText, Stack, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Grid from '@mui/material/Grid';
-import StarIcon from '@mui/icons-material/StarBorder';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Layout from '@/components/Layout';
+import Typography from '@mui/material/Typography';
+import { ThemeOptions } from '@mui/material/styles';
+import { WidgetProps } from '@superfluid-finance/widget';
 import { GetServerSideProps } from 'next';
 import createClient from 'openapi-fetch';
-import { paths } from '@/backend-openapi-client';
-import internalConfig from '@/internalConfig';
-import { WidgetProps } from '@superfluid-finance/widget';
+import { FC, useMemo } from 'react';
 import Stripe from 'stripe';
-import { useMemo } from 'react';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 type Tier = {
   title: string;
@@ -45,17 +46,92 @@ type Props = {
   theme: ThemeOptions;
 };
 
+const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
+  const theme = useTheme();
+
+  // Enterprise card is full width at sm breakpoint
+  return (
+    <Card
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: 'calc((100% - 40px) / 3)',
+        width: '100%',
+        [theme.breakpoints.down('md')]: { maxWidth: 'calc((100% - 20px) / 2)' },
+        [theme.breakpoints.down('sm')]: { maxWidth: '100%' },
+      }}
+    >
+      <CardHeader
+        title={tier.title}
+        // subheader={tier.subheader}
+        titleTypographyProps={{ align: 'center' }}
+        action={tier.title === 'Pro' ? <StarIcon /> : null}
+        subheaderTypographyProps={{
+          align: 'center',
+        }}
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
+        }}
+      />
+      <CardContent sx={{ flex: 1 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'baseline',
+            mb: 2,
+          }}
+        >
+          <Typography component="h2" variant="h3" color="text.primary">
+            {tier.price}
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            /mo
+          </Typography>
+        </Box>
+        <List dense>
+          {tier.description.map((line) => (
+            <ListItem key={line} disableGutters>
+              <ArrowRightIcon />
+              <ListItemText primary={line} />
+            </ListItem>
+          ))}
+        </List>
+      </CardContent>
+      <CardActions>
+        <Button
+          fullWidth
+          variant={tier.buttonVariant as 'outlined' | 'contained'}
+          href={`${tier.productId}`}
+        >
+          {tier.buttonText}
+        </Button>
+      </CardActions>
+    </Card>
+  );
+};
+
 export default function Pricing({ productConfigs, theme }: Props) {
   const tiers = useMemo<Tier[]>(
     () =>
-      productConfigs.map((p) => ({
-        title: p.stripeProduct.name,
-        description: p.stripeProduct.features.map((f) => f.name),
-        price: 'X',
-        buttonText: 'Get Started',
-        buttonVariant: 'contained',
-        productId: p.stripeProduct.id,
-      })),
+      productConfigs.map((x) => {
+        const price = x.stripeProduct.default_price as Stripe.Price | null;
+        return {
+          title: x.stripeProduct.name,
+          description: x.stripeProduct.features.map((f) => f.name),
+          price:
+            price && price.unit_amount
+              ? new Intl.NumberFormat('en-US', {
+                  style: 'currency',
+                  currency: price.currency,
+                }).format(price.unit_amount)
+              : '',
+          buttonText: 'Get Started',
+          buttonVariant: 'contained',
+          productId: x.stripeProduct.id,
+        };
+      }),
     [productConfigs],
   );
 
@@ -66,77 +142,25 @@ export default function Pricing({ productConfigs, theme }: Props) {
         <Typography component="h1" variant="h2" align="center" color="text.primary" gutterBottom>
           Pricing
         </Typography>
-        <Typography variant="h5" align="center" color="text.secondary" component="p">
+        <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
           Quickly build an effective pricing table for your potential customers with this layout.
           It&apos;s built with default MUI components with little customization.
         </Typography>
       </Container>
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
-        <Grid container spacing={5} alignItems="flex-end">
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          alignItems="stretch"
+          justifyContent="center"
+          rowGap={4}
+          columnGap={2.5}
+        >
           {tiers.map((tier) => (
-            // Enterprise card is full width at sm breakpoint
-            <Grid item key={tier.title} xs={12} sm={tier.title === 'Enterprise' ? 12 : 6} md={4}>
-              <Card>
-                <CardHeader
-                  title={tier.title}
-                  // subheader={tier.subheader}
-                  titleTypographyProps={{ align: 'center' }}
-                  action={tier.title === 'Pro' ? <StarIcon /> : null}
-                  subheaderTypographyProps={{
-                    align: 'center',
-                  }}
-                  sx={{
-                    backgroundColor: (theme) =>
-                      theme.palette.mode === 'light'
-                        ? theme.palette.grey[200]
-                        : theme.palette.grey[700],
-                  }}
-                />
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'baseline',
-                      mb: 2,
-                    }}
-                  >
-                    <Typography component="h2" variant="h3" color="text.primary">
-                      ${tier.price}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      /mo
-                    </Typography>
-                  </Box>
-                  <ul>
-                    {tier.description.map((line) => (
-                      <Typography
-                        component="li"
-                        variant="subtitle1"
-                        align="center"
-                        key={line}
-                        dangerouslySetInnerHTML={{ __html: line }}
-                      >
-                        {/* TODO(KK): clean up */}
-                        {/* {line} */}
-                      </Typography>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    fullWidth
-                    variant={tier.buttonVariant as 'outlined' | 'contained'}
-                    href={`${tier.productId}`}
-                  >
-                    {tier.buttonText}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
+            <TierCard key={tier.title} tier={tier} />
           ))}
-        </Grid>
+        </Stack>
       </Container>
     </Layout>
   );
