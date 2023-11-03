@@ -36,7 +36,7 @@ export default function Product({ productConfig, theme }: Props) {
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
-      <Container>
+      <Container sx={{ mb: 2.5 }}>
         <Button component={NextLink} href="/pricing" color="primary" startIcon={<ArrowBackIcon />}>
           Back to products
         </Button>

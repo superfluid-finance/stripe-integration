@@ -48,7 +48,7 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
   return (
     <Card
       sx={{
-        maxWidth: 'calc((100% / 3) - 40px)',
+        maxWidth: 'calc((100% / 3) - 20px)',
         width: '100%',
         [theme.breakpoints.down('md')]: { maxWidth: 'calc((100% / 2) - 20px)' },
         [theme.breakpoints.down('sm')]: { maxWidth: '100%' },
@@ -142,10 +142,12 @@ export default function Pricing({ productConfigs, theme }: Props) {
       </Container>
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
-        <Stack alignItems="center" gap={2.5}>
+        <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2.5}>
           {tiers.map((tier) => (
             <TierCard key={tier.title} tier={tier} />
           ))}
+          <TierCard tier={tiers[0]} />
+          <TierCard tier={tiers[0]} />
         </Stack>
       </Container>
     </Layout>
