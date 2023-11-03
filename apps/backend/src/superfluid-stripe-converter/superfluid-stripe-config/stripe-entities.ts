@@ -14,7 +14,7 @@ export const DEFAULT_LOOK_AND_FEEL_CUSTOMER = {
   name: LOOK_AND_FEEL_CUSTOMER_NAME,
   description: 'Auto-generated fake customer for Superfluid integration.',
   metadata: {
-    theme: `{"palette":{"mode":"light","primary":{"main":"#3f51b5"},"secondary":{"main":"#f50057"}}}`,
+    theme: `{"components":{"MuiButton":{"styleOverrides":{"root":{"borderRadius":100}}}},"palette":{"mode":"light","primary":{"main":"#0074d4"},"secondary":{"main":"#f50057"}}}`,
   },
 } as const satisfies Stripe.CustomerCreateParams;
 
