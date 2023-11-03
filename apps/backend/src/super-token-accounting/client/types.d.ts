@@ -32,7 +32,7 @@ export interface paths {
         /** @description Array of stream periods containing virtualized periods. */
         200: {
           content: {
-            "application/json": components["schemas"]["StreamPeriod"];
+            "application/json": components["schemas"]["StreamPeriod"][];
           };
         };
       };
