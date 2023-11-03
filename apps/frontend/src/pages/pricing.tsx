@@ -146,8 +146,6 @@ export default function Pricing({ productConfigs, theme }: Props) {
           {tiers.map((tier) => (
             <TierCard key={tier.title} tier={tier} />
           ))}
-          <TierCard tier={tiers[0]} />
-          <TierCard tier={tiers[0]} />
         </Stack>
       </Container>
     </Layout>
