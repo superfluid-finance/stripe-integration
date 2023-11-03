@@ -3,17 +3,7 @@ import Layout from '@/components/Layout';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
-import {
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Link,
-  Stack,
-  ThemeOptions,
-  Toolbar,
-} from '@mui/material';
-import { WidgetProps } from '@superfluid-finance/widget';
+import { Button, Container, IconButton, ThemeOptions, Typography } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
@@ -21,7 +11,7 @@ import createClient from 'openapi-fetch';
 import { LookAndFeelConfig, ProductConfig } from './pricing';
 import { EmailField } from '@superfluid-finance/widget/utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import NextLink from 'next/link';
+import Link from '@/Link';
 
 type Props = {
   productConfig: ProductConfig;
@@ -31,21 +21,27 @@ type Props = {
 export default function Product({ productConfig, theme }: Props) {
   // TODO(KK): validate params?
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
+      {/* TODO(KK): check if pricing table is enabled */}
+
       <Container sx={{ mb: 2.5 }}>
-        <Button component={NextLink} href="/pricing" color="primary" startIcon={<ArrowBackIcon />}>
-          Back to products
-        </Button>
+        <IconButton
+          LinkComponent={Link}
+          href="/pricing"
+          title="Back"
+          edge="start"
+          size="large"
+          sx={(theme) => ({ color: theme.palette.text.secondary })}
+        >
+          <ArrowBackIcon fontSize="small" />
+        </IconButton>
       </Container>
 
       <WagmiProvider>
         <ConnectKitProvider mode={theme.palette?.mode}>
-          {!!productConfig && mounted && (
+          {!!productConfig && (
             <SupefluidWidgetProvider
               productId={productConfig.stripeProduct.id}
               productDetails={productConfig.productDetails}

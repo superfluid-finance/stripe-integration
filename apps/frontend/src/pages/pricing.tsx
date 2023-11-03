@@ -116,7 +116,6 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
 };
 
 export default function Pricing({ productConfigs, theme }: Props) {
-
   // TODO(KK): Order by price
   const tiers = useMemo<Tier[]>(
     () =>
@@ -128,9 +127,12 @@ export default function Pricing({ productConfigs, theme }: Props) {
           price:
             price && price.unit_amount
               ? new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: price.currency,
-              }).format(price.unit_amount / (10 * currencyDecimalMapping.get(price.currency.toUpperCase())!))
+                  style: 'currency',
+                  currency: price.currency,
+                }).format(
+                  price.unit_amount /
+                    (10 * currencyDecimalMapping.get(price.currency.toUpperCase())!),
+                )
               : '',
           buttonText: 'Get Started',
           buttonVariant: 'contained',

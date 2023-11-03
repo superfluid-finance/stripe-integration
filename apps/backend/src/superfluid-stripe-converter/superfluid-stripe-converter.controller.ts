@@ -10,8 +10,8 @@ import {
 } from './superfluid-stripe-config/superfluid-stripe-config.service';
 
 type StripeProductWithPriceExpanded = Stripe.Product & {
-  default_price: Stripe.Price
-}
+  default_price: Stripe.Price;
+};
 
 type ProductResponse = {
   stripeProduct: Stripe.Product;
@@ -25,8 +25,8 @@ type InvoiceResponse = {
 };
 
 type ProductsResponse = (ProductResponse & {
-  stripeProduct: StripeProductWithPriceExpanded
-})[]
+  stripeProduct: StripeProductWithPriceExpanded;
+})[];
 
 @Controller('superfluid-stripe-converter')
 export class SuperfluidStripeConverterController {
@@ -46,7 +46,7 @@ export class SuperfluidStripeConverterController {
       this.stripeClient.prices
         .list({
           product: productId,
-          active: true
+          active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.superfluidStripeConfigService.loadOrInitializeBlockchainConfig(),
@@ -69,7 +69,7 @@ export class SuperfluidStripeConverterController {
       this.stripeClient.products
         .list({
           active: true,
-          expand: ["data.default_price"]
+          expand: ['data.default_price'],
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.stripeClient.prices

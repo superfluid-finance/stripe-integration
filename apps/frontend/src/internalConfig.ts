@@ -7,7 +7,10 @@ type InternalConfig = {
 
 const internalConfig: InternalConfig = {
   getApiKey() {
-    const apiKey = ensureDefined(process.env.STRIPE_SECRET_KEY ?? process.env.INTERNAL_API_KEY, "STRIPE_SECRET_KEY or INTERNAL_API_KEY");
+    const apiKey = ensureDefined(
+      process.env.STRIPE_SECRET_KEY ?? process.env.INTERNAL_API_KEY,
+      'STRIPE_SECRET_KEY or INTERNAL_API_KEY',
+    );
     return apiKey;
   },
   getBackendBaseUrl() {

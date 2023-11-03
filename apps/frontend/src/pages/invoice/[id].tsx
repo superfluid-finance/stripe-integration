@@ -5,10 +5,9 @@ import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
 import { ThemeOptions } from '@mui/material';
 import { GetServerSideProps } from 'next';
-import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
-import { InvoiceConfig, LookAndFeelConfig, ProductConfig } from '../pricing';
+import { InvoiceConfig, LookAndFeelConfig } from '../pricing';
 import { EmailField } from '@superfluid-finance/widget/utils';
 
 type Props = {
@@ -17,19 +16,14 @@ type Props = {
 };
 
 export default function Invoice({ invoiceConfig, theme }: Props) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   const { productConfig, stripeInvoice } = invoiceConfig;
-
-  console.log(invoiceConfig);
 
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
       <WagmiProvider>
         <ConnectKitProvider mode={theme.palette?.mode}>
-          {!!invoiceConfig && mounted && (
+          {!!invoiceConfig && (
             <SupefluidWidgetProvider
               productId={invoiceConfig.productConfig.stripeProduct.id}
               productDetails={productConfig.productDetails}
@@ -38,7 +32,6 @@ export default function Invoice({ invoiceConfig, theme }: Props) {
               personalData={[
                 {
                   ...EmailField,
-
                   disabled: true,
                   value: stripeInvoice.customer_email ?? '',
                 },
