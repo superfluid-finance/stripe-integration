@@ -1,14 +1,6 @@
-import {
-  Box,
-  CssBaseline,
-  Paper,
-  Stack,
-  Theme,
-  ThemeOptions,
-  ThemeProvider
-} from '@mui/material';
+import { Stack, ThemeOptions, ThemeProvider } from '@mui/material';
 import { createWidgetTheme } from '@superfluid-finance/widget';
-import { PropsWithChildren, useEffect, useMemo } from 'react';
+import { PropsWithChildren, useMemo } from 'react';
 
 type Props = PropsWithChildren<{
   themeOptions: ThemeOptions;
@@ -22,10 +14,10 @@ export default function Layout({ children, themeOptions }: Props) {
     <ThemeProvider theme={theme}>
       <Stack
         alignItems="center"
-        justifyContent="center"
         bgcolor={theme.palette.background.default}
-        width="100%"
-        height="100%"
+        width="100vw"
+        minHeight="100vh"
+        sx={{ pt: '10dvh' }}
       >
         {children}
       </Stack>

@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Link from '../Link';
 import Layout from '@/components/Layout';
-import { ThemeOptions } from '@mui/material';
+import { Button, ThemeOptions } from '@mui/material';
 import { GetServerSideProps } from 'next';
 import createClient from 'openapi-fetch';
 import { paths } from '@/backend-openapi-client';
@@ -16,7 +16,7 @@ type Props = { theme: ThemeOptions };
 export default function Home({ theme }: Props) {
   return (
     <Layout themeOptions={theme}>
-      <Container maxWidth="lg">
+      <Container disableGutters maxWidth="sm" component="main" sx={{ pt: 8, pb: 6 }}>
         <Box
           sx={{
             my: 4,
@@ -26,10 +26,10 @@ export default function Home({ theme }: Props) {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h3" align="center" color="text.primary" gutterBottom>
+          <Typography component="h1" variant="h2" align="center" color="text.primary" gutterBottom>
             Superfluid ♥ Stripe
           </Typography>
-          <Typography variant="h5" align="center" color="text.secondary" component="p">
+          <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
             The Superfluid-Stripe Integration provides a bridge between the conventional and the
             progressive world of digital finance, refining the process of managing
             subscription-based services.
@@ -45,9 +45,9 @@ export default function Home({ theme }: Props) {
             height: '100%',
           }}
         >
-          <Link align="center" href="/pricing">
-            Pricing Table
-          </Link>
+          <Button component={Link} href="/pricing" variant="contained" size="medium">
+            Continue
+          </Button>
         </Box>
       </Container>
     </Layout>
