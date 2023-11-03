@@ -3,13 +3,24 @@ import Layout from '@/components/Layout';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
-import { Box, ThemeOptions } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Link,
+  Stack,
+  ThemeOptions,
+  Toolbar,
+} from '@mui/material';
 import { WidgetProps } from '@superfluid-finance/widget';
 import { GetServerSideProps } from 'next';
 import { use, useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
 import { LookAndFeelConfig, ProductConfig } from './pricing';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import NextLink from 'next/link';
 
 type Props = {
   productConfig: ProductConfig;
@@ -25,6 +36,12 @@ export default function Product({ productConfig, theme }: Props) {
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
+      <Container sx={{ mb: 2.5 }}>
+        <Button component={NextLink} href="/pricing" color="primary" startIcon={<ArrowBackIcon />}>
+          Back to products
+        </Button>
+      </Container>
+
       <WagmiProvider>
         <ConnectKitProvider mode={theme.palette?.mode}>
           {!!productConfig && mounted && (
