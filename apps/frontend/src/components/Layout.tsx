@@ -5,9 +5,9 @@ import {
   Stack,
   Theme,
   ThemeOptions,
-  ThemeProvider,
-  createTheme,
+  ThemeProvider
 } from '@mui/material';
+import { createWidgetTheme } from '@superfluid-finance/widget';
 import { PropsWithChildren, useEffect, useMemo } from 'react';
 
 type Props = PropsWithChildren<{
@@ -16,7 +16,7 @@ type Props = PropsWithChildren<{
 
 export default function Layout({ children, themeOptions }: Props) {
   // TODO(KK): optimize, expose theme from widget?
-  const theme = useMemo(() => createTheme(themeOptions), [themeOptions]);
+  const theme = useMemo(() => createWidgetTheme(themeOptions), [themeOptions]);
 
   return (
     <ThemeProvider theme={theme}>
