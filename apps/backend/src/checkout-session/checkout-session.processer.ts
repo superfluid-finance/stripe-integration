@@ -41,7 +41,10 @@ export const SuperfluidStripeSubscriptionsMetadataSchema: z.ZodType<SuperfluidSt
       superfluid_token_address: AddressSchema,
       superfluid_sender_address: AddressSchema,
       superfluid_receiver_address: AddressSchema,
-      superfluid_require_upfront_transfer: z.string().toLowerCase().pipe(z.literal("true").or(z.literal("false")))
+      superfluid_require_upfront_transfer: z
+        .string()
+        .toLowerCase()
+        .pipe(z.literal('true').or(z.literal('false'))),
     })
     .strip();
 
@@ -151,13 +154,15 @@ export class CheckoutSessionProcesser extends WorkerHost {
       superfluid_token_address: data.superTokenAddress as Address,
       superfluid_sender_address: data.senderAddress as Address,
       superfluid_receiver_address: data.receiverAddress as Address,
-      superfluid_require_upfront_transfer: requireUpfrontTransfer.toString() 
+      superfluid_require_upfront_transfer: requireUpfrontTransfer.toString(),
     };
 
     // Note that we are creating a Stripe Subscription here that will send invoices and e-mails to the user.
     // There could be scenarios where someone was using the checkout widget to pay for an existing subscription.
     // Then we wouldn't want to create a new subscription here...
-    const daysUntilDue = requireUpfrontTransfer ? 0 : mapTimePeriodToSeconds(price.recurring!.interval) / SECONDS_IN_A_DAY
+    const daysUntilDue = requireUpfrontTransfer
+      ? 0
+      : mapTimePeriodToSeconds(price.recurring!.interval) / SECONDS_IN_A_DAY;
     const subscriptionsCreateParams: Stripe.SubscriptionCreateParams = {
       customer: customerId,
       collection_method: 'send_invoice',
@@ -178,7 +183,7 @@ export class CheckoutSessionProcesser extends WorkerHost {
       ],
       metadata: subscriptionMetadata,
     };
-    
+
     const subscriptionsCreateResponse =
       await this.stripeClient.subscriptions.create(subscriptionsCreateParams);
 

@@ -19,6 +19,9 @@ export interface paths {
   '/superfluid-stripe-converter/look-and-feel': {
     get: operations['SuperfluidStripeConverterController_lookAndFeel'];
   };
+  '/superfluid-stripe-converter/invoice': {
+    get: operations['SuperfluidStripeConverterController_invoice'];
+  };
   '/health': {
     get: operations['HealthController_check'];
   };
@@ -98,6 +101,18 @@ export interface operations {
     };
   };
   SuperfluidStripeConverterController_lookAndFeel: {
+    responses: {
+      200: {
+        content: never;
+      };
+    };
+  };
+  SuperfluidStripeConverterController_invoice: {
+    parameters: {
+      query: {
+        'invoice-id': string;
+      };
+    };
     responses: {
       200: {
         content: never;

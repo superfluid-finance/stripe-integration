@@ -51,7 +51,7 @@ export default function SupefluidWidgetProvider({
   const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();
   const { address: accountAddress } = useAccount();
 
-  const eventListeners = useMemo<EventListeners>( 
+  const eventListeners = useMemo<EventListeners>(
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
@@ -64,7 +64,7 @@ export default function SupefluidWidgetProvider({
             senderAddress: accountAddress,
             receiverAddress: paymentOption.receiverAddress,
             email: email,
-            idempotencyKey: idempotencyKey
+            idempotencyKey: idempotencyKey,
           };
           createSession(data);
         }

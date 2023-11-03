@@ -50,7 +50,7 @@ const registerCacheModule = () =>
           port: Number(config.getOrThrow('REDIS_PORT')),
         },
         username: config.get('REDIS_USER'),
-        password: config.get('REDIS_PASSWORD')
+        password: config.get('REDIS_PASSWORD'),
       });
 
       return {

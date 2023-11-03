@@ -3,51 +3,39 @@ import Layout from '@/components/Layout';
 import SupefluidWidgetProvider from '@/components/SuperfluidWidgetProvider';
 import WagmiProvider from '@/components/WagmiProvider';
 import internalConfig from '@/internalConfig';
-import { Button, Container, IconButton, ThemeOptions, Typography } from '@mui/material';
+import { ThemeOptions } from '@mui/material';
 import { GetServerSideProps } from 'next';
-import { useEffect, useState } from 'react';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
-import { LookAndFeelConfig, ProductConfig } from './pricing';
+import { InvoiceConfig, LookAndFeelConfig } from '../pricing';
 import { EmailField } from '@superfluid-finance/widget/utils';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import Link from '@/Link';
 
 type Props = {
-  productConfig: ProductConfig;
+  invoiceConfig: InvoiceConfig;
   theme: ThemeOptions;
 };
 
-export default function Product({ productConfig, theme }: Props) {
-  // TODO(KK): validate params?
+export default function Invoice({ invoiceConfig, theme }: Props) {
+  const { productConfig, stripeInvoice } = invoiceConfig;
 
   // TODO(KK): handle theme any
   return (
     <Layout themeOptions={theme}>
-      {/* TODO(KK): check if pricing table is enabled */}
-
-      <Container sx={{ mb: 2.5 }}>
-        <IconButton
-          LinkComponent={Link}
-          href="/pricing"
-          title="Back"
-          edge="start"
-          size="large"
-          sx={(theme) => ({ color: theme.palette.text.secondary })}
-        >
-          <ArrowBackIcon fontSize="small" />
-        </IconButton>
-      </Container>
-
       <WagmiProvider>
         <ConnectKitProvider mode={theme.palette?.mode}>
-          {!!productConfig && (
+          {!!invoiceConfig && (
             <SupefluidWidgetProvider
-              productId={productConfig.stripeProduct.id}
+              productId={invoiceConfig.productConfig.stripeProduct.id}
               productDetails={productConfig.productDetails}
               paymentDetails={productConfig.paymentDetails}
               theme={theme}
-              personalData={[EmailField]}
+              personalData={[
+                {
+                  ...EmailField,
+                  disabled: true,
+                  value: stripeInvoice.customer_email ?? '',
+                },
+              ]}
             />
           )}
         </ConnectKitProvider>
@@ -57,29 +45,29 @@ export default function Product({ productConfig, theme }: Props) {
 }
 
 export const getServerSideProps = (async (context) => {
-  const productId = context.query.product as string;
+  const invoiceId = context.query.id as string;
 
   const client = createClient<paths>({
     baseUrl: internalConfig.getBackendBaseUrl().toString(),
   });
 
-  const [{ response: productResponse }, { response: lookAndFeelResponse }] = await Promise.all([
-    client.GET('/superfluid-stripe-converter/product', {
+  const [{ response: invoiceResponse }, { response: lookAndFeelResponse }] = await Promise.all([
+    client.GET('/superfluid-stripe-converter/invoice', {
       params: {
         query: {
-          'product-id': productId,
+          'invoice-id': invoiceId,
         },
       },
     }),
     client.GET('/superfluid-stripe-converter/look-and-feel'),
   ]);
 
-  const productConfig = (await productResponse.json()) as ProductConfig;
+  const invoiceConfig = (await invoiceResponse.json()) as InvoiceConfig;
   const { theme } = (await lookAndFeelResponse.json()) as LookAndFeelConfig;
 
   return {
     props: {
-      productConfig,
+      invoiceConfig,
       theme,
     },
   };

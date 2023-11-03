@@ -18,6 +18,8 @@ import createClient from 'openapi-fetch';
 import { FC, useMemo } from 'react';
 import Stripe from 'stripe';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import { currencyDecimalMapping } from '@/stripe-currencies';
+import Link from '@/Link';
 
 type Tier = {
   title: string;
@@ -32,6 +34,11 @@ export type ProductConfig = {
   stripeProduct: Stripe.Product;
   productDetails: WidgetProps['productDetails'];
   paymentDetails: WidgetProps['paymentDetails'];
+};
+
+export type InvoiceConfig = {
+  stripeInvoice: Stripe.Invoice;
+  productConfig: ProductConfig;
 };
 
 export type LookAndFeelConfig = { theme: ThemeOptions };
@@ -96,9 +103,10 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
       </CardContent>
       <CardActions>
         <Button
+          LinkComponent={Link}
+          href={`/${tier.productId}`}
           fullWidth
           variant={tier.buttonVariant as 'outlined' | 'contained'}
-          href={`${tier.productId}`}
         >
           {tier.buttonText}
         </Button>
@@ -108,6 +116,7 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
 };
 
 export default function Pricing({ productConfigs, theme }: Props) {
+  // TODO(KK): Order by price
   const tiers = useMemo<Tier[]>(
     () =>
       productConfigs.map((x) => {
@@ -120,7 +129,10 @@ export default function Pricing({ productConfigs, theme }: Props) {
               ? new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: price.currency,
-                }).format(price.unit_amount)
+                }).format(
+                  price.unit_amount /
+                    (10 * currencyDecimalMapping.get(price.currency.toUpperCase())!),
+                )
               : '',
           buttonText: 'Get Started',
           buttonVariant: 'contained',

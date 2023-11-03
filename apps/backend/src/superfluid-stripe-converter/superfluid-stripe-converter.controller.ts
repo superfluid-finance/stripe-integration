@@ -10,8 +10,8 @@ import {
 } from './superfluid-stripe-config/superfluid-stripe-config.service';
 
 type StripeProductWithPriceExpanded = Stripe.Product & {
-  default_price: Stripe.Price
-}
+  default_price: Stripe.Price;
+};
 
 type ProductResponse = {
   stripeProduct: Stripe.Product;
@@ -19,9 +19,14 @@ type ProductResponse = {
   paymentDetails: WidgetProps['paymentDetails'];
 };
 
+type InvoiceResponse = {
+  stripeInvoice: Stripe.Invoice;
+  productConfig: ProductResponse;
+};
+
 type ProductsResponse = (ProductResponse & {
-  stripeProduct: StripeProductWithPriceExpanded
-})[]
+  stripeProduct: StripeProductWithPriceExpanded;
+})[];
 
 @Controller('superfluid-stripe-converter')
 export class SuperfluidStripeConverterController {
@@ -41,7 +46,7 @@ export class SuperfluidStripeConverterController {
       this.stripeClient.prices
         .list({
           product: productId,
-          active: true
+          active: true,
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.superfluidStripeConfigService.loadOrInitializeBlockchainConfig(),
@@ -64,7 +69,7 @@ export class SuperfluidStripeConverterController {
       this.stripeClient.products
         .list({
           active: true,
-          expand: ["data.default_price"]
+          expand: ['data.default_price'],
         })
         .autoPagingToArray(DEFAULT_PAGING),
       this.stripeClient.prices
@@ -103,6 +108,21 @@ export class SuperfluidStripeConverterController {
     const lookAndFeelConfig =
       await this.superfluidStripeConfigService.loadOrInitializeLookAndFeelConfig();
     return lookAndFeelConfig;
+  }
+
+  @Get('invoice')
+  async invoice(@Query('invoice-id') invoiceId: string): Promise<InvoiceResponse> {
+    const stripeInvoice = await this.stripeClient.invoices.retrieve(invoiceId);
+    const product = await this.stripeClient.products.retrieve(
+      stripeInvoice.lines.data[0].price?.product as string,
+    );
+
+    const productConfig = await this.mapStripeProductToCheckoutWidget(product.id);
+
+    return {
+      stripeInvoice,
+      productConfig,
+    };
   }
 }
 
