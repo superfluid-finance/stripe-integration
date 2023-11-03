@@ -48,9 +48,11 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
   return (
     <Card
       sx={{
-        maxWidth: 'calc((100% / 3) - 20px)',
+        display: 'flex',
+        flexDirection: 'column',
+        maxWidth: 'calc((100% - 40px) / 3)',
         width: '100%',
-        [theme.breakpoints.down('md')]: { maxWidth: 'calc((100% / 2) - 20px)' },
+        [theme.breakpoints.down('md')]: { maxWidth: 'calc((100% - 20px) / 2)' },
         [theme.breakpoints.down('sm')]: { maxWidth: '100%' },
       }}
     >
@@ -67,7 +69,7 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
             theme.palette.mode === 'light' ? theme.palette.grey[200] : theme.palette.grey[700],
         }}
       />
-      <CardContent>
+      <CardContent sx={{ flex: 1 }}>
         <Box
           sx={{
             display: 'flex',
@@ -145,7 +147,7 @@ export default function Pricing({ productConfigs, theme }: Props) {
         <Stack
           direction="row"
           flexWrap="wrap"
-          alignItems="center"
+          alignItems="stretch"
           justifyContent="center"
           rowGap={4}
           columnGap={2.5}
