@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
-import { RedisStore, redisStore } from 'cache-manager-redis-store';
+import { redisStore } from 'cache-manager-redis-store';
 import { CacheInterceptor, CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { QueueDashboardModule } from './queue-dashboard/queue-dashboard.module';
 import { CheckoutSessionModule } from './checkout-session/checkout-session.module';
@@ -42,6 +42,7 @@ const registerBullModule = () =>
 const registerCacheModule = () =>
   CacheModule.registerAsync({
     imports: [ConfigModule],
+    inject: [ConfigService],
     useFactory: async (config: ConfigService) => {
       const store = await redisStore({
         socket: {
@@ -57,13 +58,12 @@ const registerCacheModule = () =>
         ttl: 60 * 60 * 24 * 7,
       };
     },
-    inject: [ConfigService],
   });
 
 @Module({
   imports: [
-    registerCacheModule(),
     registerConfigModule(),
+    registerCacheModule(),
     registerStripeModule(),
     registerBullModule(),
     QueueDashboardModule,
