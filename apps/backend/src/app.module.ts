@@ -22,12 +22,12 @@ const registerConfigModule = () =>
 const registerBullModule = () =>
   BullModule.forRootAsync({
     inject: [ConfigService],
-    useFactory: async (configService: ConfigService) => ({
+    useFactory: async (config: ConfigService) => ({
       connection: {
-        host: configService.getOrThrow('REDIS_HOST'),
-        port: configService.getOrThrow('REDIS_PORT'),
-        password: configService.get('REDIS_PASSWORD'),
-        username: configService.get('REDIS_USER'),
+        host: config.getOrThrow('REDIS_HOST'),
+        port: config.getOrThrow('REDIS_PORT'),
+        password: config.get('REDIS_PASSWORD'),
+        username: config.get('REDIS_USER'),
       },
       defaultJobOptions: {
         attempts: 3,
@@ -46,16 +46,17 @@ const registerCacheModule = () =>
     useFactory: async (config: ConfigService) => {
       const store = await redisStore({
         socket: {
-          host: config.get('REDIS_HOST'),
-          port: +config.get('REDIS_PORT'),
+          host: config.getOrThrow('REDIS_HOST'),
+          port: Number(config.getOrThrow('REDIS_PORT')),
         },
-        // password: config.get('REDIS_PASSWORD'),
+        username: config.get('REDIS_USER'),
+        password: config.get('REDIS_PASSWORD')
       });
 
       return {
         isGlobal: true,
-        store: store as unknown as CacheStore,
-        ttl: 60 * 60 * 24 * 7,
+        store: store as unknown as CacheStore, // Nest.js hasn't caught up with right types
+        ttl: 3000, // In cache-manager v5, TTL is configured in milliseconds: https://docs.nestjs.com/techniques/caching
       };
     },
   });
