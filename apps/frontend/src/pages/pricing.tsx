@@ -142,7 +142,14 @@ export default function Pricing({ productConfigs, theme }: Props) {
       </Container>
       {/* End hero unit */}
       <Container maxWidth="md" component="main">
-        <Stack direction="row" flexWrap="wrap" alignItems="center" gap={2.5}>
+        <Stack
+          direction="row"
+          flexWrap="wrap"
+          alignItems="center"
+          justifyContent="center"
+          rowGap={4}
+          columnGap={2.5}
+        >
           {tiers.map((tier) => (
             <TierCard key={tier.title} tier={tier} />
           ))}
