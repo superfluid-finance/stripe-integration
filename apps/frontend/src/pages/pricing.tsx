@@ -2,7 +2,7 @@ import { paths } from '@/backend-openapi-client';
 import Layout from '@/components/Layout';
 import internalConfig from '@/internalConfig';
 import StarIcon from '@mui/icons-material/StarBorder';
-import { List, ListItem, ListItemIcon, ListItemText, Stack, useTheme } from '@mui/material';
+import { List, ListItem, ListItemText, Stack, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -17,9 +17,10 @@ import { GetServerSideProps } from 'next';
 import createClient from 'openapi-fetch';
 import { FC, useMemo } from 'react';
 import Stripe from 'stripe';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import { currencyDecimalMapping } from '@/stripe-currencies';
 import Link from '@/Link';
+import CheckIcon from '@mui/icons-material/Check';
+import { green } from '@mui/material/colors';
 
 type Tier = {
   title: string;
@@ -95,7 +96,11 @@ const TierCard: FC<{ tier: Tier }> = ({ tier }) => {
         <List dense>
           {tier.description.map((line) => (
             <ListItem key={line} disableGutters>
-              <ArrowRightIcon />
+              <Box px={2}>
+                <CheckIcon fontSize="small" sx={{
+                  color: green[600]
+                }} />
+              </Box>
               <ListItemText primary={line} />
             </ListItem>
           ))}
@@ -120,20 +125,22 @@ export default function Pricing({ productConfigs, theme }: Props) {
   const tiers = useMemo<Tier[]>(
     () =>
       productConfigs.map((x) => {
-        const price = x.stripeProduct.default_price as Stripe.Price | null;
+        const stripePrice = x.stripeProduct.default_price as Stripe.Price | null;
+
+        let priceString = ""
+        if (stripePrice && stripePrice.unit_amount) {
+          const currencyDecimals = currencyDecimalMapping.get(stripePrice.currency.toUpperCase())!;
+          const value = stripePrice.unit_amount / Math.pow(10, currencyDecimals);
+          priceString = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: stripePrice.currency,
+          }).format(value)
+        }
+
         return {
           title: x.stripeProduct.name,
           description: x.stripeProduct.features.map((f) => f.name),
-          price:
-            price && price.unit_amount
-              ? new Intl.NumberFormat('en-US', {
-                  style: 'currency',
-                  currency: price.currency,
-                }).format(
-                  price.unit_amount /
-                    (10 * currencyDecimalMapping.get(price.currency.toUpperCase())!),
-                )
-              : '',
+          price: priceString,
           buttonText: 'Get Started',
           buttonVariant: 'contained',
           productId: x.stripeProduct.id,
