@@ -56,7 +56,7 @@ const registerCacheModule = () =>
       return {
         isGlobal: true,
         store: store as unknown as CacheStore, // Nest.js hasn't caught up with right types
-        ttl: 3000, // In cache-manager v5, TTL is configured in milliseconds: https://docs.nestjs.com/techniques/caching
+        ttl: 3 * 1000, // In cache-manager v5, TTL is configured in milliseconds: https://docs.nestjs.com/techniques/caching
       };
     },
   });
