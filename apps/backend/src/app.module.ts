@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
-import { redisStore } from 'cache-manager-redis-store';
 import { CacheInterceptor, CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { QueueDashboardModule } from './queue-dashboard/queue-dashboard.module';
 import { CheckoutSessionModule } from './checkout-session/checkout-session.module';
@@ -40,25 +39,9 @@ const registerBullModule = () =>
   });
 
 const registerCacheModule = () =>
-  CacheModule.registerAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: async (config: ConfigService) => {
-      const store = await redisStore({
-        socket: {
-          host: config.getOrThrow('REDIS_HOST'),
-          port: Number(config.getOrThrow('REDIS_PORT')),
-        },
-        username: config.get('REDIS_USER'),
-        password: config.get('REDIS_PASSWORD'),
-      });
-
-      return {
-        isGlobal: true,
-        store: store as unknown as CacheStore, // Nest.js hasn't caught up with right types
-        ttl: 3 * 1000, // In cache-manager v5, TTL is configured in milliseconds: https://docs.nestjs.com/techniques/caching
-      };
-    },
+  CacheModule.register({
+    ttl: 30 * 1000, // We're using cache-manager v5 so need to specify in milliseconds: https://docs.nestjs.com/techniques/caching
+    max: 25,
   });
 
 @Module({

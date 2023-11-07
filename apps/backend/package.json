@@ -62,7 +62,6 @@
     "@types/lodash": "^4.14.200",
     "bullmq": "^4.13.0",
     "cache-manager": "^5.2.4",
-    "cache-manager-redis-store": "^3.0.1",
     "date-fns": "^2.30.0",
     "lodash": "^4.17.21",
     "openapi-fetch": "^0.8.1",
