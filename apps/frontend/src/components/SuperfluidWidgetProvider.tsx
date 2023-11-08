@@ -1,6 +1,5 @@
 import { CreateSessionData } from '@/pages/api/create-session';
 import SuperfluidWidget, {
-  EventListeners,
   PaymentOption,
   WalletManager,
   WidgetProps,
@@ -53,10 +52,12 @@ export default function SupefluidWidgetProvider({
   const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();
   const { address: accountAddress } = useAccount();
 
+
+
   const callbacks = useMemo<Callbacks>(
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
-      onRouteChange: async (arg) => {
+      onRouteChange: (arg) => {
         const email = arg?.data?.['e-mail']; // TODO(KK): use better name than "e-mail", prefer "email"
 
         if (arg?.route === 'transactions') {
@@ -70,13 +71,13 @@ export default function SupefluidWidgetProvider({
               email: email,
               idempotencyKey: idempotencyKey,
             };
-            await createSession(data);
+            createSession(data);
           } else {
             throw new Error(`Something went wrong when creating a session. Data: [${{ email, accountAddress, paymentOption }}]`); // TODO(KK): remove this data from the error?
           }
         }
       },
-      validatePersonalData: async (data: PersonalData) => {
+      validatePersonalData: (data: PersonalData) => {
 
         // const email = data.find(x => x.name === "email")!;
 

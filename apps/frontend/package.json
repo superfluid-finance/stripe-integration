@@ -27,7 +27,7 @@
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
     "@mui/material": "^5.14.17",
-    "@superfluid-finance/widget": "0.0.0-dev-20231108092510",
+    "@superfluid-finance/widget": "0.0.0-dev-20231108114346",
     "clsx": "^2.0.0",
     "connectkit": "^1.5.3",
     "next": "latest",

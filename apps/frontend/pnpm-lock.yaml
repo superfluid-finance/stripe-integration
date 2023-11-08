@@ -24,8 +24,8 @@ dependencies:
     specifier: ^5.14.17
     version: 5.14.17(@emotion/react@11.11.1)(@emotion/styled@11.11.0)(@types/react@18.2.36)(react-dom@18.2.0)(react@18.2.0)
   '@superfluid-finance/widget':
-    specifier: 0.0.0-dev-20231108092510
-    version: 0.0.0-dev-20231108092510(@mui/material@5.14.17)(@types/react@18.2.36)(typescript@5.2.2)(viem@1.18.8)(wagmi@1.4.5)
+    specifier: 0.0.0-dev-20231108114346
+    version: 0.0.0-dev-20231108114346(@mui/material@5.14.17)(@types/react@18.2.36)(typescript@5.2.2)(viem@1.18.8)(wagmi@1.4.5)
   clsx:
     specifier: ^2.0.0
     version: 2.0.0
@@ -1340,8 +1340,8 @@ packages:
       '@uniswap/token-lists': 1.0.0-beta.33
     dev: false
 
-  /@superfluid-finance/widget@0.0.0-dev-20231108092510(@mui/material@5.14.17)(@types/react@18.2.36)(typescript@5.2.2)(viem@1.18.8)(wagmi@1.4.5):
-    resolution: {integrity: sha512-X8/U9OyKr+lUjOLEeOZ8nSn6R96QpYAJ5usWrz4wQXh+QX18VHh25VI91vmnAIZap9JC55186QH3jzfePpMa6A==}
+  /@superfluid-finance/widget@0.0.0-dev-20231108114346(@mui/material@5.14.17)(@types/react@18.2.36)(typescript@5.2.2)(viem@1.18.8)(wagmi@1.4.5):
+    resolution: {integrity: sha512-gIgXDHCSZV2gQCngQriQ49E4nyLamY01z3w27TKWyMEX7Hy/jIlzybE2N664FJvxeImsr/L5KeQdUBJzYLDoYA==}
     peerDependencies:
       viem: '>=1'
       wagmi: '>=1'
