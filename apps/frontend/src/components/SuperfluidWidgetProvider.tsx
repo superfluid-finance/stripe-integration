@@ -1,9 +1,10 @@
 import { CreateSessionData } from '@/pages/api/create-session';
 import SuperfluidWidget, {
-  EventListeners,
   PaymentOption,
   WalletManager,
   WidgetProps,
+  Callbacks,
+  PersonalData
 } from '@superfluid-finance/widget';
 import { useModal } from 'connectkit';
 import { useMemo, useState } from 'react';
@@ -35,7 +36,7 @@ export default function SupefluidWidgetProvider({
     [open, setOpen],
   );
 
-  const { mutate: createSession } = useMutation(
+  const { mutateAsync: createSession } = useMutation(
     ['createSession'],
     async (data: CreateSessionData) => {
       await fetch('/api/create-session', {
@@ -51,24 +52,44 @@ export default function SupefluidWidgetProvider({
   const [paymentOption, setPaymentOption] = useState<PaymentOption | undefined>();
   const { address: accountAddress } = useAccount();
 
-  const eventListeners = useMemo<EventListeners>(
+
+
+  const callbacks = useMemo<Callbacks>(
     () => ({
       onPaymentOptionUpdate: (paymentOption) => setPaymentOption(paymentOption),
       onRouteChange: (arg) => {
-        const email = arg?.data?.['email'];
-        if (email && accountAddress && paymentOption && arg?.route === 'transactions') {
-          const data: CreateSessionData = {
-            productId,
-            chainId: paymentOption.chainId,
-            superTokenAddress: paymentOption.superToken.address,
-            senderAddress: accountAddress,
-            receiverAddress: paymentOption.receiverAddress,
-            email: email,
-            idempotencyKey: idempotencyKey,
-          };
-          createSession(data);
+        const email = arg?.data?.['e-mail']; // TODO(KK): use better name than "e-mail", prefer "email"
+
+        if (arg?.route === 'transactions') {
+          if (email && accountAddress && paymentOption) {
+            const data: CreateSessionData = {
+              productId,
+              chainId: paymentOption.chainId,
+              superTokenAddress: paymentOption.superToken.address,
+              senderAddress: accountAddress,
+              receiverAddress: paymentOption.receiverAddress,
+              email: email,
+              idempotencyKey: idempotencyKey,
+            };
+            createSession(data);
+          } else {
+            throw new Error(`Something went wrong when creating a session. Data: [${{ email, accountAddress, paymentOption }}]`); // TODO(KK): remove this data from the error?
+          }
         }
       },
+      validatePersonalData: (data: PersonalData) => {
+
+        // const email = data.find(x => x.name === "email")!;
+
+        // TODO(KK): Validate against Stripe so not already subscribed.
+
+        // return ({
+        //   "email": {
+        //     message: "test-test-test",
+        //     success: true
+        //   }
+        // });
+      }
     }),
     [productId, paymentOption, accountAddress, createSession],
   );
@@ -77,11 +98,11 @@ export default function SupefluidWidgetProvider({
     <SuperfluidWidget
       type="page"
       walletManager={walletManager}
-      eventListeners={eventListeners}
       paymentDetails={paymentDetails}
       productDetails={productDetails}
       personalData={personalData}
       theme={theme}
+      callbacks={callbacks}
     />
   );
 }

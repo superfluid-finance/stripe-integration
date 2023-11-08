@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import { paths } from '@/backend-openapi-client';
 import createClient from 'openapi-fetch';
 import { LookAndFeelConfig, ProductConfig } from './pricing';
-import { EmailField } from '@superfluid-finance/widget/utils';
+import { EmailWithAliasField } from '@superfluid-finance/widget/utils';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Link from '@/Link';
 
@@ -46,7 +46,7 @@ export default function Product({ productConfig, theme }: Props) {
               productDetails={productConfig.productDetails}
               paymentDetails={productConfig.paymentDetails}
               theme={theme}
-              personalData={[EmailField]}
+              personalData={[EmailWithAliasField]}
             />
           )}
         </ConnectKitProvider>
