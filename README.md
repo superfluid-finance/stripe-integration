@@ -69,6 +69,9 @@ For effective debugging, utilize the **Swagger UI** for backend query calls, whi
 
 That should be enough to get you started on contributing to this project. Happy coding!
 
+### Example 1-click deploy
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/Ns82Ol?referralCode=tbUwhT)
 
 ## Contributing
 
